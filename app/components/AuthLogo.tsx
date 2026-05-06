@@ -4,7 +4,7 @@ type AuthLogoProps = {
   name?: string;
 };
 
-export function AuthLogo({ name = "SustentaRural" }: AuthLogoProps) {
+export function AuthLogo({ name = "Ruralize" }: AuthLogoProps) {
   return (
     <Link
       href="/"

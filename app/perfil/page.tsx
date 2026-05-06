@@ -25,7 +25,7 @@ export default function PerfilPage() {
             Escolha seu perfil
           </h1>
           <p className="mt-3 text-[12px] font-semibold leading-5 text-[#777f72]">
-            Selecione como deseja criar sua conta no SustentaRural
+            Selecione como deseja criar sua conta no Ruralize
           </p>
         </div>
 

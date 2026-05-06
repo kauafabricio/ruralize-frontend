@@ -1,9 +1,6 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-
-import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 import { AuthCard } from "../components/AuthCard";
@@ -20,10 +17,7 @@ import { MatriculaInput } from "../components/MatriculaInput";
 import { Toast } from "../components/Toast";
 
 export default function CadastroPage() {
-  const searchParams = useSearchParams();
-  const perfil = searchParams.get("perfil");
-
-  const role = perfil === "professor" ? "teacher" : "student";
+  const [role, setRole] = useState<"student" | "teacher">("student");
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -37,6 +31,12 @@ export default function CadastroPage() {
     type: "success" | "error";
   } | null>(null);
 
+  // pega query param no client (sem quebrar build)
+  useEffect(() => {
+    const perfil = new URLSearchParams(window.location.search).get("perfil");
+    setRole(perfil === "professor" ? "teacher" : "student");
+  }, []);
+
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -49,7 +49,7 @@ export default function CadastroPage() {
         role,
       };
 
-      // 👇 só adiciona se for aluno
+      // só adiciona se for aluno
       if (role === "student") {
         if (!registration || !course) {
           throw new Error("Preencha todos os campos de aluno");
@@ -76,7 +76,7 @@ export default function CadastroPage() {
         throw new Error(data.detail || "Erro ao cadastrar");
       }
 
-      // ✅ sucesso
+      // sucesso
       setToast({
         message: "Conta criada com sucesso!",
         type: "success",
@@ -98,7 +98,7 @@ export default function CadastroPage() {
 
   return (
     <AuthShell>
-      {/* 🔥 TOAST */}
+      {/* TOAST */}
       {toast && (
         <Toast
           message={toast.message}
@@ -130,7 +130,7 @@ export default function CadastroPage() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          {/* 👇 Só aparece para ALUNO */}
+          {/* Só aparece para ALUNO */}
           {role === "student" && (
             <div className="grid grid-cols-2 gap-5">
               <MatriculaInput

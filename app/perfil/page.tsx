@@ -1,4 +1,4 @@
-export const dynamic = "force-dynamic";
+"use client";
 
 import Link from "next/link";
 import { AuthCard } from "../components/AuthCard";
@@ -49,7 +49,7 @@ export default function PerfilPage() {
         </div>
 
         <div className="mt-9 border-t border-[#ebebe8] pt-8 text-center text-[12px] font-medium text-[#8c9388]">
-          Ja possui uma conta?{" "}
+          Já possui uma conta?{" "}
           <Link href="/login" className="font-black text-[#287630]">
             Entrar agora
           </Link>

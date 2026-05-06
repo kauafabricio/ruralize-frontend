@@ -1,7 +1,5 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-
 import { useState } from "react";
 import Link from "next/link";
 
@@ -52,7 +50,7 @@ export default function LoginPage() {
         type: "success",
       });
 
-      // 👉 se tiver token:
+      // 👉 se existir token:
       // localStorage.setItem("token", data.token);
 
       setTimeout(() => {
@@ -98,7 +96,7 @@ export default function LoginPage() {
             type="email"
             placeholder="seu@ufrpe.br"
             value={email}
-            onChange={(e: any) => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           {/* SENHA */}
@@ -107,7 +105,7 @@ export default function LoginPage() {
             type="password"
             placeholder="********"
             value={password}
-            onChange={(e: any) => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             icon={<LockIcon />}
             action={
               <Link

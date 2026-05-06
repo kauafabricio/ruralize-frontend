@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { AuthCard } from "../components/AuthCard";
 import { GraduationIcon, UserIcon } from "../components/AuthIcons";

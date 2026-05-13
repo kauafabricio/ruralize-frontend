@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { AuthCard } from "../components/AuthCard";
@@ -15,6 +15,20 @@ import { AuthShell } from "../components/AuthShell";
 import { CourseSelect } from "../components/CourseSelect";
 import { MatriculaInput } from "../components/MatriculaInput";
 import { Toast } from "../components/Toast";
+
+type RegisterPayload = {
+  name: string;
+  email: string;
+  password: string;
+  role: "student" | "teacher";
+  registration?: number;
+  course?: string;
+};
+
+type RegisterResponse = {
+  detail?: string;
+  message?: string;
+};
 
 export default function CadastroPage() {
   const [role, setRole] = useState<"student" | "teacher">("student");
@@ -33,8 +47,12 @@ export default function CadastroPage() {
 
   // pega query param no client (sem quebrar build)
   useEffect(() => {
-    const perfil = new URLSearchParams(window.location.search).get("perfil");
-    setRole(perfil === "professor" ? "teacher" : "student");
+    const timeout = window.setTimeout(() => {
+      const perfil = new URLSearchParams(window.location.search).get("perfil");
+      setRole(perfil === "professor" ? "teacher" : "student");
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
   }, []);
 
   async function handleRegister(e: React.FormEvent) {
@@ -42,7 +60,7 @@ export default function CadastroPage() {
     setLoading(true);
 
     try {
-      const body: any = {
+      const body: RegisterPayload = {
         name,
         email,
         password,
@@ -70,7 +88,7 @@ export default function CadastroPage() {
         }
       );
 
-      const data = await response.json();
+      const data = (await response.json()) as RegisterResponse;
 
       if (!response.ok) {
         throw new Error(data.detail || "Erro ao cadastrar");
@@ -86,9 +104,9 @@ export default function CadastroPage() {
         window.location.href = "/login";
       }, 1500);
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       setToast({
-        message: err.message,
+        message: err instanceof Error ? err.message : "Erro ao cadastrar",
         type: "error",
       });
     } finally {
@@ -135,7 +153,7 @@ export default function CadastroPage() {
             <div className="grid grid-cols-2 gap-5">
               <MatriculaInput
                 value={registration}
-                onChange={(e: any) => setRegistration(e.target.value)}
+                onChange={(e) => setRegistration(e.target.value)}
               />
               <CourseSelect
                 value={course}

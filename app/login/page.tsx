@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { AuthCard } from "../components/AuthCard";
 import { AuthInput } from "../components/AuthInput";
-import { LockIcon } from "../components/AuthIcons";
+import { EyeIcon, EyeOffIcon, LockIcon } from "../components/AuthIcons";
 import { AuthShell } from "../components/AuthShell";
 import { Toast } from "../components/Toast";
 import { useAuth } from "../components/auth/AuthProvider";
@@ -16,6 +16,7 @@ export default function LoginPage() {
   const { isAuthenticated, login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [toast, setToast] = useState<{
@@ -84,20 +85,35 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
+          <div className="mb-3 flex items-center justify-between gap-4 text-[10px] font-black uppercase tracking-[0.14em] text-[#262b23]">
+            <span>Senha</span>
+            <Link
+              href="/login"
+              className="text-[10px] font-black normal-case tracking-normal text-[#287630]"
+            >
+              Esqueci senha
+            </Link>
+          </div>
+
           <AuthInput
-            label="Senha"
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="********"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             icon={<LockIcon />}
             action={
-              <Link
-                href="/login"
-                className="text-[10px] font-black normal-case tracking-normal text-[#287630]"
+              <button
+                type="button"
+                onClick={() => setShowPassword((current) => !current)}
+                className="inline-flex items-center justify-center text-[#697163]"
+                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
               >
-                Esqueci senha
-              </Link>
+                {showPassword ? (
+                  <EyeOffIcon className="h-4 w-4" />
+                ) : (
+                  <EyeIcon className="h-4 w-4" />
+                )}
+              </button>
             }
           />
 

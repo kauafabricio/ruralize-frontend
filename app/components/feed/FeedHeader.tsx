@@ -5,32 +5,38 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useAuth } from "../auth/AuthProvider";
-import { BellIcon } from "./FeedIcons";
+import { BellIcon, SearchIcon } from "./FeedIcons";
 
 const navItems = [
   { label: "Feed", path: "/feed" },
   { label: "Agendamentos", path: "/agendamentos" },
   { label: "Pontos", path: "/pontos" },
-  { label: "Perfil", path: "/perfil" },
 ] as const;
 
 type HeaderSection = (typeof navItems)[number]["label"];
 
-export function FeedHeader() {
+type FeedHeaderProps = {
+  searchTerm?: string;
+  onSearchChange?: (value: string) => void;
+};
+
+export function FeedHeader(props: FeedHeaderProps = {}) {
+  const { searchTerm = "", onSearchChange = () => {} } = props;
   const pathname = usePathname();
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navRef = useRef<HTMLElement>(null);
   const buttonRefs = useRef<Record<HeaderSection, HTMLButtonElement | null>>({
     Feed: null,
     Agendamentos: null,
     Pontos: null,
-    Perfil: null,
   });
   const [indicatorStyle, setIndicatorStyle] = useState({
     left: 0,
-    opacity: 0,
+    opacity: 1,
   });
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
   const currentSection = useMemo<HeaderSection>(() => {
     const matchedItem = navItems.find((item) => pathname.startsWith(item.path));
     return matchedItem?.label ?? "Feed";
@@ -51,6 +57,24 @@ export function FeedHeader() {
       opacity: 1,
     });
   }, [activeSection]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        menuOpen &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node)
+      ) {
+        setMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
 
   function handleLogout() {
     logout();
@@ -103,7 +127,22 @@ export function FeedHeader() {
           })}
         </nav>
 
-        <div className="flex items-center gap-6 text-[#101510]">
+        <div className="flex items-center gap-4 text-[#101510]">
+          <div className="w-full max-w-[140px] items-center gap-2 rounded-full border border-[#e4e8df] bg-[#f6f7f1] px-2 py-1 text-[#30372f] shadow-[0_1px_0_rgba(33,55,30,0.04)] flex">
+            <SearchIcon className="text-[#6c7b6d]" />
+            <label htmlFor="feed-search" className="sr-only">
+              Buscar no feed
+            </label>
+            <input
+              id="feed-search"
+              type="search"
+              value={searchTerm}
+              onChange={(event) => onSearchChange(event.target.value)}
+              placeholder="Buscar no feed"
+              className="w-full min-w-0 bg-transparent text-[13px] font-medium leading-5 outline-none placeholder:text-[#8b998d]"
+            />
+          </div>
+
           <button
             type="button"
             className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-[#f0f2ea]"
@@ -112,18 +151,49 @@ export function FeedHeader() {
             <BellIcon className="h-[18px] w-[18px]" />
           </button>
 
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="relative h-10 w-10 overflow-hidden rounded-full bg-[#225f35] ring-2 ring-[#e8efdf]"
-            aria-label="Sair"
-            title="Sair"
-          >
-            <span className="absolute inset-x-[9px] top-[7px] h-[10px] rounded-full bg-[#f0b07b]" />
-            <span className="absolute left-[11px] top-[14px] h-[8px] w-[18px] rounded-t-full bg-[#273f2a]" />
-            <span className="absolute bottom-0 left-[7px] h-[19px] w-[26px] rounded-t-[16px] bg-[#e2ead8]" />
-            <span className="absolute bottom-[2px] left-[13px] h-[11px] w-[14px] rounded-t-full bg-[#29713b]" />
-          </button>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setMenuOpen((current) => !current)}
+              className="relative h-10 w-10 overflow-hidden rounded-full bg-[#225f35] ring-2 ring-[#e8efdf]"
+              aria-label="Abrir menu de perfil"
+              aria-expanded={menuOpen}
+            >
+              <span className="absolute inset-x-[9px] top-[7px] h-[10px] rounded-full bg-[#f0b07b]" />
+              <span className="absolute left-[11px] top-[14px] h-[8px] w-[18px] rounded-t-full bg-[#273f2a]" />
+              <span className="absolute bottom-0 left-[7px] h-[19px] w-[26px] rounded-t-[16px] bg-[#e2ead8]" />
+              <span className="absolute bottom-[2px] left-[13px] h-[11px] w-[14px] rounded-t-full bg-[#29713b]" />
+            </button>
+
+            {menuOpen ? (
+              <div
+                ref={menuRef}
+                className="absolute right-0 top-[calc(100%_+_10px)] z-20 w-[180px] rounded-[18px] border border-[#e4ebdf] bg-white py-2 shadow-[0_12px_30px_rgba(33,55,30,0.12)]"
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    router.push("/perfil");
+                  }}
+                  className="w-full px-4 py-3 text-left text-[13px] font-semibold text-[#1f6f2a] transition-colors hover:bg-[#f4f6f1]"
+                >
+                  Meu perfil
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    handleLogout();
+                  }}
+                  className="w-full px-4 py-3 text-left text-[13px] font-semibold text-[#8a9186] transition-colors hover:bg-[#f4f6f1]"
+                >
+                  Sair da conta
+                </button>
+              </div>
+            ) : null}
+          </div>
+
         </div>
       </div>
     </header>

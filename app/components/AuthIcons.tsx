@@ -97,3 +97,20 @@ export function EyeIcon({ className = "h-4 w-4" }: IconProps) {
     </svg>
   );
 }
+
+export function EyeOffIcon({ className = "h-4 w-4" }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" />
+      <path d="M9.5 9.5a2.5 2.5 0 0 1 3.5 3.5" />
+      <path d="M2 2l20 20" />
+    </svg>
+  );
+}

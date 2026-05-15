@@ -6,6 +6,7 @@ import Link from "next/link";
 import { AuthCard } from "../components/AuthCard";
 import {
   EyeIcon,
+  EyeOffIcon,
   LockIcon,
   MailIcon,
   UserIcon,
@@ -36,6 +37,7 @@ export default function CadastroPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [registration, setRegistration] = useState("");
   const [course, setCourse] = useState("");
   const [loading, setLoading] = useState(false);
@@ -164,10 +166,23 @@ export default function CadastroPage() {
 
           <AuthInput
             label="Senha"
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="********"
             icon={<LockIcon />}
-            action={<EyeIcon className="h-4 w-4 text-[#697163]" />}
+            action={
+              <button
+                type="button"
+                onClick={() => setShowPassword((current) => !current)}
+                className="inline-flex items-center justify-center text-[#697163]"
+                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+              >
+                {showPassword ? (
+                  <EyeOffIcon className="h-4 w-4" />
+                ) : (
+                  <EyeIcon className="h-4 w-4" />
+                )}
+              </button>
+            }
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />

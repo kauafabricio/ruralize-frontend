@@ -9,9 +9,18 @@ const feedTabs = [
   { id: "network", label: "Rede", description: "Feed da rede geral carregando" },
 ] as const;
 
+const feedFilters = [
+  { id: "all", label: "Todos" },
+  { id: "events", label: "Eventos" },
+  { id: "warnings", label: "Avisos" },
+  { id: "projects", label: "Projetos" },
+  { id: "recent", label: "Recentes" },
+] as const;
+
 const samplePosts = [
   {
     id: "1",
+    category: "projects",
     author: "Ana Silva",
     role: "Agrônoma",
     content:
@@ -22,6 +31,7 @@ const samplePosts = [
   },
   {
     id: "2",
+    category: "warnings",
     author: "Lucas Ferreira",
     role: "Pesquisador UFRPE",
     content:
@@ -32,6 +42,7 @@ const samplePosts = [
   },
   {
     id: "3",
+    category: "events",
     author: "Mariana Costa",
     role: "Produtora rural",
     content:
@@ -43,6 +54,7 @@ const samplePosts = [
 ] as const;
 
 type FeedTabId = (typeof feedTabs)[number]["id"];
+type FeedFilterId = (typeof feedFilters)[number]["id"];
 
 type FeedPost = (typeof samplePosts)[number];
 
@@ -101,9 +113,19 @@ function FeedPostList({ posts }: { posts: FeedPost[] }) {
 
 export function FeedTabs({ searchTerm }: { searchTerm: string }) {
   const [activeTab, setActiveTab] = useState<FeedTabId>("friends");
+  const [activeFilter, setActiveFilter] = useState<FeedFilterId>("all");
   const activeIndex = feedTabs.findIndex((tab) => tab.id === activeTab);
   const normalizedSearch = searchTerm.trim().toLowerCase();
   const filteredPosts = samplePosts.filter((post) => {
+    const matchesFilter =
+      activeFilter === "all" ||
+      (activeFilter === "recent" && post.date.includes("h")) ||
+      post.category === activeFilter;
+
+    if (!matchesFilter) {
+      return false;
+    }
+
     if (!normalizedSearch) {
       return true;
     }
@@ -116,7 +138,7 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
   return (
     <>
       <div
-        className="relative mb-10 inline-flex items-center gap-11 pl-1 text-[12px] font-semibold text-[#30372f]"
+        className="relative mb-8 inline-flex items-center gap-11 pl-1 text-[12px] font-semibold text-[#30372f]"
         role="tablist"
         aria-label="Tipo de feed"
       >
@@ -145,6 +167,31 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
               }`}
             >
               {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <div
+        className="mb-7 flex flex-wrap items-center gap-2 rounded-[20px] border border-[#ecf0e8] bg-[#fbfcf7] px-3 py-2 shadow-[0_1px_0_rgba(33,55,30,0.04)]"
+        aria-label="Filtros do feed"
+      >
+        {feedFilters.map((filter) => {
+          const active = filter.id === activeFilter;
+
+          return (
+            <button
+              key={filter.id}
+              type="button"
+              onClick={() => setActiveFilter(filter.id)}
+              className={`h-8 rounded-full px-3 text-[12px] font-bold transition-all duration-200 ${
+                active
+                  ? "bg-[#287630] text-white shadow-[0_6px_14px_rgba(40,118,48,0.16)]"
+                  : "bg-white text-[#566154] ring-1 ring-[#e5eadf] hover:text-[#287630]"
+              }`}
+              aria-pressed={active}
+            >
+              {filter.label}
             </button>
           );
         })}

@@ -24,7 +24,7 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
   const { searchTerm = "", onSearchChange = () => {} } = props;
   const pathname = usePathname();
   const router = useRouter();
-  const { logout, user } = useAuth();
+  const { logout } = useAuth();
   const navRef = useRef<HTMLElement>(null);
   const buttonRefs = useRef<Record<HeaderSection, HTMLButtonElement | null>>({
     Feed: null,
@@ -128,8 +128,8 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
         </nav>
 
         <div className="flex items-center gap-4 text-[#101510]">
-          <div className="w-full max-w-[140px] items-center gap-2 rounded-full border border-[#e4e8df] bg-[#f6f7f1] px-2 py-1 text-[#30372f] shadow-[0_1px_0_rgba(33,55,30,0.04)] flex">
-            <SearchIcon className="text-[#6c7b6d]" />
+          <div className="flex h-8 w-[116px] items-center gap-1.5 rounded-full border border-[#e4e8df] bg-[#f6f7f1] px-2 text-[#30372f] shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+            <SearchIcon className="h-[14px] w-[14px] shrink-0 text-[#7a877b]" />
             <label htmlFor="feed-search" className="sr-only">
               Buscar no feed
             </label>
@@ -138,8 +138,8 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
               type="search"
               value={searchTerm}
               onChange={(event) => onSearchChange(event.target.value)}
-              placeholder="Buscar no feed"
-              className="w-full min-w-0 bg-transparent text-[13px] font-medium leading-5 outline-none placeholder:text-[#8b998d]"
+              placeholder="Buscar"
+              className="w-full min-w-0 bg-transparent text-[12px] font-medium leading-5 outline-none placeholder:text-[#9aa59a]"
             />
           </div>
 

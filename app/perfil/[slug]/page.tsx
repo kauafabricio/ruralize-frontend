@@ -84,7 +84,10 @@ export default function UserProfilePage({
               Atividades recentes
             </h2>
 
-            <ActivityPost displayName={profile.name} />
+            <ActivityPost
+              displayName={profile.name}
+              coverImage={profile.coverImage}
+            />
           </section>
         </div>
       </div>
@@ -172,7 +175,13 @@ function AcademicInfoCard({
   );
 }
 
-function ActivityPost({ displayName }: { displayName: string }) {
+function ActivityPost({
+  displayName,
+  coverImage,
+}: {
+  displayName: string;
+  coverImage: string;
+}) {
   return (
     <article className="mt-5 overflow-hidden rounded-[22px] bg-white shadow-[0_1px_0_rgba(33,55,30,0.04)]">
       <div className="px-6 pt-6">
@@ -214,7 +223,7 @@ function ActivityPost({ displayName }: { displayName: string }) {
         role="img"
         aria-label="Mudas verdes em cultivo"
         style={{
-          backgroundImage: `linear-gradient(180deg, rgba(23, 73, 27, 0), rgba(23, 73, 27, 0.08)), url("${profile.coverImage}")`,
+          backgroundImage: `linear-gradient(180deg, rgba(23, 73, 27, 0), rgba(23, 73, 27, 0.08)), url("${coverImage}")`,
         }}
       />
 

@@ -17,20 +17,6 @@ import { CourseSelect } from "../components/CourseSelect";
 import { MatriculaInput } from "../components/MatriculaInput";
 import { Toast } from "../components/Toast";
 
-type RegisterPayload = {
-  name: string;
-  email: string;
-  password: string;
-  role: "student" | "teacher";
-  registration?: number;
-  course?: string;
-};
-
-type RegisterResponse = {
-  detail?: string;
-  message?: string;
-};
-
 export default function CadastroPage() {
   const [role, setRole] = useState<"student" | "teacher">("student");
 
@@ -62,41 +48,12 @@ export default function CadastroPage() {
     setLoading(true);
 
     try {
-      const body: RegisterPayload = {
-        name,
-        email,
-        password,
-        role,
-      };
-
-      // só adiciona se for aluno
-      if (role === "student") {
-        if (!registration || !course) {
-          throw new Error("Preencha todos os campos de aluno");
-        }
-
-        body.registration = Number(registration);
-        body.course = course;
+      if (role === "student" && (!registration || !course)) {
+        throw new Error("Preencha todos os campos de aluno");
       }
 
-      const response = await fetch(
-        "https://rural-backend.vercel.app/auth/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        }
-      );
+      await new Promise((resolve) => setTimeout(resolve, 600));
 
-      const data = (await response.json()) as RegisterResponse;
-
-      if (!response.ok) {
-        throw new Error(data.detail || "Erro ao cadastrar");
-      }
-
-      // sucesso
       setToast({
         message: "Conta criada com sucesso!",
         type: "success",
@@ -105,7 +62,6 @@ export default function CadastroPage() {
       setTimeout(() => {
         window.location.href = "/login";
       }, 1500);
-
     } catch (err: unknown) {
       setToast({
         message: err instanceof Error ? err.message : "Erro ao cadastrar",

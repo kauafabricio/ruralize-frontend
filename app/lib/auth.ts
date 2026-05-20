@@ -3,6 +3,7 @@ export type AuthUser = {
   name?: string;
   email?: string;
   role?: string;
+  avatarUrl?: string;
   raw?: Record<string, unknown>;
 };
 
@@ -169,6 +170,22 @@ function normalizeUser(payload: JsonRecord): AuthUser {
     name: readString(payload, ["name", "nome", "fullName", "full_name"]),
     email: readString(payload, ["email"]),
     role: readString(payload, ["role", "perfil", "type"]),
+    avatarUrl: readString(payload, [
+      "avatar",
+      "avatarUrl",
+      "avatar_url",
+      "photo",
+      "photoUrl",
+      "picture",
+      "pictureUrl",
+      "image",
+      "imageUrl",
+      "image_url",
+      "foto",
+      "imagem",
+      "profileImage",
+      "profile_image",
+    ]),
     raw: payload,
   };
 }

@@ -1,8 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import { RequireAuth } from "../components/auth/RequireAuth";
 import { useAuth } from "../components/auth/AuthProvider";
-import { useState } from "react";
 import { FeedHeader } from "../components/feed/FeedHeader";
 import {
   HeartIcon,
@@ -10,12 +11,27 @@ import {
   MoreIcon,
 } from "../components/feed/FeedIcons";
 
+type EditableProfile = {
+  name: string;
+  email: string;
+  roleDescription: string;
+  bio: string;
+  location: string;
+};
+
+type ProfileFieldName = keyof EditableProfile;
+
 const coverImage =
   "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1800&q=85";
 const avatarImage =
   "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=320&q=85";
+const PROFILE_AVATAR_STORAGE_KEY = "ruralize.profile.avatarUrl";
 const activityImage =
   "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=1400&q=85";
+
+const defaultBio =
+  "Entusiasta da agricultura sintrópica e tecnologias de monitoramento de solo. Atualmente pesquisando o impacto da regeneração de matas ciliares no Campus Dois Irmãos.";
+const defaultLocation = "Recife, PE - UFRPE Campus Sede";
 
 const suggestions = [
   {
@@ -41,10 +57,8 @@ export default function PerfilPage() {
 function PerfilContent() {
   const { user } = useAuth();
   const initialEmail = user?.email ?? "";
-  const initialDisplayName =
-    user?.name ?? readNameFromEmail(user?.email) ?? "";
-  const initialCourse =
-    readProfileValue(user?.raw, ["course", "curso"]) ?? "";
+  const initialDisplayName = user?.name ?? readNameFromEmail(user?.email) ?? "";
+  const initialCourse = readProfileValue(user?.raw, ["course", "curso"]) ?? "";
   const registration =
     readProfileValue(user?.raw, [
       "registration",
@@ -53,104 +67,235 @@ function PerfilContent() {
       "studentRegistration",
     ]) ?? "Não informada";
   const roleLabel = formatRole(user?.role);
+  const initialRoleDescription =
+    readProfileValue(user?.raw, [
+      "roleDescription",
+      "cargo",
+      "position",
+      "function",
+      "funcao",
+    ]) ?? formatRoleDescription(roleLabel, initialCourse);
+  const initialBio =
+    readProfileValue(user?.raw, ["bio", "biography", "resumo", "summary"]) ??
+    defaultBio;
+  const initialLocation =
+    readProfileValue(user?.raw, ["location", "localizacao", "campus"]) ??
+    defaultLocation;
+
+  const initialProfile = {
+    name: initialDisplayName,
+    email: initialEmail,
+    roleDescription: initialRoleDescription,
+    bio: initialBio,
+    location: initialLocation,
+  };
 
   const [editMode, setEditMode] = useState(false);
-  const [savedName, setSavedName] = useState(initialDisplayName);
-  const [savedEmail, setSavedEmail] = useState(initialEmail);
-  const [savedCourse, setSavedCourse] = useState(initialCourse);
-  const [editedName, setEditedName] = useState(initialDisplayName);
-  const [editedEmail, setEditedEmail] = useState(initialEmail);
-  const [editedCourse, setEditedCourse] = useState(initialCourse);
+  const [savedProfile, setSavedProfile] =
+    useState<EditableProfile>(initialProfile);
+  const [draftProfile, setDraftProfile] =
+    useState<EditableProfile>(initialProfile);
+  const [savedCoverImage, setSavedCoverImage] = useState(coverImage);
+  const [draftCoverImage, setDraftCoverImage] = useState(coverImage);
+  const [savedAvatarImage, setSavedAvatarImage] = useState(
+    readProfileValue(user?.raw, [
+      "avatar",
+      "avatarUrl",
+      "avatar_url",
+      "photo",
+      "photoUrl",
+      "picture",
+      "pictureUrl",
+      "image",
+      "imageUrl",
+      "image_url",
+      "foto",
+      "imagem",
+      "profileImage",
+      "profile_image",
+    ]) ?? user?.avatarUrl ?? avatarImage,
+  );
+  const [draftAvatarImage, setDraftAvatarImage] = useState(
+    readProfileValue(user?.raw, [
+      "avatar",
+      "avatarUrl",
+      "avatar_url",
+      "photo",
+      "photoUrl",
+      "picture",
+      "pictureUrl",
+      "image",
+      "imageUrl",
+      "image_url",
+      "foto",
+      "imagem",
+      "profileImage",
+      "profile_image",
+    ]) ?? user?.avatarUrl ?? avatarImage,
+  );
+  const [saveFeedbackOpen, setSaveFeedbackOpen] = useState(false);
 
-  const subtitle =
-    roleLabel === "Professor"
-      ? `Professor${savedCourse ? ` de ${savedCourse}` : ""} - UFRPE`
-      : `Estudante${savedCourse ? ` de ${savedCourse}` : ""} - UFRPE`;
+  const subtitle = `${savedProfile.roleDescription || roleLabel} - UFRPE`;
+
+  function handleDraftChange(field: ProfileFieldName, value: string) {
+    setDraftProfile((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  }
+
+  function handleOpenEdit() {
+    setDraftProfile(savedProfile);
+    setDraftCoverImage(savedCoverImage);
+    setDraftAvatarImage(savedAvatarImage);
+    setEditMode(true);
+  }
+
+  function handleCancelEdit() {
+    setDraftProfile(savedProfile);
+    setDraftCoverImage(savedCoverImage);
+    setDraftAvatarImage(savedAvatarImage);
+    setEditMode(false);
+  }
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const storedAvatarUrl = window.localStorage.getItem(
+      PROFILE_AVATAR_STORAGE_KEY,
+    );
+
+    if (storedAvatarUrl) {
+      setSavedAvatarImage(storedAvatarUrl);
+      setDraftAvatarImage(storedAvatarUrl);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    window.localStorage.setItem(
+      PROFILE_AVATAR_STORAGE_KEY,
+      savedAvatarImage,
+    );
+    window.dispatchEvent(new Event("ruralize.avatar.update"));
+  }, [savedAvatarImage]);
+
+  function handleSaveEdit() {
+    setSavedProfile(draftProfile);
+    setSavedCoverImage(draftCoverImage);
+    setSavedAvatarImage(draftAvatarImage);
+    setEditMode(false);
+    setSaveFeedbackOpen(true);
+  }
 
   return (
     <main className="flex min-h-screen flex-col bg-[#f8f8f3] text-[#222a20]">
       <FeedHeader />
 
-      <div className="mx-auto w-full max-w-[1132px] flex-1 px-4 pb-20 pt-10 sm:px-6 lg:px-1">
-        <ProfileHero
-          displayName={savedName}
-          subtitle={subtitle}
-          editMode={editMode}
-          editedName={editedName}
-          editedEmail={editedEmail}
-          editedCourse={editedCourse}
-          onNameChange={setEditedName}
-          onEmailChange={setEditedEmail}
-          onCourseChange={setEditedCourse}
-          onToggleEdit={() => setEditMode((current) => !current)}
-          onSave={() => {
-            setSavedName(editedName);
-            setSavedEmail(editedEmail);
-            setSavedCourse(editedCourse);
-            setEditMode(false);
-          }}
-          onCancel={() => {
-            setEditedName(savedName);
-            setEditedEmail(savedEmail);
-            setEditedCourse(savedCourse);
-            setEditMode(false);
-          }}
+      {editMode ? (
+        <EditProfileScreen
+          profile={draftProfile}
+          registration={registration}
+          coverImageUrl={draftCoverImage}
+          avatarImageUrl={draftAvatarImage}
+          onChange={handleDraftChange}
+          onCoverChange={setDraftCoverImage}
+          onAvatarChange={setDraftAvatarImage}
+          onCancel={handleCancelEdit}
+          onSave={handleSaveEdit}
         />
+      ) : (
+        <>
+          <ProfileOverview
+            profile={savedProfile}
+            subtitle={subtitle}
+            registration={registration}
+            coverImageUrl={savedCoverImage}
+            avatarImageUrl={savedAvatarImage}
+            onEdit={handleOpenEdit}
+          />
+          <Footer />
+        </>
+      )}
 
-        <div className="mt-9 grid gap-9 lg:grid-cols-[340px_minmax(0,1fr)]">
-          <aside className="space-y-8">
-            <SuggestionsCard />
-            <AcademicInfoCard
-              email={savedEmail}
-              course={savedCourse}
-              registration={registration}
-            />
-          </aside>
-
-          <section aria-labelledby="profile-activities-title">
-            <h2
-              id="profile-activities-title"
-              className="text-[15px] font-black tracking-[-0.02em] text-[#1e261e]"
-            >
-              Minhas Atividades
-            </h2>
-
-            <ActivityPost displayName={savedName} />
-          </section>
-        </div>
-      </div>
-
-      <Footer />
+      {saveFeedbackOpen ? (
+        <SaveSuccessModal onClose={() => setSaveFeedbackOpen(false)} />
+      ) : null}
     </main>
+  );
+}
+
+function ProfileOverview({
+  profile,
+  subtitle,
+  registration,
+  coverImageUrl,
+  avatarImageUrl,
+  onEdit,
+}: {
+  profile: EditableProfile;
+  subtitle: string;
+  registration: string;
+  coverImageUrl: string;
+  avatarImageUrl: string;
+  onEdit: () => void;
+}) {
+  return (
+    <div className="mx-auto w-full max-w-[1132px] flex-1 px-4 pb-20 pt-10 sm:px-6 lg:px-1">
+      <ProfileHero
+        displayName={profile.name}
+        subtitle={subtitle}
+        bio={profile.bio}
+        coverImageUrl={coverImageUrl}
+        avatarImageUrl={avatarImageUrl}
+        onEdit={onEdit}
+      />
+
+      <div className="mt-9 grid gap-9 lg:grid-cols-[340px_minmax(0,1fr)]">
+        <aside className="space-y-8">
+          <SuggestionsCard />
+          <AcademicInfoCard
+            email={profile.email}
+            roleDescription={profile.roleDescription}
+            registration={registration}
+            location={profile.location}
+          />
+        </aside>
+
+        <section aria-labelledby="profile-activities-title">
+          <h2
+            id="profile-activities-title"
+            className="text-[15px] font-black tracking-[-0.02em] text-[#1e261e]"
+          >
+            Minhas Atividades
+          </h2>
+
+          <ActivityPost displayName={profile.name} />
+        </section>
+      </div>
+    </div>
   );
 }
 
 function ProfileHero({
   displayName,
   subtitle,
-  editMode,
-  editedName,
-  editedEmail,
-  editedCourse,
-  onNameChange,
-  onEmailChange,
-  onCourseChange,
-  onToggleEdit,
-  onSave,
-  onCancel,
+  bio,
+  coverImageUrl,
+  avatarImageUrl,
+  onEdit,
 }: {
   displayName: string;
   subtitle: string;
-  editMode: boolean;
-  editedName: string;
-  editedEmail: string;
-  editedCourse: string;
-  onNameChange: (value: string) => void;
-  onEmailChange: (value: string) => void;
-  onCourseChange: (value: string) => void;
-  onToggleEdit: () => void;
-  onSave: () => void;
-  onCancel: () => void;
+  bio: string;
+  coverImageUrl: string;
+  avatarImageUrl: string;
+  onEdit: () => void;
 }) {
   return (
     <section className="overflow-hidden rounded-[28px] bg-white shadow-[0_1px_0_rgba(33,55,30,0.04)]">
@@ -159,12 +304,12 @@ function ProfileHero({
         role="img"
         aria-label="Campo cultivado ao nascer do sol"
         style={{
-          backgroundImage: `linear-gradient(180deg, rgba(23, 73, 27, 0.02), rgba(23, 73, 27, 0.12)), url("${coverImage}")`,
+          backgroundImage: `linear-gradient(180deg, rgba(23, 73, 27, 0.02), rgba(23, 73, 27, 0.12)), url("${coverImageUrl}")`,
         }}
       />
 
       <div className="relative px-6 pb-8 pt-[62px] sm:px-8 lg:px-9">
-        <ProfileAvatar name={displayName} />
+        <ProfileAvatar name={displayName} imageUrl={avatarImageUrl} />
 
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-[620px]">
@@ -174,81 +319,297 @@ function ProfileHero({
             <p className="mt-1 text-[13px] font-black text-[#287630]">
               {subtitle}
             </p>
-
-            {editMode ? (
-              <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <label className="block">
-                  <span className="text-[11px] font-black uppercase tracking-[0.14em] text-[#8a9186]">
-                    Nome completo
-                  </span>
-                  <input
-                    type="text"
-                    value={editedName}
-                    onChange={(event) => onNameChange(event.target.value)}
-                    className="mt-2 w-full rounded-[18px] border border-[#e3e7de] bg-[#f8f8f3] px-4 py-3 text-[13px] text-[#20281f] outline-none"
-                  />
-                </label>
-
-                <label className="block">
-                  <span className="text-[11px] font-black uppercase tracking-[0.14em] text-[#8a9186]">
-                    Curso
-                  </span>
-                  <input
-                    type="text"
-                    value={editedCourse}
-                    onChange={(event) => onCourseChange(event.target.value)}
-                    className="mt-2 w-full rounded-[18px] border border-[#e3e7de] bg-[#f8f8f3] px-4 py-3 text-[13px] text-[#20281f] outline-none"
-                  />
-                </label>
-
-                <label className="block sm:col-span-2">
-                  <span className="text-[11px] font-black uppercase tracking-[0.14em] text-[#8a9186]">
-                    Email institucional
-                  </span>
-                  <input
-                    type="email"
-                    value={editedEmail}
-                    onChange={(event) => onEmailChange(event.target.value)}
-                    className="mt-2 w-full rounded-[18px] border border-[#e3e7de] bg-[#f8f8f3] px-4 py-3 text-[13px] text-[#20281f] outline-none"
-                  />
-                </label>
-              </div>
-            ) : (
-              <p className="mt-6 max-w-[590px] text-[12px] font-medium leading-6 text-[#545d50]">
-                Perfil carregado a partir dos dados da sua conta. Atualize seu
-                nome, curso ou email abaixo para manter as informações do seu
-                perfil sempre corretas.
-              </p>
-            )}
-
+            <p className="mt-6 max-w-[590px] text-[12px] font-medium leading-6 text-[#545d50]">
+              {bio}
+            </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={editMode ? onSave : onToggleEdit}
-              className="inline-flex h-10 w-fit items-center gap-2 rounded-full bg-[#95ee9d] px-6 text-[12px] font-black text-[#1f6f2a] shadow-[0_10px_18px_rgba(40,118,48,0.12)] transition-colors hover:bg-[#82e78d]"
-            >
-              <PencilIcon className="h-[14px] w-[14px]" />
-              {editMode ? "Salvar" : "Editar Perfil"}
-            </button>
-            {editMode ? (
-              <button
-                type="button"
-                onClick={onCancel}
-                className="inline-flex h-10 w-fit items-center justify-center rounded-full border border-[#c7cfc1] bg-white px-6 text-[12px] font-black text-[#20281f] transition-colors hover:bg-[#f4f5f0]"
-              >
-                Cancelar
-              </button>
-            ) : null}
-          </div>
+          <button
+            type="button"
+            onClick={onEdit}
+            className="inline-flex h-10 w-fit items-center gap-2 rounded-full bg-[#95ee9d] px-6 text-[12px] font-black text-[#1f6f2a] shadow-[0_10px_18px_rgba(40,118,48,0.12)] transition-colors hover:bg-[#82e78d]"
+          >
+            <PencilIcon className="h-[14px] w-[14px]" />
+            Editar Perfil
+          </button>
         </div>
       </div>
     </section>
   );
 }
 
-function ProfileAvatar({ name }: { name: string }) {
+function EditProfileScreen({
+  profile,
+  registration,
+  coverImageUrl,
+  avatarImageUrl,
+  onChange,
+  onCoverChange,
+  onAvatarChange,
+  onCancel,
+  onSave,
+}: {
+  profile: EditableProfile;
+  registration: string;
+  coverImageUrl: string;
+  avatarImageUrl: string;
+  onChange: (field: ProfileFieldName, value: string) => void;
+  onCoverChange: (value: string) => void;
+  onAvatarChange: (value: string) => void;
+  onCancel: () => void;
+  onSave: () => void;
+}) {
+  function handleImageFileChange(
+    event: React.ChangeEvent<HTMLInputElement>,
+    onImageChange: (value: string) => void,
+  ) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        onImageChange(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+    event.target.value = "";
+  }
+
+  return (
+    <div className="mx-auto flex w-full max-w-[1132px] flex-1 flex-col px-4 pb-12 pt-10 sm:px-6 lg:px-1">
+      <section aria-labelledby="edit-profile-title">
+        <div className="px-0 sm:px-1">
+          <h1
+            id="edit-profile-title"
+            className="text-[30px] font-black leading-tight tracking-[-0.03em] text-[#222a20]"
+          >
+            Editar Perfil
+          </h1>
+          <p className="mt-2 text-[13px] font-medium text-[#4f594c]">
+            Gerencie suas informações públicas e institucionais na rede SustentaRural.
+          </p>
+        </div>
+
+        <div className="relative mt-9">
+          <div
+            className="h-[164px] rounded-[28px] bg-[#5aa37a] bg-cover bg-center shadow-[0_1px_0_rgba(33,55,30,0.05)] sm:h-[172px]"
+            role="img"
+            aria-label="Capa do perfil"
+            style={{
+              backgroundImage: `linear-gradient(90deg, rgba(76, 134, 128, 0.92), rgba(79, 163, 109, 0.9)), url("${coverImageUrl}")`,
+            }}
+          >
+            <label className="absolute bottom-5 right-5 inline-flex h-9 cursor-pointer items-center gap-2 rounded-full bg-[#eef8ea] px-4 text-[12px] font-black text-[#1f6f2a] shadow-[0_8px_18px_rgba(33,55,30,0.12)] transition-colors hover:bg-white">
+              <PencilIcon className="h-[13px] w-[13px]" />
+              Alterar Capa
+              <input
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                onChange={(event) =>
+                  handleImageFileChange(event, onCoverChange)
+                }
+              />
+            </label>
+          </div>
+
+          <EditAvatar
+            name={profile.name}
+            imageUrl={avatarImageUrl}
+            onImageChange={(event) =>
+              handleImageFileChange(event, onAvatarChange)
+            }
+          />
+        </div>
+
+        <form
+          className="mt-8 rounded-[28px] bg-white px-6 pb-8 pt-[82px] shadow-[0_22px_50px_rgba(33,55,30,0.08)] sm:px-9 lg:px-10"
+          onSubmit={(event) => {
+            event.preventDefault();
+            onSave();
+          }}
+        >
+          <div className="grid gap-x-8 gap-y-7 lg:grid-cols-2">
+            <ProfileField
+              label="Nome Completo"
+              value={profile.name}
+              onChange={(value) => onChange("name", value)}
+            />
+
+            <ProfileField
+              label="Cargo / Função"
+              value={profile.roleDescription}
+              onChange={(value) => onChange("roleDescription", value)}
+            />
+
+            <ProfileField
+              label="Bio / Resumo Profissional"
+              value={profile.bio}
+              onChange={(value) => onChange("bio", value)}
+              multiline
+              className="lg:col-span-2"
+            />
+
+            <ProfileField
+              label="E-mail Institucional"
+              value={profile.email}
+              type="email"
+              icon={<AtSignIcon className="h-[15px] w-[15px]" />}
+              onChange={(value) => onChange("email", value)}
+            />
+
+            <ProfileField
+              label="Matrícula"
+              value={registration}
+              disabled
+            />
+
+            <ProfileField
+              label="Localização"
+              value={profile.location}
+              icon={<LocationIcon className="h-[15px] w-[15px]" />}
+              onChange={(value) => onChange("location", value)}
+              className="lg:col-span-2"
+            />
+          </div>
+
+          <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[#eceee8] pt-6 sm:flex-row sm:items-center sm:justify-end">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="h-11 rounded-full px-6 text-[12px] font-black text-[#287630] transition-colors hover:bg-[#f2f5ef]"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="h-11 rounded-full bg-[#287630] px-7 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.24)] transition-colors hover:bg-[#1f6428]"
+            >
+              Salvar Alterações
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <p className="mt-10 text-center text-[11px] font-medium text-[#a0a69b]">
+        Suas informações institucionais como Matrícula são gerenciadas pelo SIGA e não podem ser alteradas.
+      </p>
+    </div>
+  );
+}
+
+function ProfileField({
+  label,
+  value,
+  onChange,
+  type = "text",
+  icon,
+  multiline = false,
+  disabled = false,
+  className = "",
+}: {
+  label: string;
+  value: string;
+  onChange?: (value: string) => void;
+  type?: string;
+  icon?: React.ReactNode;
+  multiline?: boolean;
+  disabled?: boolean;
+  className?: string;
+}) {
+  const fieldClasses = `mt-2 w-full border-0 bg-[#e4e4e0] text-[13px] font-medium text-[#262d25] outline-none transition-colors placeholder:text-[#9da49a] focus:bg-[#eeeeea] disabled:bg-[#f1f1ee] disabled:text-[#a0a69b] ${
+    icon ? "pl-10 pr-4" : "px-4"
+  } ${multiline ? "min-h-[104px] resize-none py-4 leading-6" : "h-11 py-0"}`;
+
+  return (
+    <label className={`block ${className}`}>
+      <span className="text-[11px] font-black text-[#3c463b]">{label}</span>
+      <span className="relative mt-2 block">
+        {icon ? (
+          <span className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-[#697163]">
+            {icon}
+          </span>
+        ) : null}
+
+        {multiline ? (
+          <textarea
+            value={value}
+            onChange={(event) => onChange?.(event.target.value)}
+            disabled={disabled}
+            readOnly={!onChange}
+            className={fieldClasses}
+          />
+        ) : (
+          <input
+            type={type}
+            value={value}
+            onChange={(event) => onChange?.(event.target.value)}
+            disabled={disabled}
+            readOnly={!onChange}
+            className={fieldClasses}
+          />
+        )}
+      </span>
+    </label>
+  );
+}
+
+function SaveSuccessModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#173b22]/72 px-4 py-8">
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="save-success-title"
+        className="relative w-full max-w-[420px] overflow-hidden rounded-[24px] bg-[#fffef9] px-8 pb-9 pt-10 text-center shadow-[0_24px_70px_rgba(11,35,17,0.28)]"
+      >
+        <div className="mx-auto flex h-[86px] w-[86px] items-center justify-center rounded-full bg-[#c8ffd0] shadow-[0_0_46px_rgba(149,238,157,0.72)]">
+          <span className="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[#287630] text-white">
+            <CheckIcon className="h-[25px] w-[25px]" />
+          </span>
+        </div>
+
+        <h2
+          id="save-success-title"
+          className="mx-auto mt-7 max-w-[290px] text-[24px] font-black leading-[1.12] tracking-[-0.03em] text-[#1f6f2a]"
+        >
+          Alterações salvas com sucesso!
+        </h2>
+
+        <p className="mx-auto mt-5 max-w-[300px] text-[13px] font-medium leading-6 text-[#5d6659]">
+          Suas informações de perfil foram atualizadas em nossa rede. Agora sua
+          jornada no <strong className="font-black text-[#1f6f2a]">Ruralize</strong>{" "}
+          está sincronizada com seus novos dados.
+        </p>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-8 h-14 w-full rounded-full bg-[#287630] text-[13px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.24)] transition-colors hover:bg-[#1f6428]"
+        >
+          Entendido
+        </button>
+
+        <span
+          className="pointer-events-none absolute -bottom-6 -right-5 h-20 w-20 rounded-full border-[10px] border-[#dfeedd]"
+          aria-hidden="true"
+        />
+      </section>
+    </div>
+  );
+}
+
+function ProfileAvatar({
+  name,
+  imageUrl,
+}: {
+  name: string;
+  imageUrl: string;
+}) {
   return (
     <div className="absolute left-6 top-[-58px] h-[116px] w-[116px] rounded-full bg-white p-[5px] shadow-[0_14px_28px_rgba(33,55,30,0.18)] sm:left-8 lg:left-9">
       <div className="relative h-full w-full overflow-hidden rounded-full bg-[#287630]">
@@ -257,10 +618,48 @@ function ProfileAvatar({ name }: { name: string }) {
         </span>
         <span
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url("${avatarImage}")` }}
+          style={{ backgroundImage: `url("${imageUrl}")` }}
           aria-hidden="true"
         />
       </div>
+    </div>
+  );
+}
+
+function EditAvatar({
+  name,
+  imageUrl,
+  onImageChange,
+}: {
+  name: string;
+  imageUrl: string;
+  onImageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}) {
+  return (
+    <div className="absolute left-6 top-[118px] h-[96px] w-[96px] rounded-[22px] bg-white p-[4px] shadow-[0_16px_28px_rgba(33,55,30,0.2)] sm:left-8 sm:top-[124px] lg:left-9">
+      <div className="relative h-full w-full overflow-hidden rounded-[18px] bg-[#287630]">
+        <span className="absolute inset-0 flex items-center justify-center text-[23px] font-black text-white">
+          {readInitials(name)}
+        </span>
+        <span
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url("${imageUrl}")` }}
+          aria-hidden="true"
+        />
+      </div>
+      <label
+        className="absolute -bottom-2 -right-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-[#eef8ea] text-[#1f6f2a] shadow-[0_8px_18px_rgba(33,55,30,0.16)] ring-4 ring-white transition-colors hover:bg-white"
+        title="Alterar foto de perfil"
+        aria-label="Alterar foto de perfil"
+      >
+        <PencilIcon className="h-[14px] w-[14px]" />
+        <input
+          type="file"
+          accept="image/*"
+          className="sr-only"
+          onChange={onImageChange}
+        />
+      </label>
     </div>
   );
 }
@@ -300,12 +699,14 @@ function SuggestionsCard() {
 
 function AcademicInfoCard({
   email,
-  course,
+  roleDescription,
   registration,
+  location,
 }: {
   email: string;
-  course: string;
+  roleDescription: string;
   registration: string;
+  location: string;
 }) {
   return (
     <section className="rounded-[22px] bg-white px-6 py-7 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
@@ -328,10 +729,10 @@ function AcademicInfoCard({
 
         <div>
           <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-[#a0a69b]">
-            Curso
+            Cargo/Função
           </dt>
           <dd className="mt-2 text-[12px] font-semibold text-[#333b31]">
-            {course}
+            {roleDescription}
           </dd>
         </div>
 
@@ -350,7 +751,7 @@ function AcademicInfoCard({
           </dt>
           <dd className="mt-2 flex items-center gap-2 text-[12px] font-semibold text-[#333b31]">
             <LocationIcon className="h-[14px] w-[14px] text-[#287630]" />
-            Campus Dois Irmãos
+            {location}
           </dd>
         </div>
       </dl>
@@ -494,6 +895,41 @@ function LeafIcon({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
+function AtSignIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      className={className}
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="4" />
+      <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8" />
+    </svg>
+  );
+}
+
+function CheckIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="3"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="m5 12 4 4L19 6" />
+    </svg>
+  );
+}
+
 function LocationIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (
     <svg
@@ -570,4 +1006,8 @@ function formatRole(role: string | undefined) {
   }
 
   return "Estudante";
+}
+
+function formatRoleDescription(roleLabel: string, course: string) {
+  return `${roleLabel}${course ? ` de ${course}` : ""}`;
 }

@@ -1,48 +1,128 @@
-import { PlusIcon } from "./FeedIcons";
+"use client";
 
-const suggestions = [
-  {
-    name: "Mariana Lima",
-    role: "Engenharia Florestal",
-    color: "bg-[#2f7d42]",
-  },
-  {
-    name: "Roberto Silva",
-    role: "Pesquisador UFRPE",
-    color: "bg-[#286a7a]",
-  },
-];
+import { useState } from "react";
+import Link from "next/link";
+import { PlusIcon } from "./FeedIcons";
+import { suggestions } from "../../lib/suggestions";
 
 export function SuggestionsCard() {
-  return (
-    <aside className="rounded-[28px] bg-white px-6 py-7 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
-      <h2 className="text-[15px] font-black tracking-[-0.02em] text-[#1e261e]">
-        Sugestões
-      </h2>
+  const [modalOpen, setModalOpen] = useState(false);
+  const visibleSuggestions = suggestions.slice(0, 3);
 
-      <div className="mt-6 space-y-4">
-        {suggestions.map((person, index) => (
-          <div key={person.name} className="flex items-center gap-3">
-            <ProfileAvatar color={person.color} variant={index} />
-            <div className="min-w-0">
-              <p className="truncate text-[12px] font-black leading-4 text-[#242b23]">
-                {person.name}
-              </p>
-              <p className="truncate text-[10px] font-semibold leading-3 text-[#8a9186]">
-                {person.role}
-              </p>
+  return (
+    <>
+      <aside className="rounded-[28px] bg-white px-6 py-7 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+        <h2 className="text-[15px] font-black tracking-[-0.02em] text-[#1e261e]">
+          Sugestões
+        </h2>
+
+        <div className="mt-6 space-y-4">
+          {visibleSuggestions.map((person, index) => (
+            <Link
+              key={person.slug}
+              href={`/perfil/${person.slug}`}
+              className="group flex items-center gap-3 rounded-[18px] px-3 py-3 transition hover:bg-[#f4f6f1]"
+            >
+              <ProfileAvatar color={person.color} variant={index} />
+              <div className="min-w-0">
+                <p className="truncate text-[12px] font-black leading-4 text-[#242b23] group-hover:text-[#1f6f2a]">
+                  {person.name}
+                </p>
+                <p className="truncate text-[10px] font-semibold leading-3 text-[#8a9186]">
+                  {person.role}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setModalOpen(true)}
+          className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-[#f1f5ed] px-4 py-3 text-[11px] font-black text-[#287630] transition hover:bg-[#e7f1df]"
+        >
+          Ver todas as sugestões
+        </button>
+      </aside>
+
+      {modalOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#0b1f0b]/50 px-4 py-8"
+          onClick={() => setModalOpen(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            onClick={(event) => event.stopPropagation()}
+            className="w-full max-w-[960px] overflow-hidden rounded-[28px] bg-white shadow-[0_24px_70px_rgba(11,35,17,0.28)]"
+          >
+            <div className="flex flex-col gap-3 border-b border-[#e6efe4] px-6 py-5 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <h2 className="text-[18px] font-black tracking-[-0.02em] text-[#1e261e]">
+                  Todas as sugestões
+                </h2>
+                <p className="mt-1 text-[12px] text-[#525b4f]">
+                  Conecte-se com perfis que combinam com seu interesse em sustentabilidade e produção rural.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setModalOpen(false)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#d9e0d4] bg-white text-[16px] font-black text-[#287630] transition hover:bg-[#f4f6f1]"
+                aria-label="Fechar"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="max-h-[calc(100vh-210px)] overflow-y-auto px-6 py-5 scrollbar-thin scrollbar-thumb-[#c7dabd] scrollbar-track-[#f4f6f1]">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {suggestions.map((person) => (
+                <Link
+                  key={person.slug}
+                  href={`/perfil/${person.slug}`}
+                  className="group overflow-hidden rounded-[22px] border border-[#e6efe4] bg-[#fbfbf7] p-5 transition hover:border-[#c7dabd] hover:bg-white"
+                >
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className={`h-12 w-12 rounded-full ${person.color} ring-2 ring-[#e8efdf]`}>
+                      <span className="flex h-full items-center justify-center text-[18px] font-black text-white">
+                        {readInitials(person.name)}
+                      </span>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-[13px] font-black text-[#1e261e] group-hover:text-[#1f6f2a]">
+                        {person.name}
+                      </p>
+                      <p className="truncate text-[11px] font-semibold text-[#8a9186]">
+                        {person.role}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="mb-4 text-[12px] leading-6 text-[#545d50]">
+                    {person.bio}
+                  </p>
+                  <div className="space-y-2 text-[11px] text-[#333b31]">
+                    <div>
+                      <span className="font-black">Email: </span>
+                      {person.email}
+                    </div>
+                    <div>
+                      <span className="font-black">Matrícula: </span>
+                      {person.registration}
+                    </div>
+                    <div>
+                      <span className="font-black">Local: </span>
+                      {person.location}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+              </div>
             </div>
           </div>
-        ))}
-      </div>
-
-      <button
-        type="button"
-        className="mt-7 w-full text-center text-[11px] font-black text-[#287630]"
-      >
-        Ver todas as sugestões
-      </button>
-    </aside>
+        </div>
+      ) : null}
+    </>
   );
 }
 
@@ -97,4 +177,13 @@ function ProfileAvatar({
       <span className="absolute bottom-[2px] left-[13px] h-[10px] w-[14px] rounded-t-full bg-[#275f35]" />
     </div>
   );
+}
+
+function readInitials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("") || "R";
 }

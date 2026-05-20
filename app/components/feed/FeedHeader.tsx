@@ -7,6 +7,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../auth/AuthProvider";
 import { BellIcon, SearchIcon } from "./FeedIcons";
 
+const PROFILE_AVATAR_STORAGE_KEY = "ruralize.profile.avatarUrl";
+
 const navItems = [
   { label: "Feed", path: "/feed" },
   { label: "Agendamentos", path: "/agendamentos" },
@@ -24,7 +26,7 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
   const { searchTerm = "", onSearchChange = () => {} } = props;
   const pathname = usePathname();
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navRef = useRef<HTMLElement>(null);
   const buttonRefs = useRef<Record<HeaderSection, HTMLButtonElement | null>>({
     Feed: null,
@@ -36,6 +38,9 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
     opacity: 1,
   });
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileAvatarUrl, setProfileAvatarUrl] = useState<string | undefined>(
+    undefined,
+  );
   const menuRef = useRef<HTMLDivElement | null>(null);
   const currentSection = useMemo<HeaderSection>(() => {
     const matchedItem = navItems.find((item) => pathname.startsWith(item.path));
@@ -57,6 +62,32 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
       opacity: 1,
     });
   }, [activeSection]);
+
+  useEffect(() => {
+    const storedAvatarUrl =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem(PROFILE_AVATAR_STORAGE_KEY) ?? undefined
+        : undefined;
+
+    setProfileAvatarUrl(user?.avatarUrl ?? storedAvatarUrl);
+  }, [user?.avatarUrl]);
+
+  useEffect(() => {
+    function handleAvatarUpdate() {
+      const storedAvatarUrl =
+        typeof window !== "undefined"
+          ? window.localStorage.getItem(PROFILE_AVATAR_STORAGE_KEY) ?? undefined
+          : undefined;
+
+      setProfileAvatarUrl(user?.avatarUrl ?? storedAvatarUrl);
+    }
+
+    window.addEventListener("ruralize.avatar.update", handleAvatarUpdate);
+
+    return () => {
+      window.removeEventListener("ruralize.avatar.update", handleAvatarUpdate);
+    };
+  }, [user?.avatarUrl]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -159,10 +190,20 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
               aria-label="Abrir menu de perfil"
               aria-expanded={menuOpen}
             >
-              <span className="absolute inset-x-[9px] top-[7px] h-[10px] rounded-full bg-[#f0b07b]" />
-              <span className="absolute left-[11px] top-[14px] h-[8px] w-[18px] rounded-t-full bg-[#273f2a]" />
-              <span className="absolute bottom-0 left-[7px] h-[19px] w-[26px] rounded-t-[16px] bg-[#e2ead8]" />
-              <span className="absolute bottom-[2px] left-[13px] h-[11px] w-[14px] rounded-t-full bg-[#29713b]" />
+              {profileAvatarUrl ? (
+                <img
+                  src={profileAvatarUrl}
+                  alt={user?.name ? `${user.name} - foto do perfil` : "Foto do perfil"}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <>
+                  <span className="absolute inset-x-[9px] top-[7px] h-[10px] rounded-full bg-[#f0b07b]" />
+                  <span className="absolute left-[11px] top-[14px] h-[8px] w-[18px] rounded-t-full bg-[#273f2a]" />
+                  <span className="absolute bottom-0 left-[7px] h-[19px] w-[26px] rounded-t-[16px] bg-[#e2ead8]" />
+                  <span className="absolute bottom-[2px] left-[13px] h-[11px] w-[14px] rounded-t-full bg-[#29713b]" />
+                </>
+              )}
             </button>
 
             {menuOpen ? (

@@ -16,20 +16,7 @@ import { AuthShell } from "../components/AuthShell";
 import { CourseSelect } from "../components/CourseSelect";
 import { MatriculaInput } from "../components/MatriculaInput";
 import { Toast } from "../components/Toast";
-
-type RegisterPayload = {
-  name: string;
-  email: string;
-  password: string;
-  role: "student" | "teacher";
-  registration?: number;
-  course?: string;
-};
-
-type RegisterResponse = {
-  detail?: string;
-  message?: string;
-};
+import { registerUser, type UserCreate } from "../services/api/auth.api";
 
 export default function CadastroPage() {
   const [role, setRole] = useState<"student" | "teacher">("student");
@@ -62,7 +49,7 @@ export default function CadastroPage() {
     setLoading(true);
 
     try {
-      const body: RegisterPayload = {
+      const body: UserCreate = {
         name,
         email,
         password,
@@ -75,26 +62,11 @@ export default function CadastroPage() {
           throw new Error("Preencha todos os campos de aluno");
         }
 
-        body.registration = Number(registration);
+        body.registration = registration;
         body.course = course;
       }
 
-      const response = await fetch(
-        "https://rural-backend.vercel.app/auth/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        }
-      );
-
-      const data = (await response.json()) as RegisterResponse;
-
-      if (!response.ok) {
-        throw new Error(data.detail || "Erro ao cadastrar");
-      }
+      await registerUser(body);
 
       // sucesso
       setToast({

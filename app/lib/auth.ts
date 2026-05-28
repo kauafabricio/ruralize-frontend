@@ -1,3 +1,5 @@
+import { loginUser } from "../services/api/auth.api";
+
 export type AuthUser = {
   id?: string;
   name?: string;
@@ -18,7 +20,6 @@ export type LoginCredentials = {
   password: string;
 };
 
-const API_BASE_URL = "https://rural-backend.vercel.app";
 const SESSION_STORAGE_KEY = "ruralize.session";
 const AUTH_COOKIE_NAME = "ruralize_auth";
 
@@ -27,20 +28,7 @@ type JsonRecord = Record<string, unknown>;
 export async function loginRequest(
   credentials: LoginCredentials,
 ): Promise<AuthSession> {
-  const response = await fetch(`${API_BASE_URL}/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(credentials),
-  });
-
-  const data = (await response.json()) as unknown;
-
-  if (!response.ok) {
-    throw new Error(readErrorMessage(data) || "Erro ao fazer login");
-  }
-
+  const data = await loginUser(credentials);
   return createSessionFromLoginResponse(data);
 }
 
@@ -222,14 +210,6 @@ function writeAuthCookie(session: AuthSession) {
     : 60 * 60 * 24 * 7;
 
   document.cookie = `${AUTH_COOKIE_NAME}=1; path=/; max-age=${maxAge}; samesite=lax`;
-}
-
-function readErrorMessage(data: unknown): string | null {
-  if (!isRecord(data)) {
-    return null;
-  }
-
-  return readString(data, ["message", "detail", "error"]) ?? null;
 }
 
 function readString(record: JsonRecord, keys: string[]) {

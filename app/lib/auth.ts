@@ -1,3 +1,4 @@
+```ts
 import { loginUser } from "../services/api/auth.api";
 
 export type AuthUser = {
@@ -20,10 +21,10 @@ export type LoginCredentials = {
   password: string;
 };
 
+type JsonRecord = Record<string, unknown>;
+
 const SESSION_STORAGE_KEY = "ruralize.session";
 const AUTH_COOKIE_NAME = "ruralize_auth";
-
-type JsonRecord = Record<string, unknown>;
 
 export async function loginRequest(
   credentials: LoginCredentials,
@@ -82,126 +83,9 @@ export function isSessionExpired(session: AuthSession) {
 }
 
 export function getAuthorizationHeader(session: AuthSession | null) {
-  return session?.token ? { Authorization: `Bearer ${session.token}` } : {};
-}
-
-function createSessionFromLoginResponse(data: unknown): AuthSession {
-  const token = findToken(data);
-
-  if (!token) {
-    throw new Error("Token de autenticação não retornado pelo servidor.");
-  }
-
-  const decodedToken = decodeJwtPayload(token);
-  const userPayload = findUserPayload(data) ?? decodedToken;
-  const user = userPayload ? normalizeUser(userPayload) : null;
-
-  return {
-    token,
-    user,
-    expiresAt: readExpiration(decodedToken),
-  };
-}
-
-function findToken(data: unknown): string | null {
-  if (!isRecord(data)) {
-    return null;
-  }
-
-  const directToken = readString(data, [
-    "token",
-    "accessToken",
-    "access_token",
-    "jwt",
-  ]);
-
-  if (directToken) {
-    return directToken;
-  }
-
-  for (const key of ["data", "session", "auth"]) {
-    const nestedToken = findToken(data[key]);
-
-    if (nestedToken) {
-      return nestedToken;
-    }
-  }
-
-  return null;
-}
-
-function findUserPayload(data: unknown): JsonRecord | null {
-  if (!isRecord(data)) {
-    return null;
-  }
-
-  for (const key of ["user", "usuario", "account", "profile"]) {
-    if (isRecord(data[key])) {
-      return data[key];
-    }
-  }
-
-  for (const key of ["data", "session", "auth"]) {
-    const nestedUser = findUserPayload(data[key]);
-
-    if (nestedUser) {
-      return nestedUser;
-    }
-  }
-
-  return null;
-}
-
-function normalizeUser(payload: JsonRecord): AuthUser {
-  return {
-    id: readString(payload, ["id", "_id", "sub", "userId", "user_id"]),
-    name: readString(payload, ["name", "nome", "fullName", "full_name"]),
-    email: readString(payload, ["email"]),
-    role: readString(payload, ["role", "perfil", "type"]),
-    avatarUrl: readString(payload, [
-      "avatar",
-      "avatarUrl",
-      "avatar_url",
-      "photo",
-      "photoUrl",
-      "picture",
-      "pictureUrl",
-      "image",
-      "imageUrl",
-      "image_url",
-      "foto",
-      "imagem",
-      "profileImage",
-      "profile_image",
-    ]),
-    raw: payload,
-  };
-}
-
-function decodeJwtPayload(token: string): JsonRecord | null {
-  const [, payload] = token.split(".");
-
-  if (!payload) {
-    return null;
-  }
-
-  try {
-    const normalizedPayload = payload.replace(/-/g, "+").replace(/_/g, "/");
-    const paddedPayload =
-      normalizedPayload + "=".repeat((4 - (normalizedPayload.length % 4)) % 4);
-    const decodedPayload = atob(paddedPayload);
-    const parsedPayload = JSON.parse(decodedPayload) as unknown;
-
-    return isRecord(parsedPayload) ? parsedPayload : null;
-  } catch {
-    return null;
-  }
-}
-
-function readExpiration(payload: JsonRecord | null): number | null {
-  const exp = payload?.exp;
-
-  return typeof exp === "number" ? exp * 1000 : null;
+  return session?.token
+    ? { Authorization: `Bearer ${session.token}` }
+    : {};
 }
 
 function writeAuthCookie(session: AuthSession) {
@@ -221,10 +105,41 @@ function readString(record: JsonRecord, keys: string[]) {
     }
   }
 
-  return undefined;
+  return null;
 }
 
-function isRecord(value: unknown): value is JsonRecord {
+function createSessionFromLoginResponse(
+  data: unknown,
+): AuthSession {
+  if (!isRecord(data)) {
+    throw new Error("Resposta inválida da API.");
+  }
+
+  const token = readString(data, ["token", "access_token"]);
+
+  if (!token) {
+    throw new Error("Token não encontrado.");
+  }
+
+  const user = isRecord(data.user)
+    ? {
+        id: readString(data.user, ["id", "_id"]),
+        name: readString(data.user, ["name", "username"]),
+        email: readString(data.user, ["email"]),
+        role: readString(data.user, ["role"]),
+        avatarUrl: readString(data.user, ["avatar", "avatarUrl"]),
+        raw: data.user,
+      }
+    : null;
+
+  return {
+    token,
+    user,
+    expiresAt: Date.now() + 1000 * 60 * 60 * 24,
+  };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
@@ -232,10 +147,15 @@ function isValidSessionShape(session: unknown): session is AuthSession {
   return (
     isRecord(session) &&
     typeof session.token === "string" &&
-    (typeof session.expiresAt === "number" || session.expiresAt === null)
+    (typeof session.expiresAt === "number" ||
+      session.expiresAt === null)
   );
 }
 
 function canUseBrowserStorage() {
-  return typeof window !== "undefined" && typeof document !== "undefined";
+  return (
+    typeof window !== "undefined" &&
+    typeof document !== "undefined"
+  );
 }
+```

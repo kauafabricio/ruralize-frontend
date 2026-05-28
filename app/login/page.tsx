@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -13,7 +13,8 @@ import { useAuth } from "../components/auth/AuthProvider";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { isAuthenticated, login } = useAuth();
+  const { login } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -24,14 +25,9 @@ export default function LoginPage() {
     type: "success" | "error";
   } | null>(null);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.replace(readNextPathFromLocation() ?? "/feed");
-    }
-  }, [isAuthenticated, router]);
-
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
+
     setLoading(true);
 
     try {
@@ -42,12 +38,10 @@ export default function LoginPage() {
         type: "success",
       });
 
-      setTimeout(() => {
-        router.replace(readNextPathFromLocation() ?? "/feed");
-      }, 1500);
-    } catch (err: unknown) {
+      router.replace("/feed");
+    } catch (err) {
       setToast({
-        message: err instanceof Error ? err.message : "Erro ao fazer login",
+        message: err instanceof Error ? err.message : "Erro ao entrar",
         type: "error",
       });
     } finally {
@@ -70,6 +64,7 @@ export default function LoginPage() {
           <h1 className="text-[28px] font-black leading-tight tracking-[-0.03em] text-[#1f6f2a]">
             Bem-vindo
           </h1>
+
           <p className="mt-3 max-w-[265px] text-[12px] font-medium leading-5 text-[#8a9186]">
             Acesse sua conta para gerenciar suas atividades academicas
             sustentaveis.
@@ -87,6 +82,7 @@ export default function LoginPage() {
 
           <div className="mb-3 flex items-center justify-between gap-4 text-[10px] font-black uppercase tracking-[0.14em] text-[#262b23]">
             <span>Senha</span>
+
             <Link
               href="/login"
               className="text-[10px] font-black normal-case tracking-normal text-[#287630]"
@@ -134,23 +130,5 @@ export default function LoginPage() {
         </div>
       </AuthCard>
     </AuthShell>
-  );
-}
-
-function readSafeNextPath(nextPath: string | null) {
-  if (!nextPath || !nextPath.startsWith("/") || nextPath.startsWith("//")) {
-    return null;
-  }
-
-  return nextPath;
-}
-
-function readNextPathFromLocation() {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  return readSafeNextPath(
-    new URLSearchParams(window.location.search).get("next"),
   );
 }

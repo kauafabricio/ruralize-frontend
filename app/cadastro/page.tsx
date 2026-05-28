@@ -1,3 +1,4 @@
+```tsx id="s2k8x9"
 "use client";
 
 import { useEffect, useState } from "react";
@@ -34,10 +35,10 @@ export default function CadastroPage() {
     type: "success" | "error";
   } | null>(null);
 
-  // pega query param no client (sem quebrar build)
   useEffect(() => {
     const timeout = window.setTimeout(() => {
       const perfil = new URLSearchParams(window.location.search).get("perfil");
+
       setRole(perfil === "professor" ? "teacher" : "student");
     }, 0);
 
@@ -46,6 +47,7 @@ export default function CadastroPage() {
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
+
     setLoading(true);
 
     try {
@@ -56,7 +58,6 @@ export default function CadastroPage() {
         role,
       };
 
-      // só adiciona se for aluno
       if (role === "student") {
         if (!registration || !course) {
           throw new Error("Preencha todos os campos de aluno");
@@ -68,7 +69,6 @@ export default function CadastroPage() {
 
       await registerUser(body);
 
-      // sucesso
       setToast({
         message: "Conta criada com sucesso!",
         type: "success",
@@ -77,10 +77,12 @@ export default function CadastroPage() {
       setTimeout(() => {
         window.location.href = "/login";
       }, 1500);
-
     } catch (err: unknown) {
       setToast({
-        message: err instanceof Error ? err.message : "Erro ao cadastrar",
+        message:
+          err instanceof Error
+            ? err.message
+            : "Erro ao cadastrar",
         type: "error",
       });
     } finally {
@@ -90,7 +92,6 @@ export default function CadastroPage() {
 
   return (
     <AuthShell>
-      {/* TOAST */}
       {toast && (
         <Toast
           message={toast.message}
@@ -104,7 +105,10 @@ export default function CadastroPage() {
           Crie sua conta para começar sua jornada sustentável na UFRPE
         </p>
 
-        <form className="space-y-6" onSubmit={handleRegister}>
+        <form
+          className="space-y-6"
+          onSubmit={handleRegister}
+        >
           <AuthInput
             label="Nome completo"
             placeholder="Como devemos te chamar?"
@@ -122,13 +126,15 @@ export default function CadastroPage() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          {/* Só aparece para ALUNO */}
           {role === "student" && (
             <div className="grid grid-cols-2 gap-5">
               <MatriculaInput
                 value={registration}
-                onChange={(e) => setRegistration(e.target.value)}
+                onChange={(e) =>
+                  setRegistration(e.target.value)
+                }
               />
+
               <CourseSelect
                 value={course}
                 onChange={(value) => setCourse(value)}
@@ -144,9 +150,15 @@ export default function CadastroPage() {
             action={
               <button
                 type="button"
-                onClick={() => setShowPassword((current) => !current)}
+                onClick={() =>
+                  setShowPassword((current) => !current)
+                }
                 className="inline-flex items-center justify-center text-[#697163]"
-                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                aria-label={
+                  showPassword
+                    ? "Ocultar senha"
+                    : "Mostrar senha"
+                }
               >
                 {showPassword ? (
                   <EyeOffIcon className="h-4 w-4" />
@@ -170,7 +182,10 @@ export default function CadastroPage() {
 
         <div className="mt-9 border-t border-[#ebebe8] pt-8 text-center text-[12px] font-medium text-[#8c9388]">
           Já possui uma conta?{" "}
-          <Link href="/login" className="font-black text-[#287630]">
+          <Link
+            href="/login"
+            className="font-black text-[#287630]"
+          >
             Entrar agora
           </Link>
         </div>
@@ -178,3 +193,4 @@ export default function CadastroPage() {
     </AuthShell>
   );
 }
+```

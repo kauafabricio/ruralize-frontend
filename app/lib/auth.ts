@@ -13,6 +13,16 @@ export type AuthSession = {
   expiresAt: number | null;
 };
 
+export type ProfileUpdatePayload = {
+  name: string;
+  email: string;
+  roleDescription: string;
+  bio: string;
+  location: string;
+  coverImageUrl: string;
+  avatarUrl: string;
+};
+
 export type LoginCredentials = {
   email: string;
   password: string;
@@ -99,6 +109,41 @@ export function isSessionExpired(session: AuthSession) {
 
 export function getAuthorizationHeader(session: AuthSession | null) {
   return session?.token ? { Authorization: `Bearer ${session.token}` } : {};
+}
+
+export async function updateProfileRequest(
+  session: AuthSession | null,
+  profile: ProfileUpdatePayload,
+): Promise<AuthSession> {
+  if (!session?.token) {
+    throw new Error("Sessão expirada. Faça login novamente.");
+  }
+
+  const response = await fetch("/api/profile", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthorizationHeader(session),
+    },
+    body: JSON.stringify({
+      profile,
+      user: session.user,
+    }),
+  });
+
+  const data = (await response.json().catch(() => null)) as {
+    message?: string;
+    user?: AuthUser;
+  } | null;
+
+  if (!response.ok || !data?.user) {
+    throw new Error(data?.message ?? "Não foi possível salvar o perfil.");
+  }
+
+  return {
+    ...session,
+    user: data.user,
+  };
 }
 
 function writeAuthCookie(session: AuthSession) {

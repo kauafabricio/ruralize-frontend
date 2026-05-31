@@ -20,15 +20,20 @@ type HeaderSection = (typeof navItems)[number]["label"];
 type FeedHeaderProps = {
   searchTerm?: string;
   onSearchChange?: (value: string) => void;
+  showSearch?: boolean;
 };
 
 export function FeedHeader(props: FeedHeaderProps = {}) {
-  const { searchTerm = "", onSearchChange = () => {} } = props;
+  const {
+    searchTerm = "",
+    onSearchChange = () => {},
+    showSearch = true,
+  } = props;
   const pathname = usePathname();
   const router = useRouter();
   const { logout, user } = useAuth();
   const navRef = useRef<HTMLElement>(null);
-  const buttonRefs = useRef<Record<HeaderSection, HTMLButtonElement | null>>({
+  const buttonRefs = useRef<Record<HeaderSection, HTMLElement | null>>({
     Feed: null,
     Agendamentos: null,
     Pontos: null,
@@ -38,9 +43,10 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
     opacity: 1,
   });
   const [menuOpen, setMenuOpen] = useState(false);
-  const [profileAvatarUrl, setProfileAvatarUrl] = useState<string | undefined>(
-    undefined,
-  );
+  const [storedProfileAvatarUrl, setStoredProfileAvatarUrl] = useState<
+    string | undefined
+  >(undefined);
+  const profileAvatarUrl = user?.avatarUrl ?? storedProfileAvatarUrl;
   const menuRef = useRef<HTMLDivElement | null>(null);
   const currentSection = useMemo<HeaderSection>(() => {
     const matchedItem = navItems.find((item) => pathname.startsWith(item.path));
@@ -64,30 +70,18 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
   }, [activeSection]);
 
   useEffect(() => {
-    const storedAvatarUrl =
-      typeof window !== "undefined"
-        ? window.localStorage.getItem(PROFILE_AVATAR_STORAGE_KEY) ?? undefined
-        : undefined;
-
-    setProfileAvatarUrl(user?.avatarUrl ?? storedAvatarUrl);
-  }, [user?.avatarUrl]);
-
-  useEffect(() => {
-    function handleAvatarUpdate() {
-      const storedAvatarUrl =
-        typeof window !== "undefined"
-          ? window.localStorage.getItem(PROFILE_AVATAR_STORAGE_KEY) ?? undefined
-          : undefined;
-
-      setProfileAvatarUrl(user?.avatarUrl ?? storedAvatarUrl);
+    function syncStoredAvatar() {
+      setStoredProfileAvatarUrl(readStoredProfileAvatarUrl());
     }
 
-    window.addEventListener("ruralize.avatar.update", handleAvatarUpdate);
+    const initialAvatarTimeout = window.setTimeout(syncStoredAvatar, 0);
+    window.addEventListener("ruralize.avatar.update", syncStoredAvatar);
 
     return () => {
-      window.removeEventListener("ruralize.avatar.update", handleAvatarUpdate);
+      window.clearTimeout(initialAvatarTimeout);
+      window.removeEventListener("ruralize.avatar.update", syncStoredAvatar);
     };
-  }, [user?.avatarUrl]);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -138,41 +132,44 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
 
           {navItems.map((item) => {
             const active = item.label === activeSection;
+            const itemClassName = `relative flex h-full items-center whitespace-nowrap px-1 pt-1 transition-colors duration-300 ${
+              active ? "font-black text-[#1f6f2a]" : "hover:text-[#1f6f2a]"
+            }`;
 
             return (
-              <button
+              <Link
                 key={item.label}
                 ref={(element) => {
                   buttonRefs.current[item.label] = element;
                 }}
-                type="button"
+                href={item.path}
                 onClick={() => setSelectedSection(item.label)}
-                className={`relative h-full px-1 pt-1 transition-colors duration-300 ${
-                  active ? "font-black text-[#1f6f2a]" : "hover:text-[#1f6f2a]"
-                }`}
+                className={itemClassName}
                 aria-current={active ? "page" : undefined}
               >
                 {item.label}
-              </button>
+              </Link>
             );
           })}
         </nav>
 
         <div className="flex items-center gap-4 text-[#101510]">
-          <div className="flex h-8 w-[116px] items-center gap-1.5 rounded-full border border-[#e4e8df] bg-[#f6f7f1] px-2 text-[#30372f] shadow-[0_1px_0_rgba(33,55,30,0.04)]">
-            <SearchIcon className="h-[14px] w-[14px] shrink-0 text-[#7a877b]" />
-            <label htmlFor="feed-search" className="sr-only">
-              Buscar no feed
-            </label>
-            <input
-              id="feed-search"
-              type="search"
-              value={searchTerm}
-              onChange={(event) => onSearchChange(event.target.value)}
-              placeholder="Buscar"
-              className="w-full min-w-0 bg-transparent text-[12px] font-medium leading-5 outline-none placeholder:text-[#9aa59a]"
-            />
-          </div>
+          {showSearch ? (
+            <div className="flex h-8 w-[116px] items-center gap-1.5 rounded-full border border-[#e4e8df] bg-[#f6f7f1] px-2 text-[#30372f] shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+              <SearchIcon className="h-[14px] w-[14px] shrink-0 text-[#7a877b]" />
+              <label htmlFor="feed-search" className="sr-only">
+                Buscar no feed
+              </label>
+              <input
+                id="feed-search"
+                type="search"
+                value={searchTerm}
+                onChange={(event) => onSearchChange(event.target.value)}
+                placeholder="Buscar"
+                className="w-full min-w-0 bg-transparent text-[12px] font-medium leading-5 outline-none placeholder:text-[#9aa59a]"
+              />
+            </div>
+          ) : null}
 
           <button
             type="button"
@@ -240,3 +237,12 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
     </header>
   );
 }
+
+function readStoredProfileAvatarUrl() {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+
+  return window.localStorage.getItem(PROFILE_AVATAR_STORAGE_KEY) ?? undefined;
+}
+

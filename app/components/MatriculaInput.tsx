@@ -21,7 +21,7 @@ export function MatriculaInput({
   const showWarning = value.length > 0 && value.length < MATRICULA_LENGTH;
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    // 🔥 permite apenas números
+    // Permite apenas números.
     const onlyNumbers = e.target.value.replace(/\D/g, "").slice(0, MATRICULA_LENGTH);
 
     // cria um "evento fake" com valor limpo

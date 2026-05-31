@@ -16,8 +16,10 @@ import {
   getStoredSession,
   isSessionExpired,
   LoginCredentials,
+  ProfileUpdatePayload,
   loginRequest,
   storeSession,
+  updateProfileRequest,
 } from "../../lib/auth";
 
 type AuthStatus = "loading" | "authenticated" | "unauthenticated";
@@ -29,6 +31,7 @@ type AuthContextValue = {
   token: string | null;
   isAuthenticated: boolean;
   login: (credentials: LoginCredentials) => Promise<AuthSession>;
+  updateProfile: (profile: ProfileUpdatePayload) => Promise<AuthSession>;
   logout: () => void;
   refreshSession: () => AuthSession | null;
 };
@@ -64,6 +67,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return nextSession;
     },
     [applySession],
+  );
+
+  const updateProfile = useCallback(
+    async (profile: ProfileUpdatePayload) => {
+      const nextSession = await updateProfileRequest(session, profile);
+      applySession(nextSession);
+      return nextSession;
+    },
+    [applySession, session],
   );
 
   const logout = useCallback(() => {
@@ -112,10 +124,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       token: session?.token ?? null,
       isAuthenticated: status === "authenticated",
       login,
+      updateProfile,
       logout,
       refreshSession,
     }),
-    [login, logout, refreshSession, session, status],
+    [login, logout, refreshSession, session, status, updateProfile],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

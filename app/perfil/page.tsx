@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 
@@ -55,7 +55,7 @@ export default function PerfilPage() {
 }
 
 function PerfilContent() {
-  const { user } = useAuth();
+  const { updateProfile, user } = useAuth();
   const initialEmail = user?.email ?? "";
   const initialDisplayName = user?.name ?? readNameFromEmail(user?.email) ?? "";
   const initialCourse = readProfileValue(user?.raw, ["course", "curso"]) ?? "";
@@ -134,6 +134,8 @@ function PerfilContent() {
     ]) ?? user?.avatarUrl ?? avatarImage,
   );
   const [saveFeedbackOpen, setSaveFeedbackOpen] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [savingProfile, setSavingProfile] = useState(false);
 
   const subtitle = `${savedProfile.roleDescription || roleLabel} - UFRPE`;
 
@@ -145,6 +147,7 @@ function PerfilContent() {
   }
 
   function handleOpenEdit() {
+    setSaveError(null);
     setDraftProfile(savedProfile);
     setDraftCoverImage(savedCoverImage);
     setDraftAvatarImage(savedAvatarImage);
@@ -152,6 +155,7 @@ function PerfilContent() {
   }
 
   function handleCancelEdit() {
+    setSaveError(null);
     setDraftProfile(savedProfile);
     setDraftCoverImage(savedCoverImage);
     setDraftAvatarImage(savedAvatarImage);
@@ -167,10 +171,16 @@ function PerfilContent() {
       PROFILE_AVATAR_STORAGE_KEY,
     );
 
-    if (storedAvatarUrl) {
-      setSavedAvatarImage(storedAvatarUrl);
-      setDraftAvatarImage(storedAvatarUrl);
-    }
+    const syncStoredAvatarTimeout = window.setTimeout(() => {
+      if (storedAvatarUrl) {
+        setSavedAvatarImage(storedAvatarUrl);
+        setDraftAvatarImage(storedAvatarUrl);
+      }
+    }, 0);
+
+    return () => {
+      window.clearTimeout(syncStoredAvatarTimeout);
+    };
   }, []);
 
   useEffect(() => {
@@ -185,17 +195,36 @@ function PerfilContent() {
     window.dispatchEvent(new Event("ruralize.avatar.update"));
   }, [savedAvatarImage]);
 
-  function handleSaveEdit() {
-    setSavedProfile(draftProfile);
-    setSavedCoverImage(draftCoverImage);
-    setSavedAvatarImage(draftAvatarImage);
-    setEditMode(false);
-    setSaveFeedbackOpen(true);
+  async function handleSaveEdit() {
+    setSavingProfile(true);
+    setSaveError(null);
+
+    try {
+      await updateProfile({
+        ...draftProfile,
+        coverImageUrl: draftCoverImage,
+        avatarUrl: draftAvatarImage,
+      });
+
+      setSavedProfile(draftProfile);
+      setSavedCoverImage(draftCoverImage);
+      setSavedAvatarImage(draftAvatarImage);
+      setEditMode(false);
+      setSaveFeedbackOpen(true);
+    } catch (error) {
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível salvar o perfil.",
+      );
+    } finally {
+      setSavingProfile(false);
+    }
   }
 
   return (
     <main className="flex min-h-screen flex-col bg-[#f8f8f3] text-[#222a20]">
-      <FeedHeader />
+      <FeedHeader showSearch={false} />
 
       {editMode ? (
         <EditProfileScreen
@@ -208,6 +237,8 @@ function PerfilContent() {
           onAvatarChange={setDraftAvatarImage}
           onCancel={handleCancelEdit}
           onSave={handleSaveEdit}
+          saveError={saveError}
+          saving={savingProfile}
         />
       ) : (
         <>
@@ -348,6 +379,8 @@ function EditProfileScreen({
   onAvatarChange,
   onCancel,
   onSave,
+  saveError,
+  saving,
 }: {
   profile: EditableProfile;
   registration: string;
@@ -357,7 +390,9 @@ function EditProfileScreen({
   onCoverChange: (value: string) => void;
   onAvatarChange: (value: string) => void;
   onCancel: () => void;
-  onSave: () => void;
+  onSave: () => Promise<void>;
+  saveError: string | null;
+  saving: boolean;
 }) {
   function handleImageFileChange(
     event: React.ChangeEvent<HTMLInputElement>,
@@ -478,18 +513,25 @@ function EditProfileScreen({
           </div>
 
           <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[#eceee8] pt-6 sm:flex-row sm:items-center sm:justify-end">
+            {saveError ? (
+              <p className="mr-auto text-[12px] font-semibold text-[#b42318]">
+                {saveError}
+              </p>
+            ) : null}
             <button
               type="button"
               onClick={onCancel}
+              disabled={saving}
               className="h-11 rounded-full px-6 text-[12px] font-black text-[#287630] transition-colors hover:bg-[#f2f5ef]"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="h-11 rounded-full bg-[#287630] px-7 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.24)] transition-colors hover:bg-[#1f6428]"
+              disabled={saving}
+              className="h-11 rounded-full bg-[#287630] px-7 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.24)] transition-colors hover:bg-[#1f6428] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Salvar Alterações
+              {saving ? "Salvando..." : "Salvar Alterações"}
             </button>
           </div>
         </form>

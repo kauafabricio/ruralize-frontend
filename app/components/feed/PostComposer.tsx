@@ -1,15 +1,28 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { createPost, type PostCreate } from "@/app/services/api/posts.api";
+import { useAuth } from "../auth/AuthProvider";
+import { Toast } from "../Toast";
 
 import { ImageIcon } from "./FeedIcons";
 
-export function PostComposer() {
+export function PostComposer({
+  onPostCreated,
+}: {
+  onPostCreated?: () => void;
+}) {
+  const { user } = useAuth();
   const fileInputId = useId();
   const textInputId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [text, setText] = useState("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -30,6 +43,45 @@ export function PostComposer() {
     }
   }
 
+  async function handlePublish() {
+    if (!text.trim() || !user?.id) {
+      setToast({
+        message: "Digite algo e faça login para publicar",
+        type: "error",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const payload: PostCreate = {
+        content: text,
+        sustainable_action: "general",
+        image_url: previewUrl || undefined,
+      };
+
+      await createPost(user.id, payload);
+
+      setToast({
+        message: "Publicação criada com sucesso!",
+        type: "success",
+      });
+
+      setText("");
+      clearImage();
+      onPostCreated?.();
+    } catch (err) {
+      setToast({
+        message:
+          err instanceof Error ? err.message : "Erro ao publicar",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     return () => {
       if (previewUrl) {
@@ -40,6 +92,14 @@ export function PostComposer() {
 
   return (
     <section className="rounded-[28px] bg-white px-6 py-6 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+
       <div className="flex items-start gap-4">
         <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-[#205f36] ring-4 ring-[#edf3e7]">
           <span className="absolute left-[13px] top-[8px] h-[11px] w-[15px] rounded-full bg-[#e7b37f]" />
@@ -100,10 +160,11 @@ export function PostComposer() {
 
             <button
               type="button"
-              aria-disabled="true"
-              className="h-9 min-w-[132px] rounded-full bg-[#287630] px-7 text-[11px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)]"
+              onClick={handlePublish}
+              disabled={loading || !text.trim()}
+              className="h-9 min-w-[132px] rounded-full bg-[#287630] px-7 text-[11px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)] disabled:opacity-50 transition-opacity"
             >
-              Publicar
+              {loading ? "Publicando..." : "Publicar"}
             </button>
           </div>
         </div>

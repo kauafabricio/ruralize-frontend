@@ -8,7 +8,6 @@ import { useAuth } from "../auth/AuthProvider";
 
 import { PostComposer } from "./PostComposer";
 import { FeedSkeleton } from "./FeedSkeleton";
-import { PostCard } from "./PostCard";
 
 const feedTabs = [
   { id: "friends", label: "Amigos", description: "Feed de amigos" },
@@ -28,6 +27,68 @@ type FeedFilterId = (typeof feedFilters)[number]["id"];
 
 type FeedPost = PostResponse;
 
+function FeedPostCard({ post }: { post: FeedPost }) {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return "agora";
+    if (diffMins < 60) return `há ${diffMins}m`;
+    if (diffHours < 24) return `há ${diffHours}h`;
+    if (diffDays === 1) return "ontem";
+    if (diffDays < 7) return `há ${diffDays}d`;
+    return date.toLocaleDateString("pt-BR");
+  };
+
+  return (
+    <article className="overflow-hidden rounded-[28px] bg-white shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+      <div className="px-6 pt-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#205f36] text-[12px] font-black uppercase text-white">
+              {post.user_id.substring(0, 2).toUpperCase()}
+            </div>
+            <div>
+              <p className="text-sm font-black text-[#1f6f2a]">
+                {post.user_id}
+              </p>
+              <p className="text-[12px] text-[#6c7b6d]">
+                {post.sustainable_action}
+              </p>
+            </div>
+          </div>
+
+          <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#8b998d]">
+            {formatDate(post.created_at)}
+          </span>
+        </div>
+
+        <p className="mt-5 text-sm leading-6 text-[#20281f]">{post.content}</p>
+
+        {post.image_url && (
+          <div className="mt-4 overflow-hidden rounded-[14px]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post.image_url}
+              alt="Post image"
+              className="h-auto w-full"
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-center justify-between border-t border-[#eff1eb] px-6 py-4 text-[12px] text-[#4f5b4e]">
+        <span className="font-semibold">{post.likes} curtidas</span>
+        <span>{post.comments.length} comentários</span>
+      </div>
+    </article>
+  );
+}
+
 function FeedPostList({ posts }: { posts: FeedPost[] }) {
   if (posts.length === 0) {
     return (
@@ -40,7 +101,7 @@ function FeedPostList({ posts }: { posts: FeedPost[] }) {
   return (
     <div className="space-y-6">
       {posts.map((post) => (
-        <PostCard key={post.id} post={post} />
+        <FeedPostCard key={post.id} post={post} />
       ))}
     </div>
   );
@@ -184,7 +245,7 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
           <span className="sr-only">{tab.description}</span>
           {searchTerm ? (
             <p className="text-sm font-medium text-[#4f5b4e]">
-              Buscando por “{searchTerm}”
+              Buscando por "{searchTerm}"
             </p>
           ) : null}
           <PostComposer onPostCreated={handlePostCreated} />

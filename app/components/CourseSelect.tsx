@@ -70,7 +70,7 @@ export function CourseSelect({
   }
 
   function selectCourse(course: string) {
-    onChange?.(course); // 🔥 AGORA ATUALIZA O PAI
+    onChange?.(course);
     setQuery("");
     setIsOpen(false);
   }
@@ -128,3 +128,4 @@ export function CourseSelect({
     </div>
   );
 }
+

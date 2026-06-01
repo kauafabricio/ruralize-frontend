@@ -66,8 +66,8 @@ export default function LoginPage() {
           </h1>
 
           <p className="mt-3 max-w-[265px] text-[12px] font-medium leading-5 text-[#8a9186]">
-            Acesse sua conta para gerenciar suas atividades academicas
-            sustentaveis.
+            Acesse sua conta para gerenciar suas atividades acadêmicas
+            sustentáveis.
           </p>
         </div>
 
@@ -123,7 +123,7 @@ export default function LoginPage() {
         </form>
 
         <div className="mt-8 border-t border-[#ebebe8] pt-8 text-center text-[12px] font-medium text-[#8c9388]">
-          Ainda nao possui acesso?{" "}
+          Ainda não possui acesso?{" "}
           <Link href="/cadastro/perfil" className="font-black text-[#287630]">
             Criar conta
           </Link>

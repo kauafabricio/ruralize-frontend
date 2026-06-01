@@ -1,4 +1,3 @@
-```ts
 import { loginUser } from "../services/api/auth.api";
 
 export type AuthUser = {
@@ -203,4 +202,4 @@ function canUseBrowserStorage() {
     typeof document !== "undefined"
   );
 }
-```
+

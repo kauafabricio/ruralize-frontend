@@ -7,7 +7,7 @@ import type { PostResponse } from "@/app/services/api/posts.api";
 import { useAuth } from "../auth/AuthProvider";
 
 import { PostComposer } from "./PostComposer";
-import { FeedSkeleton } from "./FeedSkeleton";
+import { FeedSkeletonList } from "./FeedSkeleton";
 import { PostCard } from "./PostCard";
 
 const feedTabs = [
@@ -190,7 +190,7 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
           <PostComposer onPostCreated={handlePostCreated} />
 
           {loading ? (
-            <FeedSkeleton />
+            <FeedSkeletonList />
           ) : error ? (
             <div className="rounded-[28px] bg-white px-6 py-8 text-center text-sm text-red-600 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
               {error}

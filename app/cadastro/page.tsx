@@ -1,4 +1,3 @@
-```tsx id="s2k8x9"
 "use client";
 
 import { useEffect, useState } from "react";
@@ -193,4 +192,4 @@ export default function CadastroPage() {
     </AuthShell>
   );
 }
-```
+

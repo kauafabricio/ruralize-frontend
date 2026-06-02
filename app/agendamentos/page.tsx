@@ -6,8 +6,10 @@ import { useEffect, useState } from "react";
 import { RequireAuth } from "@/app/components/auth/RequireAuth";
 import { FeedHeader } from "@/app/components/feed/FeedHeader";
 import { events } from "@/app/lib/appointments";
-
-const REGISTERED_EVENTS_STORAGE_KEY = "ruralize.registeredEvents";
+import {
+  readRegisteredEventSlugs,
+  unregisterEvent,
+} from "@/app/lib/eventRegistration";
 
 export default function AgendamentosPage() {
   const [registeredEventSlugs, setRegisteredEventSlugs] = useState<string[]>(
@@ -57,6 +59,12 @@ export default function AgendamentosPage() {
                     title={appointment.title}
                     location={appointment.location}
                     href={`/agendamentos/${appointment.slug}`}
+                    onCancel={() => {
+                      const nextRegisteredEvents = unregisterEvent(
+                        appointment.slug,
+                      );
+                      setRegisteredEventSlugs(nextRegisteredEvents);
+                    }}
                   />
                 ))}
               </div>
@@ -64,9 +72,11 @@ export default function AgendamentosPage() {
               <EmptyAppointmentsState />
             )}
 
-            <div className="mt-11 flex justify-center">
-              <NewAppointmentCard />
-            </div>
+            {registeredEvents.length > 0 ? (
+              <div className="mt-11 flex justify-center">
+                <NewAppointmentCard />
+              </div>
+            ) : null}
           </section>
         </div>
 
@@ -105,12 +115,14 @@ function AppointmentCard({
   title,
   location,
   href,
+  onCancel,
 }: {
   status: string;
   date: string;
   title: string;
   location: string;
   href: string;
+  onCancel: () => void;
 }) {
   return (
     <article className="flex min-h-[264px] flex-col rounded-[26px] bg-white px-7 py-7 shadow-[0_20px_45px_rgba(33,55,30,0.08)]">
@@ -133,7 +145,7 @@ function AppointmentCard({
         <span>{location}</span>
       </p>
 
-      <div className="mt-auto flex items-center justify-between border-t border-[#edf0e9] pt-6">
+      <div className="mt-auto flex items-center justify-between gap-4 border-t border-[#edf0e9] pt-6">
         <Link
           href={href}
           className="text-[11px] font-black text-[#287630] transition hover:text-[#1f6428]"
@@ -148,6 +160,21 @@ function AppointmentCard({
           <ArrowIcon className="h-4 w-4" />
         </Link>
       </div>
+      <button
+        type="button"
+        onClick={() => {
+          const confirmed = window.confirm(
+            `Cancelar sua inscricao em "${title}"?`,
+          );
+
+          if (confirmed) {
+            onCancel();
+          }
+        }}
+        className="mt-4 h-10 rounded-full border border-[#f1c4c4] bg-white px-5 text-[11px] font-black text-[#b92828] transition hover:bg-[#fff3f3]"
+      >
+        Cancelar inscricao
+      </button>
     </article>
   );
 }
@@ -248,28 +275,5 @@ function ArrowIcon({ className = "h-4 w-4" }: { className?: string }) {
       <path d="m13 5 7 7-7 7" />
     </svg>
   );
-}
-
-function readRegisteredEventSlugs() {
-  if (typeof window === "undefined") {
-    return [];
-  }
-
-  const currentValue = window.localStorage.getItem(
-    REGISTERED_EVENTS_STORAGE_KEY,
-  );
-
-  if (!currentValue) {
-    return [];
-  }
-
-  try {
-    const parsedValue = JSON.parse(currentValue);
-    return Array.isArray(parsedValue)
-      ? parsedValue.filter((value): value is string => typeof value === "string")
-      : [];
-  } catch {
-    return [];
-  }
 }
 

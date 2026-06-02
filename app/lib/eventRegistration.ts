@@ -47,27 +47,59 @@ export function storeRegisteredEvent(eventSlug: string) {
     return;
   }
 
-  const currentValue = window.localStorage.getItem(REGISTERED_EVENTS_STORAGE_KEY);
-  let registeredEvents: string[] = [];
-
-  if (currentValue) {
-    try {
-      const parsedValue = JSON.parse(currentValue);
-      registeredEvents = Array.isArray(parsedValue)
-        ? parsedValue.filter(
-            (value): value is string => typeof value === "string",
-          )
-        : [];
-    } catch {
-      registeredEvents = [];
-    }
-  }
+  const registeredEvents = readRegisteredEventSlugs();
 
   if (!registeredEvents.includes(eventSlug)) {
     window.localStorage.setItem(
       REGISTERED_EVENTS_STORAGE_KEY,
       JSON.stringify([...registeredEvents, eventSlug]),
     );
+  }
+}
+
+export function unregisterEvent(eventSlug: string, removeForm = false) {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  const registeredEvents = readRegisteredEventSlugs().filter(
+    (registeredEventSlug) => registeredEventSlug !== eventSlug,
+  );
+
+  window.localStorage.setItem(
+    REGISTERED_EVENTS_STORAGE_KEY,
+    JSON.stringify(registeredEvents),
+  );
+
+  if (removeForm) {
+    const forms = readJsonRecord<EventRegistrationData>(FORM_STORAGE_KEY);
+    delete forms[eventSlug];
+    window.localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(forms));
+  }
+
+  return registeredEvents;
+}
+
+export function readRegisteredEventSlugs() {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  const currentValue = window.localStorage.getItem(
+    REGISTERED_EVENTS_STORAGE_KEY,
+  );
+
+  if (!currentValue) {
+    return [];
+  }
+
+  try {
+    const parsedValue = JSON.parse(currentValue);
+    return Array.isArray(parsedValue)
+      ? parsedValue.filter((value): value is string => typeof value === "string")
+      : [];
+  } catch {
+    return [];
   }
 }
 

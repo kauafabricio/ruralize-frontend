@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 type ToastProps = {
   message: string;
@@ -16,24 +16,30 @@ export function Toast({
   onClose,
 }: ToastProps) {
   const [progress, setProgress] = useState(100);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     const interval = 50;
     const step = 100 / (duration / interval);
 
     const timer = setInterval(() => {
-      setProgress((prev) => {
-        if (prev <= 0) {
-          clearInterval(timer);
-          onClose?.();
-          return 0;
-        }
-        return prev - step;
-      });
+      setProgress((prev) => prev - step);
     }, interval);
 
-    return () => clearInterval(timer);
-  }, [duration, onClose]);
+    const timeoutId = setTimeout(() => {
+      clearInterval(timer);
+      onCloseRef.current?.();
+    }, duration);
+
+    return () => {
+      clearInterval(timer);
+      clearTimeout(timeoutId);
+    };
+  }, [duration]);
 
   return (
     <div className="fixed top-5 left-5 z-50 w-[320px] overflow-hidden rounded-lg shadow-lg border bg-white">
@@ -47,7 +53,7 @@ export function Toast({
           className={`h-full transition-all ${
             type === "error" ? "bg-red-500" : "bg-green-500"
           }`}
-          style={{ width: `${progress}%` }}
+          style={{ width: `${Math.max(0, progress)}%` }}
         />
       </div>
     </div>

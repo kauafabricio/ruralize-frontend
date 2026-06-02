@@ -1,27 +1,39 @@
 "use client";
 
+import { useState } from "react";
+
 import { RequireAuth } from "@/app/components/auth/RequireAuth";
+import { useAuth } from "@/app/components/auth/AuthProvider";
 import { FeedHeader } from "@/app/components/feed/FeedHeader";
 
 const rewards = [
   {
     title: "Combo - 5 Fichas do RU Janta",
     description: "Troque seus pontos por 5 fichas de RU - Janta.",
+    cost: 1000,
     points: "1000 pts",
+    pickupLocation: "Restaurante Universitario - guiche de atendimento",
+    deadline: "ate 5 dias uteis apos a validacao",
     image:
       "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80",
   },
   {
     title: "Combo - 5 Fichas do RU Almoço",
     description: "Troque seus pontos por 5 fichas de RU - Almoço.",
+    cost: 1300,
     points: "1300 pts",
+    pickupLocation: "Restaurante Universitario - guiche de atendimento",
+    deadline: "ate 5 dias uteis apos a validacao",
     image:
       "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=900&q=80",
   },
   {
     title: "Garrafa Térmica",
     description: "Aço inox com acabamento em bambu certificado.",
+    cost: 200,
     points: "200 pts",
+    pickupLocation: "Loja Sustenta - bloco de convivencia",
+    deadline: "ate 3 dias uteis apos a validacao",
     image:
       "https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=900&q=80",
   },
@@ -59,8 +71,125 @@ const actionHistory = [
 ] as const;
 
 type HistoryIconName = (typeof actionHistory)[number]["icon"];
+type Reward = (typeof rewards)[number];
+type RewardStep = "confirm" | "received";
+type RedemptionHistoryItem = {
+  icon: "ticket";
+  title: string;
+  details: string;
+  points: string;
+  tone: "negative";
+};
+
+const INITIAL_POINTS = 750;
+const POINTS_STORAGE_KEY = "ruralize.pointsBalance";
 
 export default function PointsPage() {
+  const { user } = useAuth();
+  const [pointsBalance, setPointsBalance] = useState(readStoredPointsBalance);
+  const [selectedReward, setSelectedReward] = useState<Reward | null>(null);
+  const [rewardStep, setRewardStep] = useState<RewardStep>("confirm");
+  const [redemptionHistory, setRedemptionHistory] = useState<
+    RedemptionHistoryItem[]
+  >([]);
+  const [redeeming, setRedeeming] = useState(false);
+  const [redemptionError, setRedemptionError] = useState<string | null>(null);
+  const [emailSent, setEmailSent] = useState<boolean | null>(null);
+
+  function openRewardModal(reward: Reward) {
+    setSelectedReward(reward);
+    setRewardStep("confirm");
+    setRedemptionError(null);
+    setEmailSent(null);
+  }
+
+  function closeRewardModal() {
+    setSelectedReward(null);
+    setRewardStep("confirm");
+    setRedemptionError(null);
+    setEmailSent(null);
+  }
+
+  async function handleConfirmRewardRedemption() {
+    if (!selectedReward) {
+      return;
+    }
+
+    if (pointsBalance < selectedReward.cost) {
+      setRedemptionError("Voce ainda nao tem pontos suficientes para este resgate.");
+      return;
+    }
+
+    const emailToUse = user?.email || "";
+    if (!emailToUse.trim()) {
+      setRedemptionError(
+        "Nao encontramos um e-mail cadastrado na sua conta para enviar as instrucoes. Verifique sua sessao e tente novamente.",
+      );
+      return;
+    }
+
+    setRedeeming(true);
+    setRedemptionError(null);
+
+    const instructions = getRewardInstructions(selectedReward);
+
+    try {
+      const response = await fetch("/api/rewards/redeem", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userEmail: emailToUse,
+          userName: user?.name || "Usuário",
+          rewardTitle: selectedReward.title,
+          rewardPoints: selectedReward.cost,
+          pickupLocation: selectedReward.pickupLocation,
+          deadline: selectedReward.deadline,
+          instructions,
+          userId: user?.id,
+        }),
+      });
+
+      const data = (await response.json().catch(() => null)) as {
+        emailSent?: boolean;
+        message?: string;
+      } | null;
+
+      if (!response.ok) {
+        throw new Error(
+          data?.message ?? "Nao foi possivel registrar o resgate.",
+        );
+      }
+
+      const nextBalance = pointsBalance - selectedReward.cost;
+      setPointsBalance(nextBalance);
+      window.localStorage.setItem(POINTS_STORAGE_KEY, String(nextBalance));
+      setRedemptionHistory((currentHistory) => [
+        {
+          icon: "ticket",
+          title: `Resgate: ${selectedReward.title}`,
+          details: `Hoje - ${selectedReward.pickupLocation}`,
+          points: `-${selectedReward.cost} pts`,
+          tone: "negative",
+        },
+        ...currentHistory,
+      ]);
+      setEmailSent(Boolean(data?.emailSent));
+      setRewardStep("received");
+    } catch (error) {
+      setRedemptionError(
+        error instanceof Error
+          ? error.message
+          : "Nao foi possivel concluir o resgate.",
+      );
+    } finally {
+      setRedeeming(false);
+    }
+  }
+
+  const displayedHistory = [...redemptionHistory, ...actionHistory];
+
   return (
     <RequireAuth>
       <main className="min-h-screen bg-[#f8f8f3] text-[#1f281f]">
@@ -73,7 +202,7 @@ export default function PointsPage() {
 
               <div className="relative z-10 flex h-28 w-28 shrink-0 flex-col items-center justify-center rounded-full bg-white text-center shadow-[0_12px_30px_rgba(33,55,30,0.08)]">
                 <strong className="text-[31px] font-black tracking-[-0.04em] text-[#287630]">
-                  750
+                  {pointsBalance}
                 </strong>
                 <span className="mt-1 text-[9px] font-black uppercase tracking-[0.12em] text-[#6b7568]">
                   Pontos totais
@@ -156,9 +285,13 @@ export default function PointsPage() {
                     </p>
                     <button
                       type="button"
-                      className="mt-5 h-10 w-full rounded-full bg-[#9ff0a1] text-[11px] font-black text-[#287630] transition hover:bg-[#8ee892]"
+                      onClick={() => openRewardModal(reward)}
+                      disabled={pointsBalance < reward.cost}
+                      className="mt-5 h-10 w-full rounded-full bg-[#9ff0a1] text-[11px] font-black text-[#287630] transition hover:bg-[#8ee892] disabled:cursor-not-allowed disabled:bg-[#e2e6dc] disabled:text-[#8a9186]"
                     >
-                      Resgatar agora
+                      {pointsBalance >= reward.cost
+                        ? "Resgatar Recompensas"
+                        : "Pontos insuficientes"}
                     </button>
                   </div>
                 </article>
@@ -172,12 +305,12 @@ export default function PointsPage() {
             </h2>
 
             <div className="mt-6 overflow-hidden rounded-[22px] bg-white shadow-[0_1px_0_rgba(33,55,30,0.05)]">
-              {actionHistory.map((action, index) => {
+              {displayedHistory.map((action, index) => {
                 const positive = action.tone === "positive";
 
                 return (
                   <div
-                    key={action.title}
+                    key={`${action.title}-${index}`}
                     className={`flex items-center justify-between gap-4 px-5 py-5 ${
                       index === 0 ? "" : "border-t border-[#edf0e8]"
                     }`}
@@ -237,9 +370,179 @@ export default function PointsPage() {
             <p>© 2024 Ruralize - UFRPE Living Canvas</p>
           </div>
         </footer>
+
+        {selectedReward ? (
+          <RewardRedemptionModal
+            reward={selectedReward}
+            step={rewardStep}
+            pointsBalance={pointsBalance}
+            isRedeeming={redeeming}
+            error={redemptionError}
+            emailSent={emailSent}
+            userEmail={user?.email ?? ""}
+            instructions={getRewardInstructions(selectedReward)}
+            onConfirm={handleConfirmRewardRedemption}
+            onClose={closeRewardModal}
+          />
+        ) : null}
       </main>
     </RequireAuth>
   );
+}
+
+function RewardRedemptionModal({
+  reward,
+  step,
+  pointsBalance,
+  isRedeeming,
+  error,
+  emailSent,
+  userEmail,
+  instructions,
+  onConfirm,
+  onClose,
+}: {
+  reward: Reward;
+  step: RewardStep;
+  pointsBalance: number;
+  isRedeeming: boolean;
+  error: string | null;
+  emailSent: boolean | null;
+  userEmail: string;
+  instructions: string[];
+  onConfirm: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#d7ddd3]/70 px-4 py-8 backdrop-blur-[5px]">
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="reward-redemption-title"
+        className="w-full max-w-[430px] rounded-[24px] bg-white px-7 pb-7 pt-8 shadow-[0_24px_50px_rgba(33,55,30,0.22)]"
+      >
+        <div className="flex items-start justify-between gap-5">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#287630]">
+              {reward.points}
+            </p>
+            <h2
+              id="reward-redemption-title"
+              className="mt-2 text-[22px] font-black tracking-[-0.04em] text-[#1e261e]"
+            >
+              {step === "confirm"
+                ? "Confirmar resgate"
+                : "Solicitacao recebida"}
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f1f3ed] text-[18px] font-black text-[#596255] transition hover:bg-[#e5e9df]"
+            aria-label="Fechar"
+          >
+            x
+          </button>
+        </div>
+
+        {step === "confirm" ? (
+          <>
+            <p className="mt-5 text-[13px] font-semibold leading-6 text-[#566052]">
+              Voce esta prestes a resgatar <strong>{reward.title}</strong>.
+              Confirme para iniciar o processo e receber as instrucoes por
+              e-mail.
+            </p>
+            <div className="mt-5 rounded-[18px] bg-[#f7f9f4] px-5 py-4 text-[12px] font-semibold leading-5 text-[#536050]">
+              <p>Saldo atual: {pointsBalance} pts</p>
+              <p>Custo do resgate: {reward.cost} pts</p>
+              <p>Saldo apos o resgate: {pointsBalance - reward.cost} pts</p>
+            </div>
+            {error ? (
+              <p className="mt-4 rounded-[14px] bg-[#fff3f3] px-4 py-3 text-[12px] font-bold leading-5 text-[#b92828]">
+                {error}
+              </p>
+            ) : null}
+            <div className="mt-7 grid gap-3 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="h-11 rounded-full bg-[#eef0ea] px-5 text-[11px] font-black text-[#4f5b4e]"
+              >
+                Voltar
+              </button>
+              <button
+                type="button"
+                onClick={onConfirm}
+                disabled={isRedeeming}
+                className="h-11 rounded-full bg-[#287630] px-5 text-[11px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)] disabled:opacity-60"
+              >
+                {isRedeeming ? "Registrando..." : "Confirmar resgate"}
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="mt-5 text-[13px] font-semibold leading-6 text-[#566052]">
+              Sua solicitacao foi recebida. Um e-mail sera enviado para{" "}
+              <strong>{userEmail}</strong> com todas as instrucoes para retirada
+              da recompensa.
+            </p>
+            {emailSent === false ? (
+              <p className="mt-4 rounded-[14px] bg-[#fff8df] px-4 py-3 text-[12px] font-bold leading-5 text-[#7a5a00]">
+                O resgate foi registrado. O envio automatico de e-mail depende
+                da configuracao do servico de envio no servidor.
+              </p>
+            ) : null}
+            <ol className="mt-6 space-y-3">
+              {instructions.map((instruction, index) => (
+                <li
+                  key={instruction}
+                  className="grid grid-cols-[32px_1fr] gap-3 rounded-[16px] bg-[#f7f9f4] px-4 py-3 text-[12px] font-semibold leading-5 text-[#536050]"
+                >
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#dff6df] text-[11px] font-black text-[#287630]">
+                    {index + 1}
+                  </span>
+                  <span>{instruction}</span>
+                </li>
+              ))}
+            </ol>
+            <button
+              type="button"
+              onClick={onClose}
+              className="mt-7 h-11 w-full rounded-full bg-[#287630] px-5 text-[11px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)]"
+            >
+              Entendi
+            </button>
+          </>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function getRewardInstructions(reward: Reward) {
+  return [
+    "Aguarde a validacao da equipe responsavel pelo programa de recompensas.",
+    `Compareca ao local de retirada: ${reward.pickupLocation}.`,
+    `Retire a recompensa no prazo informado: ${reward.deadline}.`,
+    "Leve documento de identificacao e apresente o e-mail de confirmacao recebido.",
+    "Acompanhe o status pelo historico de acoes da pagina de pontos.",
+  ];
+}
+
+function readStoredPointsBalance() {
+  if (typeof window === "undefined") {
+    return INITIAL_POINTS;
+  }
+
+  const storedPoints = window.localStorage.getItem(POINTS_STORAGE_KEY);
+
+  if (!storedPoints) {
+    return INITIAL_POINTS;
+  }
+
+  const parsedPoints = Number(storedPoints);
+  return Number.isFinite(parsedPoints) ? parsedPoints : INITIAL_POINTS;
 }
 
 function ArrowIcon({ className = "h-4 w-4" }: { className?: string }) {

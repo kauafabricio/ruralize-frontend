@@ -28,7 +28,13 @@ type FeedFilterId = (typeof feedFilters)[number]["id"];
 
 type FeedPost = PostResponse;
 
-function FeedPostList({ posts }: { posts: FeedPost[] }) {
+function FeedPostList({
+  posts,
+  onPostUpdated,
+}: {
+  posts: FeedPost[];
+  onPostUpdated: () => void;
+}) {
   if (posts.length === 0) {
     return (
       <div className="rounded-[28px] bg-white px-6 py-8 text-center text-sm text-[#4f5b4e] shadow-[0_1px_0_rgba(33,55,30,0.04)]">
@@ -40,7 +46,7 @@ function FeedPostList({ posts }: { posts: FeedPost[] }) {
   return (
     <div className="space-y-6">
       {posts.map((post) => (
-        <PostCard key={post.id} post={post} />
+        <PostCard key={post.id} post={post} onPostUpdated={onPostUpdated} />
       ))}
     </div>
   );
@@ -196,7 +202,7 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
               {error}
             </div>
           ) : (
-            <FeedPostList posts={filteredPosts} />
+            <FeedPostList posts={filteredPosts} onPostUpdated={loadPosts} />
           )}
         </div>
       ))}

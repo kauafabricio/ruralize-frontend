@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { createPost, type PostCreate } from "@/app/services/api/posts.api";
 import { useAuth } from "@/app/components/auth/AuthProvider";
 import { Toast } from "@/app/components/Toast";
@@ -17,7 +17,9 @@ export function PostComposer({
   const textInputId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [text, setText] = useState("");
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [sustainableAction, setSustainableAction] = useState("general");
+  const [location, setLocation] = useState("");
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{
     message: string;
@@ -28,15 +30,21 @@ export function PostComposer({
     const file = event.target.files?.[0];
 
     if (!file) {
-      setPreviewUrl(null);
+      setSelectedImage(null);
       return;
     }
 
-    setPreviewUrl(URL.createObjectURL(file));
+    const reader = new FileReader();
+    reader.onload = () => {
+      setSelectedImage(
+        typeof reader.result === "string" ? reader.result : null,
+      );
+    };
+    reader.readAsDataURL(file);
   }
 
   function clearImage() {
-    setPreviewUrl(null);
+    setSelectedImage(null);
 
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -44,9 +52,9 @@ export function PostComposer({
   }
 
   async function handlePublish() {
-    if (!text.trim() || !user?.id) {
+    if (!text.trim()) {
       setToast({
-        message: "Digite algo e faça login para publicar",
+        message: "Digite algo para publicar",
         type: "error",
       });
       return;
@@ -56,39 +64,34 @@ export function PostComposer({
 
     try {
       const payload: PostCreate = {
-        content: text,
-        sustainable_action: "general",
-        image_url: previewUrl || undefined,
+        content: text.trim(),
+        sustainable_action: sustainableAction,
+        location: location.trim() || undefined,
+        image_url: selectedImage || undefined,
       };
 
-      await createPost(user.id, payload);
+      await createPost(user!.id, payload);
 
       setToast({
-        message: "Publicação criada com sucesso!",
+        message: "Publicacao criada com sucesso!",
         type: "success",
       });
 
       setText("");
+      setSustainableAction("general");
+      setLocation("");
       clearImage();
       onPostCreated?.();
     } catch (err) {
+      console.error("Erro ao criar postagem:", err);
       setToast({
-        message:
-          err instanceof Error ? err.message : "Erro ao publicar",
+        message: err instanceof Error ? err.message : "Erro ao publicar",
         type: "error",
       });
     } finally {
       setLoading(false);
     }
   }
-
-  useEffect(() => {
-    return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
 
   return (
     <section className="rounded-[28px] bg-white px-6 py-6 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
@@ -109,25 +112,51 @@ export function PostComposer({
 
         <div className="min-w-0 flex-1">
           <label htmlFor={textInputId} className="sr-only">
-            Criar publicação
+            Criar publicacao
           </label>
           <textarea
             id={textInputId}
             value={text}
             onChange={(event) => setText(event.target.value)}
-            placeholder="Compartilhe um avanço sustentável ou projeto acadêmico..."
+            placeholder="Compartilhe um avanco sustentavel ou projeto academico..."
             rows={1}
             className="min-h-11 w-full resize-none rounded-full bg-[#f4f5f0] px-6 py-[14px] text-[13px] font-medium leading-4 text-[#30372f] outline-none placeholder:text-[#a4aaa0]"
           />
 
-          {previewUrl && (
+          <div className="mt-4 grid gap-3 sm:grid-cols-[160px_1fr]">
+            <label className="block text-[11px] font-black uppercase tracking-[0.08em] text-[#687266]">
+              Categoria
+              <select
+                value={sustainableAction}
+                onChange={(event) => setSustainableAction(event.target.value)}
+                className="mt-2 h-10 w-full rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none focus:border-[#9ac89c]"
+              >
+                <option value="general">Geral</option>
+                <option value="events">Eventos</option>
+                <option value="warnings">Avisos</option>
+                <option value="projects">Projetos</option>
+              </select>
+            </label>
+            <label className="block text-[11px] font-black uppercase tracking-[0.08em] text-[#687266]">
+              Local
+              <input
+                type="text"
+                value={location}
+                onChange={(event) => setLocation(event.target.value)}
+                placeholder="Opcional"
+                className="mt-2 h-10 w-full rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none placeholder:text-[#a4aaa0] focus:border-[#9ac89c]"
+              />
+            </label>
+          </div>
+
+          {selectedImage && (
             <div className="mt-4 overflow-hidden rounded-[18px] border border-[#e7e9e1] bg-[#f8f8f3]">
               <div className="relative h-[210px] w-full">
-                {/* Object URLs from local file previews cannot be optimized by next/image. */}
+                {/* User-selected data URLs cannot be optimized by next/image. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={previewUrl}
-                  alt="Imagem selecionada para publicação"
+                  src={selectedImage}
+                  alt="Imagem selecionada para publicacao"
                   className="h-full w-full object-cover"
                 />
                 <button
@@ -162,7 +191,7 @@ export function PostComposer({
               type="button"
               onClick={handlePublish}
               disabled={loading || !text.trim()}
-              className="h-9 min-w-[132px] rounded-full bg-[#287630] px-7 text-[11px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)] disabled:opacity-50 transition-opacity"
+              className="h-9 min-w-[132px] rounded-full bg-[#287630] px-7 text-[11px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)] transition-opacity disabled:opacity-50"
             >
               {loading ? "Publicando..." : "Publicar"}
             </button>

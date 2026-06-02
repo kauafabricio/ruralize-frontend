@@ -5,6 +5,7 @@ import { RequireAuth } from "@/app/components/auth/RequireAuth";
 import { FeedHeader } from "@/app/components/feed/FeedHeader";
 import { FeedTabs } from "@/app/components/feed/FeedTabs";
 import { NewScheduleCard, SuggestionsCard } from "@/app/components/feed/SideCards";
+import { AuthDebugInfo } from "@/app/components/auth/AuthDebugInfo";
 
 export default function FeedPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,6 +25,8 @@ export default function FeedPage() {
             <NewScheduleCard />
           </aside>
         </div>
+
+        <AuthDebugInfo />
       </main>
     </RequireAuth>
   );

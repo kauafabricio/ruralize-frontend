@@ -52,6 +52,15 @@ export function PostComposer({
   }
 
   async function handlePublish() {
+    console.log("[PostComposer] Iniciando publicacao...");
+    console.log("[PostComposer] Estado atual:", {
+      isReady,
+      isAuthenticated,
+      userId,
+      textLength: text.length,
+      authError
+    });
+
     if (!text.trim()) {
       setToast({
         message: "Digite algo para publicar",
@@ -61,6 +70,7 @@ export function PostComposer({
     }
 
     if (!isReady) {
+      console.warn("[PostComposer] Sistema ainda está carregando");
       setToast({
         message: "Carregando dados de autenticação...",
         type: "error",
@@ -69,11 +79,15 @@ export function PostComposer({
     }
 
     if (!isAuthenticated || !userId) {
+      console.error("[PostComposer] Usuário não autenticado", {
+        isAuthenticated,
+        userId,
+        authError,
+      });
       setToast({
         message: authError || "Você precisa estar autenticado para publicar",
         type: "error",
       });
-      console.error("[PostComposer] Auth check failed:", { isAuthenticated, userId, authError });
       return;
     }
 
@@ -87,8 +101,15 @@ export function PostComposer({
         image_url: selectedImage || undefined,
       };
 
-      console.log("[PostComposer] Publicando post com userId:", userId);
-      await createPost(userId, payload);
+      console.log("[PostComposer] Enviando payload:", {
+        userId,
+        contentLength: payload.content.length,
+        hasImage: !!payload.image_url
+      });
+
+      const response = await createPost(userId, payload);
+
+      console.log("[PostComposer] Resposta da API:", response);
 
       setToast({
         message: "Publicacao criada com sucesso!",
@@ -101,7 +122,11 @@ export function PostComposer({
       clearImage();
       onPostCreated?.();
     } catch (err) {
-      console.error("[PostComposer] Erro ao criar postagem:", err);
+      console.error("[PostComposer] Erro ao criar postagem:", {
+        error: err,
+        errorMessage: err instanceof Error ? err.message : String(err),
+        errorStack: err instanceof Error ? err.stack : undefined,
+      });
       setToast({
         message: err instanceof Error ? err.message : "Erro ao publicar",
         type: "error",

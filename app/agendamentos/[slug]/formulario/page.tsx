@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 
-import { EventRegistrationForm } from "../../../components/appointments/EventRegistrationForm";
-import { RequireAuth } from "../../../components/auth/RequireAuth";
-import { FeedHeader } from "../../../components/feed/FeedHeader";
+import { EventRegistrationForm } from "@/app/components/appointments/EventRegistrationForm";
+import { RequireAuth } from "@/app/components/auth/RequireAuth";
+import { FeedHeader } from "@/app/components/feed/FeedHeader";
 import { events, findAppointment } from "../../../lib/appointments";
 
 export function generateStaticParams() {

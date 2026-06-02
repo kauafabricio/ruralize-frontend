@@ -1,4 +1,4 @@
-import type { AuthUser, ProfileUpdatePayload } from "../../lib/auth";
+import type { AuthUser, ProfileUpdatePayload } from "@/app/lib/auth";
 
 type ProfileRequestBody = {
   profile?: Partial<ProfileUpdatePayload>;

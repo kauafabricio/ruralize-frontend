@@ -2,8 +2,8 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { createPost, type PostCreate } from "@/app/services/api/posts.api";
-import { useAuth } from "../auth/AuthProvider";
-import { Toast } from "../Toast";
+import { useAuth } from "@/app/components/auth/AuthProvider";
+import { Toast } from "@/app/components/Toast";
 
 import { ImageIcon } from "./FeedIcons";
 

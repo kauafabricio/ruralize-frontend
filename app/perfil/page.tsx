@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 
-import { RequireAuth } from "../components/auth/RequireAuth";
-import { useAuth } from "../components/auth/AuthProvider";
-import { FeedHeader } from "../components/feed/FeedHeader";
+import { RequireAuth } from "@/app/components/auth/RequireAuth";
+import { useAuth } from "@/app/components/auth/AuthProvider";
+import { FeedHeader } from "@/app/components/feed/FeedHeader";
 import {
   HeartIcon,
   MessageIcon,
   MoreIcon,
-} from "../components/feed/FeedIcons";
+} from "@/app/components/feed/FeedIcons";
 
 type EditableProfile = {
   name: string;

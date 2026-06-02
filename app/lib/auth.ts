@@ -91,7 +91,9 @@ export function isSessionExpired(session: AuthSession) {
   return Boolean(session.expiresAt && Date.now() >= session.expiresAt);
 }
 
-export function getAuthorizationHeader(session: AuthSession | null) {
+export function getAuthorizationHeader(
+  session: AuthSession | null,
+): Record<string, string> {
   return session?.token
     ? { Authorization: `Bearer ${session.token}` }
     : {};
@@ -149,7 +151,7 @@ function readString(record: JsonRecord, keys: string[]) {
     }
   }
 
-  return null;
+  return undefined;
 }
 
 function createSessionFromLoginResponse(

@@ -2,13 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import type { Appointment } from "../../lib/appointments";
+import type { Appointment } from "@/app/lib/appointments";
 import {
   EventRegistrationData,
   readRegistrationForm,
   saveRegistrationForm,
-} from "../../lib/eventRegistration";
-import { useAuth } from "../auth/AuthProvider";
+} from "@/app/lib/eventRegistration";
+import { useAuth } from "@/app/components/auth/AuthProvider";
 import { RegistrationConfirmationModal } from "./RegistrationConfirmationModal";
 
 type EventRegistrationFormProps = {

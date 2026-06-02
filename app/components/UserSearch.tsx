@@ -9,7 +9,7 @@ import {
   getAllProfiles,
   type UserProfileResponse,
 } from "@/app/services/api/profile.api";
-import { Toast } from "../Toast";
+import { Toast } from "@/app/components/Toast";
 
 type SearchType = "name" | "course" | "role" | "tags" | "all";
 

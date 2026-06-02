@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { RequireAuth } from "../components/auth/RequireAuth";
-import { FeedHeader } from "../components/feed/FeedHeader";
-import { FeedTabs } from "../components/feed/FeedTabs";
-import { NewScheduleCard, SuggestionsCard } from "../components/feed/SideCards";
+import { RequireAuth } from "@/app/components/auth/RequireAuth";
+import { FeedHeader } from "@/app/components/feed/FeedHeader";
+import { FeedTabs } from "@/app/components/feed/FeedTabs";
+import { NewScheduleCard, SuggestionsCard } from "@/app/components/feed/SideCards";
 
 export default function FeedPage() {
   const [searchTerm, setSearchTerm] = useState("");

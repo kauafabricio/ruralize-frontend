@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { FeedHeader } from "../../components/feed/FeedHeader";
-import { suggestions } from "../../lib/suggestions";
-import { HeartIcon, MessageIcon, MoreIcon } from "../../components/feed/FeedIcons";
+import { FeedHeader } from "@/app/components/feed/FeedHeader";
+import { suggestions } from "@/app/lib/suggestions";
+import { HeartIcon, MessageIcon, MoreIcon } from "@/app/components/feed/FeedIcons";
 
 export default function UserProfilePage({
   params,

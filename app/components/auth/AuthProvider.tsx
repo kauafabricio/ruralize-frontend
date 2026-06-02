@@ -20,7 +20,7 @@ import {
   loginRequest,
   storeSession,
   updateProfileRequest,
-} from "../../lib/auth";
+} from "@/app/lib/auth";
 
 type AuthStatus = "loading" | "authenticated" | "unauthenticated";
 

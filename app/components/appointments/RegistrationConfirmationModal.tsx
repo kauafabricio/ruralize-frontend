@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-import { storeRegisteredEvent } from "../../lib/eventRegistration";
+import { storeRegisteredEvent } from "@/app/lib/eventRegistration";
 
 type RegistrationConfirmationModalProps = {
   eventHref: string;

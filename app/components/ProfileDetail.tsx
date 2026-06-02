@@ -8,9 +8,9 @@ import {
   type ProfileResponse,
   type ProfileUpdate,
 } from "@/app/services/api/profile.api";
-import { RequireAuth } from "../auth/RequireAuth";
-import { useAuth } from "../auth/AuthProvider";
-import { Toast } from "../Toast";
+import { RequireAuth } from "@/app/components/auth/RequireAuth";
+import { useAuth } from "@/app/components/auth/AuthProvider";
+import { Toast } from "@/app/components/Toast";
 
 export function ProfileDetail() {
   const { user } = useAuth();

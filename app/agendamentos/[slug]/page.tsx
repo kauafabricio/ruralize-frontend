@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 
-import { RegistrationActions } from "../../components/appointments/RegistrationActions";
-import { RequireAuth } from "../../components/auth/RequireAuth";
-import { FeedHeader } from "../../components/feed/FeedHeader";
-import { events, findAppointment } from "../../lib/appointments";
+import { RegistrationActions } from "@/app/components/appointments/RegistrationActions";
+import { RequireAuth } from "@/app/components/auth/RequireAuth";
+import { FeedHeader } from "@/app/components/feed/FeedHeader";
+import { events, findAppointment } from "@/app/lib/appointments";
 
 export function generateStaticParams() {
   return events.map((appointment) => ({

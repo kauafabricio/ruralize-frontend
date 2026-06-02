@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { PlusIcon } from "./FeedIcons";
-import { suggestions } from "../../lib/suggestions";
+import { suggestions } from "@/app/lib/suggestions";
 
 export function SuggestionsCard() {
   const [modalOpen, setModalOpen] = useState(false);

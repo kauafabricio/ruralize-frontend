@@ -9,8 +9,8 @@ import {
   type CommentCreate,
   type PostResponse,
 } from "@/app/services/api/posts.api";
-import { useAuth } from "../auth/AuthProvider";
-import { Toast } from "../Toast";
+import { useAuth } from "@/app/components/auth/AuthProvider";
+import { Toast } from "@/app/components/Toast";
 
 interface PostCardProps {
   post: PostResponse;

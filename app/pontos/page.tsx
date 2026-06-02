@@ -1,7 +1,7 @@
 "use client";
 
-import { RequireAuth } from "../components/auth/RequireAuth";
-import { FeedHeader } from "../components/feed/FeedHeader";
+import { RequireAuth } from "@/app/components/auth/RequireAuth";
+import { FeedHeader } from "@/app/components/feed/FeedHeader";
 
 const rewards = [
   {

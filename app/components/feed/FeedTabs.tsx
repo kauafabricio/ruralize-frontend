@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { getGeneralFeed, getFriendsFeed } from "@/app/services/api/feed.api";
 import type { PostResponse } from "@/app/services/api/posts.api";
-import { useAuth } from "../auth/AuthProvider";
+import { useAuth } from "@/app/components/auth/AuthProvider";
 
 import { PostComposer } from "./PostComposer";
 import { FeedSkeletonList } from "./FeedSkeleton";

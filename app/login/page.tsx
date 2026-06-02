@@ -4,12 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { AuthCard } from "../components/AuthCard";
-import { AuthInput } from "../components/AuthInput";
-import { EyeIcon, EyeOffIcon, LockIcon } from "../components/AuthIcons";
-import { AuthShell } from "../components/AuthShell";
-import { Toast } from "../components/Toast";
-import { useAuth } from "../components/auth/AuthProvider";
+import { AuthCard } from "@/app/components/AuthCard";
+import { AuthInput } from "@/app/components/AuthInput";
+import { EyeIcon, EyeOffIcon, LockIcon } from "@/app/components/AuthIcons";
+import { AuthShell } from "@/app/components/AuthShell";
+import { Toast } from "@/app/components/Toast";
+import { useAuth } from "@/app/components/auth/AuthProvider";
 
 export default function LoginPage() {
   const router = useRouter();

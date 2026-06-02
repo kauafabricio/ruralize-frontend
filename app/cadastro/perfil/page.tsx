@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { AuthCard } from "../../components/AuthCard";
-import { GraduationIcon, UserIcon } from "../../components/AuthIcons";
-import { AuthShell } from "../../components/AuthShell";
+import { AuthCard } from "@/app/components/AuthCard";
+import { GraduationIcon, UserIcon } from "@/app/components/AuthIcons";
+import { AuthShell } from "@/app/components/AuthShell";
 
 const profileOptions = [
   {

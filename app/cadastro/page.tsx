@@ -3,19 +3,19 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-import { AuthCard } from "../components/AuthCard";
+import { AuthCard } from "@/app/components/AuthCard";
 import {
   EyeIcon,
   EyeOffIcon,
   LockIcon,
   MailIcon,
   UserIcon,
-} from "../components/AuthIcons";
-import { AuthInput } from "../components/AuthInput";
-import { AuthShell } from "../components/AuthShell";
-import { CourseSelect } from "../components/CourseSelect";
-import { MatriculaInput } from "../components/MatriculaInput";
-import { Toast } from "../components/Toast";
+} from "@/app/components/AuthIcons";
+import { AuthInput } from "@/app/components/AuthInput";
+import { AuthShell } from "@/app/components/AuthShell";
+import { CourseSelect } from "@/app/components/CourseSelect";
+import { MatriculaInput } from "@/app/components/MatriculaInput";
+import { Toast } from "@/app/components/Toast";
 import { registerUser, type UserCreate } from "../services/api/auth.api";
 
 export default function CadastroPage() {

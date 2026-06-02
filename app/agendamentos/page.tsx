@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { RequireAuth } from "../components/auth/RequireAuth";
-import { FeedHeader } from "../components/feed/FeedHeader";
-import { events } from "../lib/appointments";
+import { RequireAuth } from "@/app/components/auth/RequireAuth";
+import { FeedHeader } from "@/app/components/feed/FeedHeader";
+import { events } from "@/app/lib/appointments";
 
 const REGISTERED_EVENTS_STORAGE_KEY = "ruralize.registeredEvents";
 

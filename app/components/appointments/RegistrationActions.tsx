@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import { hasRegistrationForm } from "../../lib/eventRegistration";
+import { hasRegistrationForm } from "@/app/lib/eventRegistration";
 import { RegistrationConfirmationModal } from "./RegistrationConfirmationModal";
 import { RegistrationMissingFormModal } from "./RegistrationMissingFormModal";
 

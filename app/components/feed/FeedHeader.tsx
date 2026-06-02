@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { useAuth } from "../auth/AuthProvider";
+import { useAuth } from "@/app/components/auth/AuthProvider";
 import { BellIcon, SearchIcon } from "./FeedIcons";
 
 const PROFILE_AVATAR_STORAGE_KEY = "ruralize.profile.avatarUrl";

@@ -2,7 +2,7 @@
 
 import { useId, useRef, useState } from "react";
 import { createPost, type PostCreate } from "@/app/services/api/posts.api";
-import { useAuth } from "@/app/components/auth/AuthProvider";
+import { useAuthenticatedUser } from "@/app/components/auth/useAuthenticatedUser";
 import { Toast } from "@/app/components/Toast";
 
 import { ImageIcon } from "./FeedIcons";
@@ -12,7 +12,7 @@ export function PostComposer({
 }: {
   onPostCreated?: () => void;
 }) {
-  const { user } = useAuth();
+  const { userId, isAuthenticated, isReady, error: authError } = useAuthenticatedUser();
   const fileInputId = useId();
   const textInputId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -60,6 +60,23 @@ export function PostComposer({
       return;
     }
 
+    if (!isReady) {
+      setToast({
+        message: "Carregando dados de autenticação...",
+        type: "error",
+      });
+      return;
+    }
+
+    if (!isAuthenticated || !userId) {
+      setToast({
+        message: authError || "Você precisa estar autenticado para publicar",
+        type: "error",
+      });
+      console.error("[PostComposer] Auth check failed:", { isAuthenticated, userId, authError });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -70,7 +87,8 @@ export function PostComposer({
         image_url: selectedImage || undefined,
       };
 
-      await createPost(user!.id, payload);
+      console.log("[PostComposer] Publicando post com userId:", userId);
+      await createPost(userId, payload);
 
       setToast({
         message: "Publicacao criada com sucesso!",
@@ -83,7 +101,7 @@ export function PostComposer({
       clearImage();
       onPostCreated?.();
     } catch (err) {
-      console.error("Erro ao criar postagem:", err);
+      console.error("[PostComposer] Erro ao criar postagem:", err);
       setToast({
         message: err instanceof Error ? err.message : "Erro ao publicar",
         type: "error",
@@ -92,6 +110,8 @@ export function PostComposer({
       setLoading(false);
     }
   }
+
+  const isDisabled = loading || !text.trim() || !isReady || !isAuthenticated;
 
   return (
     <section className="rounded-[28px] bg-white px-6 py-6 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
@@ -120,7 +140,8 @@ export function PostComposer({
             onChange={(event) => setText(event.target.value)}
             placeholder="Compartilhe um avanco sustentavel ou projeto academico..."
             rows={1}
-            className="min-h-11 w-full resize-none rounded-full bg-[#f4f5f0] px-6 py-[14px] text-[13px] font-medium leading-4 text-[#30372f] outline-none placeholder:text-[#a4aaa0]"
+            disabled={!isReady || !isAuthenticated}
+            className="min-h-11 w-full resize-none rounded-full bg-[#f4f5f0] px-6 py-[14px] text-[13px] font-medium leading-4 text-[#30372f] outline-none placeholder:text-[#a4aaa0] disabled:opacity-50"
           />
 
           <div className="mt-4 grid gap-3 sm:grid-cols-[160px_1fr]">
@@ -129,7 +150,8 @@ export function PostComposer({
               <select
                 value={sustainableAction}
                 onChange={(event) => setSustainableAction(event.target.value)}
-                className="mt-2 h-10 w-full rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none focus:border-[#9ac89c]"
+                disabled={!isReady || !isAuthenticated}
+                className="mt-2 h-10 w-full rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none focus:border-[#9ac89c] disabled:opacity-50"
               >
                 <option value="general">Geral</option>
                 <option value="events">Eventos</option>
@@ -144,7 +166,8 @@ export function PostComposer({
                 value={location}
                 onChange={(event) => setLocation(event.target.value)}
                 placeholder="Opcional"
-                className="mt-2 h-10 w-full rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none placeholder:text-[#a4aaa0] focus:border-[#9ac89c]"
+                disabled={!isReady || !isAuthenticated}
+                className="mt-2 h-10 w-full rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none placeholder:text-[#a4aaa0] focus:border-[#9ac89c] disabled:opacity-50"
               />
             </label>
           </div>
@@ -162,7 +185,8 @@ export function PostComposer({
                 <button
                   type="button"
                   onClick={clearImage}
-                  className="absolute right-3 top-3 rounded-full bg-white px-3 py-2 text-[11px] font-black text-[#287630] shadow-[0_8px_18px_rgba(33,55,30,0.16)]"
+                  disabled={!isReady || !isAuthenticated}
+                  className="absolute right-3 top-3 rounded-full bg-white px-3 py-2 text-[11px] font-black text-[#287630] shadow-[0_8px_18px_rgba(33,55,30,0.16)] disabled:opacity-50"
                 >
                   Remover
                 </button>
@@ -178,10 +202,15 @@ export function PostComposer({
               accept="image/*"
               className="sr-only"
               onChange={handleFileChange}
+              disabled={!isReady || !isAuthenticated}
             />
             <label
               htmlFor={fileInputId}
-              className="inline-flex cursor-pointer items-center gap-2 text-[12px] font-semibold text-[#26372a]"
+              className={`inline-flex items-center gap-2 text-[12px] font-semibold ${
+                isReady && isAuthenticated
+                  ? "cursor-pointer text-[#26372a]"
+                  : "cursor-not-allowed text-[#a4aaa0]"
+              }`}
             >
               <ImageIcon className="h-[17px] w-[17px] text-[#287630]" />
               Foto
@@ -190,7 +219,7 @@ export function PostComposer({
             <button
               type="button"
               onClick={handlePublish}
-              disabled={loading || !text.trim()}
+              disabled={isDisabled}
               className="h-9 min-w-[132px] rounded-full bg-[#287630] px-7 text-[11px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)] transition-opacity disabled:opacity-50"
             >
               {loading ? "Publicando..." : "Publicar"}

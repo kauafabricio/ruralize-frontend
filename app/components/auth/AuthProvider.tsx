@@ -41,6 +41,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [status, setStatus] = useState<AuthStatus>("loading");
+  const [initialized, setInitialized] = useState(false);
 
   const applySession = useCallback((nextSession: AuthSession | null) => {
     if (!nextSession || isSessionExpired(nextSession)) {
@@ -85,7 +86,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const initialSessionTimeout = window.setTimeout(refreshSession, 0);
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    // Inicializar sessão no cliente
+    const initialSession = getStoredSession();
+    applySession(initialSession);
+    setInitialized(true);
 
     function handleStorage(event: StorageEvent) {
       if (event.key === "ruralize.session") {
@@ -95,10 +103,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     window.addEventListener("storage", handleStorage);
     return () => {
-      window.clearTimeout(initialSessionTimeout);
       window.removeEventListener("storage", handleStorage);
     };
-  }, [refreshSession]);
+  }, [applySession, refreshSession]);
 
   useEffect(() => {
     if (!session?.expiresAt) {

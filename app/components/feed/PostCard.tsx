@@ -261,7 +261,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
             </div>
             <div>
               <p className="text-sm font-black text-[#1f6f2a]">
-                {post.user_id}
+                {post.user_name}
               </p>
               <p className="text-[12px] text-[#6c7b6d]">
                 {post.sustainable_action}

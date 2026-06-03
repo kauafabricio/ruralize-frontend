@@ -54,8 +54,12 @@ function ExploreContent() {
       setUsers(data);
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Erro ao carregar usuários";
+        err instanceof Error
+          ? err.message
+          : "Erro ao carregar usuários";
+
       setError(message);
+
       setToast({
         message,
         type: "error",
@@ -74,8 +78,12 @@ function ExploreContent() {
       setUsers(data);
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Erro ao buscar usuários";
+        err instanceof Error
+          ? err.message
+          : "Erro ao buscar usuários";
+
       setError(message);
+
       setToast({
         message,
         type: "error",
@@ -86,8 +94,8 @@ function ExploreContent() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f8f8f3] text-[#222a20]">
-      <FeedHeader searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+    <main className="min-h-screen bg-[#f4f6f1]">
+      <FeedHeader />
 
       {toast && (
         <Toast
@@ -103,9 +111,37 @@ function ExploreContent() {
             <h1 className="text-[30px] font-black leading-tight tracking-[-0.03em] text-[#1e261e]">
               Explorar Usuários
             </h1>
+
             <p className="mt-2 text-[13px] font-medium text-[#4f594c]">
-              Descubra outros membros da comunidade Ruralize e conecte-se com pessoas que compartilham seus interesses.
+              Descubra outros membros da comunidade Ruralize e conecte-se com
+              pessoas que compartilham seus interesses.
             </p>
+
+            <div className="mt-6">
+              <div className="relative max-w-md">
+                <svg
+                  className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#7a8575]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+
+                <input
+                  type="text"
+                  placeholder="Pesquisar usuários..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="h-12 w-full rounded-full border border-[#d9e0d4] bg-white pl-12 pr-4 text-sm text-[#1e261e] shadow-sm outline-none transition focus:border-[#287630] focus:ring-2 focus:ring-[#287630]/20"
+                />
+              </div>
+            </div>
           </div>
 
           {error ? (

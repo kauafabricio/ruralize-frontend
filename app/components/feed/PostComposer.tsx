@@ -69,7 +69,8 @@ export function PostComposer({
       return;
     }
 
-    if (!isReady) {
+    // Verifica se está ainda carregando dados de auth
+    if (!isReady && !isAuthenticated) {
       console.warn("[PostComposer] Sistema ainda está carregando");
       setToast({
         message: "Carregando dados de autenticação...",
@@ -78,6 +79,7 @@ export function PostComposer({
       return;
     }
 
+    // Se não está autenticado, pede para fazer login
     if (!isAuthenticated || !userId) {
       console.error("[PostComposer] Usuário não autenticado", {
         isAuthenticated,
@@ -136,7 +138,9 @@ export function PostComposer({
     }
   }
 
-  const isDisabled = loading || !text.trim() || !isReady || !isAuthenticated;
+  // Botão só desabilita se: 1) carregando 2) sem texto 3) não autenticado
+  // NÃO desabilita enquanto isReady está False se já está autenticado
+  const isDisabled = loading || !text.trim() || (!isAuthenticated && isReady);
 
   return (
     <section className="rounded-[28px] bg-white px-6 py-6 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
@@ -165,7 +169,7 @@ export function PostComposer({
             onChange={(event) => setText(event.target.value)}
             placeholder="Compartilhe um avanco sustentavel ou projeto academico..."
             rows={1}
-            disabled={!isReady || !isAuthenticated}
+            disabled={!isAuthenticated && isReady}
             className="min-h-11 w-full resize-none rounded-full bg-[#f4f5f0] px-6 py-[14px] text-[13px] font-medium leading-4 text-[#30372f] outline-none placeholder:text-[#a4aaa0] disabled:opacity-50"
           />
 
@@ -175,7 +179,7 @@ export function PostComposer({
               <select
                 value={sustainableAction}
                 onChange={(event) => setSustainableAction(event.target.value)}
-                disabled={!isReady || !isAuthenticated}
+                disabled={!isAuthenticated && isReady}
                 className="mt-2 h-10 w-full rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none focus:border-[#9ac89c] disabled:opacity-50"
               >
                 <option value="general">Geral</option>
@@ -191,7 +195,7 @@ export function PostComposer({
                 value={location}
                 onChange={(event) => setLocation(event.target.value)}
                 placeholder="Opcional"
-                disabled={!isReady || !isAuthenticated}
+                disabled={!isAuthenticated && isReady}
                 className="mt-2 h-10 w-full rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none placeholder:text-[#a4aaa0] focus:border-[#9ac89c] disabled:opacity-50"
               />
             </label>
@@ -210,7 +214,7 @@ export function PostComposer({
                 <button
                   type="button"
                   onClick={clearImage}
-                  disabled={!isReady || !isAuthenticated}
+                  disabled={!isAuthenticated && isReady}
                   className="absolute right-3 top-3 rounded-full bg-white px-3 py-2 text-[11px] font-black text-[#287630] shadow-[0_8px_18px_rgba(33,55,30,0.16)] disabled:opacity-50"
                 >
                   Remover
@@ -227,12 +231,12 @@ export function PostComposer({
               accept="image/*"
               className="sr-only"
               onChange={handleFileChange}
-              disabled={!isReady || !isAuthenticated}
+              disabled={!isAuthenticated && isReady}
             />
             <label
               htmlFor={fileInputId}
               className={`inline-flex items-center gap-2 text-[12px] font-semibold ${
-                isReady && isAuthenticated
+                isAuthenticated || !isReady
                   ? "cursor-pointer text-[#26372a]"
                   : "cursor-not-allowed text-[#a4aaa0]"
               }`}

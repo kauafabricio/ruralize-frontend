@@ -32,14 +32,25 @@ export type LoginCredentials = {
 
 type JsonRecord = Record<string, unknown>;
 
-const SESSION_STORAGE_KEY = "ruralize.session";
-const AUTH_COOKIE_NAME = "ruralize_auth";
+export const SESSION_STORAGE_KEY = "ruralize.session";
+export const AUTH_COOKIE_NAME = "ruralize_auth";
+
+// Callbacks para sincronização com client.ts e AuthProvider
+type SessionChangeCallback = (session: AuthSession | null) => void;
+const sessionChangeCallbacks: Set<SessionChangeCallback> = new Set();
+
+export function onSessionChange(callback: SessionChangeCallback): () => void {
+  sessionChangeCallbacks.add(callback);
+  return () => sessionChangeCallbacks.delete(callback);
+}
 
 export async function loginRequest(
   credentials: LoginCredentials,
 ): Promise<AuthSession> {
   const data = await loginUser(credentials);
-  return createSessionFromLoginResponse(data);
+  const session = createSessionFromLoginResponse(data);
+  notifySessionChange(session);
+  return session;
 }
 
 export function getStoredSession(): AuthSession | null {
@@ -76,15 +87,26 @@ export function storeSession(session: AuthSession) {
 
   window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
   writeAuthCookie(session);
+  notifySessionChange(session);
 }
 
-export function clearStoredSession() {
+export function clearStoredSession(reason?: string) {
   if (!canUseBrowserStorage()) {
     return;
   }
 
+  const hadSession = window.localStorage.getItem(SESSION_STORAGE_KEY) !== null;
+  
   window.localStorage.removeItem(SESSION_STORAGE_KEY);
   document.cookie = `${AUTH_COOKIE_NAME}=; path=/; max-age=0; samesite=lax`;
+  
+  // Notificar listeners sobre logout/erro
+  if (hadSession) {
+    if (typeof window !== "undefined" && typeof console !== "undefined") {
+      console.log(`[Auth] Sessão limpa. Motivo: ${reason || "logout"}`);
+    }
+    notifySessionChange(null);
+  }
 }
 
 export function isSessionExpired(session: AuthSession) {
@@ -134,6 +156,9 @@ export async function updateProfileRequest(
   };
 }
 
+
+// Função privada para notificar listeners sobre mudanças de sessão (já definida acima)
+
 function writeAuthCookie(session: AuthSession) {
   const maxAge = session.expiresAt
     ? Math.max(0, Math.floor((session.expiresAt - Date.now()) / 1000))
@@ -152,6 +177,16 @@ function readString(record: JsonRecord, keys: string[]) {
   }
 
   return undefined;
+}
+
+function notifySessionChange(session: AuthSession | null) {
+  for (const callback of sessionChangeCallbacks) {
+    try {
+      callback(session);
+    } catch (err) {
+      console.error("[Auth] Erro ao notificar mudança de sessão:", err);
+    }
+  }
 }
 
 function createSessionFromLoginResponse(

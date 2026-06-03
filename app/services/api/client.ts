@@ -1,17 +1,22 @@
 import axios, { AxiosError } from "axios";
+import {
+  getStoredSession,
+  clearStoredSession,
+  isSessionExpired,
+  onSessionChange,
+  SESSION_STORAGE_KEY,
+  AUTH_COOKIE_NAME,
+  type AuthSession,
+} from "@/app/lib/auth";
 
 export const API_BASE_URL = "https://rural-backend.vercel.app";
-const SESSION_STORAGE_KEY = "ruralize.session";
-const AUTH_COOKIE_NAME = "ruralize_auth";
 
 export interface ApiErrorResponse {
   detail?: string;
 }
 
-interface StoredSession {
-  token?: string;
-  expiresAt?: number | null;
-}
+// Flag para rastrear se estamos tentando sincronizar após 401
+let syncingAfter401 = false;
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -20,6 +25,7 @@ export const api = axios.create({
   },
 });
 
+// Interceptor de requisição: adiciona token JWT
 api.interceptors.request.use((config) => {
   const session = getStoredSession();
 
@@ -27,8 +33,8 @@ api.interceptors.request.use((config) => {
     return config;
   }
 
-  if (isSessionExpired(session.expiresAt)) {
-    clearStoredSession();
+  if (isSessionExpired(session)) {
+    clearStoredSession("sessão expirada");
     return config;
   }
 
@@ -39,11 +45,29 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Interceptor de resposta: sincroniza 401 com AuthProvider
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError<ApiErrorResponse>) => {
-    if (error.response?.status === 401) {
-      clearStoredSession();
+    if (error.response?.status === 401 && !syncingAfter401) {
+      syncingAfter401 = true;
+
+      // Limpar sessão e notificar AuthProvider
+      clearStoredSession("erro 401 - token inválido");
+
+      // Disparar evento customizado para AuthProvider detectar
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("auth:unauthorized", {
+            detail: { message: "Token inválido ou expirado" },
+          }),
+        );
+      }
+
+      // Reset flag após um tempo
+      setTimeout(() => {
+        syncingAfter401 = false;
+      }, 500);
     }
 
     throw new Error(
@@ -52,38 +76,26 @@ api.interceptors.response.use(
   },
 );
 
-function getStoredSession(): StoredSession | null {
-  if (!canUseBrowserStorage()) {
-    return null;
+// Sincronizar client.ts quando sessão muda em outro lugar
+export function initializeSessionSync() {
+  if (typeof window === "undefined") {
+    return () => {};
   }
 
-  const storedSession = window.localStorage.getItem(SESSION_STORAGE_KEY);
+  // Listener para mudanças na sessão via callback
+  const unsubscribe = onSessionChange((session: AuthSession | null) => {
+    // Se a sessão foi limpa, limpar também a sessão em client.ts
+    if (!session) {
+      // A limpeza já foi feita em auth.ts, apenas sincronizar state
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("auth:session-cleared", {
+            detail: { timestamp: Date.now() },
+          }),
+        );
+      }
+    }
+  });
 
-  if (!storedSession) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(storedSession) as StoredSession;
-  } catch {
-    clearStoredSession();
-    return null;
-  }
-}
-
-function clearStoredSession() {
-  if (!canUseBrowserStorage()) {
-    return;
-  }
-
-  window.localStorage.removeItem(SESSION_STORAGE_KEY);
-  document.cookie = `${AUTH_COOKIE_NAME}=; path=/; max-age=0; samesite=lax`;
-}
-
-function isSessionExpired(expiresAt: number | null | undefined) {
-  return Boolean(expiresAt && Date.now() >= expiresAt);
-}
-
-function canUseBrowserStorage() {
-  return typeof window !== "undefined" && typeof document !== "undefined";
+  return unsubscribe;
 }

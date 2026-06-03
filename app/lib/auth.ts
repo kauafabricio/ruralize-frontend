@@ -35,6 +35,20 @@ type JsonRecord = Record<string, unknown>;
 export const SESSION_STORAGE_KEY = "ruralize.session";
 export const AUTH_COOKIE_NAME = "ruralize_auth";
 
+// Decodificar JWT para extrair informações do usuário
+function decodeJWT(token: string): JsonRecord | null {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+
+    const payload = parts[1];
+    const decoded = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+    return JSON.parse(decoded) as JsonRecord;
+  } catch {
+    return null;
+  }
+}
+
 // Callbacks para sincronização com client.ts e AuthProvider
 type SessionChangeCallback = (session: AuthSession | null) => void;
 const sessionChangeCallbacks: Set<SessionChangeCallback> = new Set();
@@ -174,6 +188,11 @@ function readString(record: JsonRecord, keys: string[]) {
     if (typeof value === "string" && value.trim()) {
       return value;
     }
+
+    // Também aceitar números (e.g., IDs numéricos)
+    if (typeof value === "number") {
+      return String(value);
+    }
   }
 
   return undefined;
@@ -202,7 +221,8 @@ function createSessionFromLoginResponse(
     throw new Error("Token não encontrado.");
   }
 
-  const user = isRecord(data.user)
+  // Tentar extrair informações do usuário da resposta da API
+  let user: AuthUser | null = isRecord(data.user)
     ? {
         id: readString(data.user, ["id", "_id"]),
         name: readString(data.user, ["name", "username"]),
@@ -212,6 +232,39 @@ function createSessionFromLoginResponse(
         raw: data.user,
       }
     : null;
+
+  console.log("[Auth] Dados da resposta de login:", {
+    hasUserData: !!data.user,
+    extractedUser: user,
+    userIdFromResponse: user?.id,
+  });
+
+  // Se não temos user.id, tentar extrair do JWT
+  if (!user?.id) {
+    const decoded = decodeJWT(token);
+    if (decoded) {
+      // Procurar em múltiplas chaves possíveis (diferentes backends usam diferentes convenções)
+      const userId = readString(decoded, ["sub", "id", "user_id", "userId", "uid", "oid"]);
+      const userName = readString(decoded, ["name", "username", "user_name"]);
+      const userEmail = readString(decoded, ["email", "mail"]);
+      const userRole = readString(decoded, ["role", "roles"]);
+
+      if (userId) {
+        console.log("[Auth] User ID extraído do JWT:", userId);
+        user = {
+          id: userId,
+          name: userName,
+          email: userEmail,
+          role: userRole,
+          raw: decoded,
+        };
+      } else {
+        console.warn("[Auth] Não foi possível extrair user ID do JWT. Payload:", decoded);
+      }
+    } else {
+      console.warn("[Auth] Não foi possível decodificar JWT");
+    }
+  }
 
   return {
     token,

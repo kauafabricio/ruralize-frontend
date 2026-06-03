@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-
+import Link from "next/link";
 import { RequireAuth } from "@/app/components/auth/RequireAuth";
 import { useAuth } from "@/app/components/auth/AuthProvider";
 import { FeedHeader } from "@/app/components/feed/FeedHeader";
+import { redeemReward } from "@/app/services/api/rewards.api";
 
 const rewards = [
   {
@@ -111,20 +112,13 @@ export default function PointsPage() {
   }
 
   async function handleConfirmRewardRedemption() {
-    if (!selectedReward) {
+    if (!selectedReward || !user?.id) {
+      setRedemptionError("Erro: usuário não autenticado");
       return;
     }
 
     if (pointsBalance < selectedReward.cost) {
-      setRedemptionError("Voce ainda nao tem pontos suficientes para este resgate.");
-      return;
-    }
-
-    const emailToUse = user?.email || "";
-    if (!emailToUse.trim()) {
-      setRedemptionError(
-        "Nao encontramos um e-mail cadastrado na sua conta para enviar as instrucoes. Verifique sua sessao e tente novamente.",
-      );
+      setRedemptionError("Você ainda não tem pontos suficientes para este resgate.");
       return;
     }
 
@@ -134,33 +128,14 @@ export default function PointsPage() {
     const instructions = getRewardInstructions(selectedReward);
 
     try {
-      const response = await fetch("/api/rewards/redeem", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userEmail: emailToUse,
-          userName: user?.name || "Usuário",
-          rewardTitle: selectedReward.title,
-          rewardPoints: selectedReward.cost,
-          pickupLocation: selectedReward.pickupLocation,
-          deadline: selectedReward.deadline,
-          instructions,
-          userId: user?.id,
-        }),
-      });
-
-      const data = (await response.json().catch(() => null)) as {
-        emailSent?: boolean;
-        message?: string;
-      } | null;
-
-      if (!response.ok) {
-        throw new Error(
-          data?.message ?? "Nao foi possivel registrar o resgate.",
-        );
-      }
+      const response = await redeemReward(
+        user.id,
+        selectedReward.title,
+        selectedReward.cost,
+        selectedReward.pickupLocation,
+        selectedReward.deadline,
+        instructions
+      );
 
       const nextBalance = pointsBalance - selectedReward.cost;
       setPointsBalance(nextBalance);
@@ -175,13 +150,13 @@ export default function PointsPage() {
         },
         ...currentHistory,
       ]);
-      setEmailSent(Boolean(data?.emailSent));
+      setEmailSent(true);
       setRewardStep("received");
     } catch (error) {
       setRedemptionError(
         error instanceof Error
           ? error.message
-          : "Nao foi possivel concluir o resgate.",
+          : "Não foi possível concluir o resgate.",
       );
     } finally {
       setRedeeming(false);
@@ -228,13 +203,12 @@ export default function PointsPage() {
                   Participe de mais eventos sustentáveis e consiga pontos mais recompensas.
                 </p>
               </div>
-
-              <button
-                type="button"
-                className="mt-7 h-11 rounded-full bg-white px-7 text-[11px] font-black uppercase tracking-[0.08em] text-[#2f7934] transition hover:bg-[#edf8e9]"
-              >
-                Ver eventos
-              </button>
+            <Link
+              href="/agendamentos"
+              className="mt-7 inline-flex h-11 items-center justify-center rounded-full bg-white px-7 text-[11px] font-black uppercase tracking-[0.08em] text-[#2f7934] transition hover:bg-[#edf8e9]"
+            >
+              Ver eventos
+            </Link>
             </aside>
           </section>
 
@@ -379,7 +353,6 @@ export default function PointsPage() {
             isRedeeming={redeeming}
             error={redemptionError}
             emailSent={emailSent}
-            userEmail={user?.email ?? ""}
             instructions={getRewardInstructions(selectedReward)}
             onConfirm={handleConfirmRewardRedemption}
             onClose={closeRewardModal}
@@ -397,7 +370,6 @@ function RewardRedemptionModal({
   isRedeeming,
   error,
   emailSent,
-  userEmail,
   instructions,
   onConfirm,
   onClose,
@@ -408,7 +380,6 @@ function RewardRedemptionModal({
   isRedeeming: boolean;
   error: string | null;
   emailSent: boolean | null;
-  userEmail: string;
   instructions: string[];
   onConfirm: () => void;
   onClose: () => void;
@@ -483,9 +454,8 @@ function RewardRedemptionModal({
         ) : (
           <>
             <p className="mt-5 text-[13px] font-semibold leading-6 text-[#566052]">
-              Sua solicitacao foi recebida. Um e-mail sera enviado para{" "}
-              <strong>{userEmail}</strong> com todas as instrucoes para retirada
-              da recompensa.
+              Sua solicitação foi recebida. Um e-mail será enviado com todas as
+              instruções para retirada da recompensa.
             </p>
             {emailSent === false ? (
               <p className="mt-4 rounded-[14px] bg-[#fff8df] px-4 py-3 text-[12px] font-bold leading-5 text-[#7a5a00]">

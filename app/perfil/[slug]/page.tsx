@@ -1,32 +1,126 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
+"use client";
 
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { FeedHeader } from "@/app/components/feed/FeedHeader";
-import { suggestions } from "@/app/lib/suggestions";
-import { HeartIcon, MessageIcon, MoreIcon } from "@/app/components/feed/FeedIcons";
+import { PostCard } from "@/app/components/feed/PostCard";
+import { FollowButton } from "@/app/components/FollowButton";
+import { Toast } from "@/app/components/Toast";
+import { getProfileByUser, type ProfileResponse } from "@/app/services/api/profile.api";
+import { getPostsByUser, type PostResponse } from "@/app/services/api/posts.api";
 
 export default function UserProfilePage({
   params,
 }: {
   params: { slug: string };
 }) {
-  const profile = suggestions.find((person) => person.slug === params.slug);
+  const userId = params.slug;
+  const [profile, setProfile] = useState<ProfileResponse | null>(null);
+  const [posts, setPosts] = useState<PostResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
-  if (!profile) {
-    notFound();
+  useEffect(() => {
+    loadUserData();
+  }, [userId]);
+
+  async function loadUserData() {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const [profileData, postsData] = await Promise.all([
+        getProfileByUser(userId),
+        getPostsByUser(userId),
+      ]);
+
+      setProfile(profileData);
+      setPosts(postsData);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Erro ao carregar perfil";
+      setError(message);
+      setToast({
+        message,
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
   }
+
+  function handlePostUpdated() {
+    loadUserData();
+  }
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-[#f8f8f3] text-[#222a20]">
+        <FeedHeader showSearch={false} />
+        <div className="mx-auto max-w-[1132px] px-4 pb-20 pt-10 sm:px-6 lg:px-1">
+          <div className="animate-pulse space-y-4">
+            <div className="h-[174px] rounded-[28px] bg-[#e0e5d8]" />
+            <div className="h-[300px] rounded-[28px] bg-[#e0e5d8]" />
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (error || !profile) {
+    return (
+      <main className="min-h-screen bg-[#f8f8f3] text-[#222a20]">
+        <FeedHeader showSearch={false} />
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        )}
+        <div className="mx-auto max-w-[1132px] px-4 pb-20 pt-10 sm:px-6 lg:px-1">
+          <div className="rounded-[28px] bg-white px-6 py-8 text-center text-sm text-red-600 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+            {error || "Perfil não encontrado"}
+          </div>
+          <div className="mt-4">
+            <Link
+              href="/explore"
+              className="rounded-full border border-[#d9e0d4] bg-white px-4 py-2 text-sm font-black text-[#1f6f2a] transition hover:bg-[#f4f6f1]"
+            >
+              Voltar à exploração
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  const coverImage = profile.cover_photo_url || "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1800&q=85";
+  const profileImage = profile.profile_photo_url || "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=320&q=85";
 
   return (
     <main className="min-h-screen bg-[#f8f8f3] text-[#222a20]">
-      <FeedHeader />
+      <FeedHeader showSearch={false} />
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
 
       <div className="mx-auto max-w-[1132px] px-4 pb-20 pt-10 sm:px-6 lg:px-1">
         <div className="mb-6 flex items-center justify-between gap-3 text-sm font-black text-[#1f6f2a]">
           <Link
-            href="/feed"
+            href="/explore"
             className="rounded-full border border-[#d9e0d4] bg-white px-4 py-2 transition hover:bg-[#f4f6f1]"
           >
-            Voltar ao feed
+            Voltar à exploração
           </Link>
           <span className="rounded-full bg-[#e9f4e4] px-4 py-2 text-[#225f35]">
             Perfil público
@@ -37,14 +131,14 @@ export default function UserProfilePage({
           <div
             className="h-[174px] bg-[#d7e4c6] bg-cover bg-center"
             role="img"
-            aria-label="Campo cultivado ao nascer do sol"
+            aria-label="Capa do perfil"
             style={{
-              backgroundImage: `linear-gradient(180deg, rgba(23, 73, 27, 0.02), rgba(23, 73, 27, 0.12)), url("${profile.coverImage}")`,
+              backgroundImage: `linear-gradient(180deg, rgba(23, 73, 27, 0.02), rgba(23, 73, 27, 0.12)), url("${coverImage}")`,
             }}
           />
 
           <div className="relative px-6 pb-8 pt-[62px] sm:px-8 lg:px-9">
-            <ProfileAvatar name={profile.name} color={profile.color} />
+            <ProfileAvatar name={profile.name} imageUrl={profileImage} />
 
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div className="max-w-[620px]">
@@ -53,15 +147,14 @@ export default function UserProfilePage({
                 </h1>
                 <p className="mt-1 text-[13px] font-black text-[#287630]">
                   {profile.role}
+                  {profile.course && ` de ${profile.course}`}
                 </p>
                 <p className="mt-6 max-w-[590px] text-[12px] font-medium leading-6 text-[#545d50]">
-                  {profile.bio}
+                  {profile.description || "Sem descrição adicionada"}
                 </p>
               </div>
 
-              <div className="inline-flex h-10 items-center gap-2 rounded-full bg-[#eef8ea] px-5 text-[12px] font-black text-[#1f6f2a] shadow-[0_10px_18px_rgba(40,118,48,0.12)]">
-                Perfil sugerido
-              </div>
+              <FollowButton />
             </div>
           </div>
         </section>
@@ -69,10 +162,12 @@ export default function UserProfilePage({
         <div className="mt-9 grid gap-9 lg:grid-cols-[340px_minmax(0,1fr)]">
           <aside className="space-y-8">
             <AcademicInfoCard
-              email={profile.email}
-              roleDescription={profile.role}
-              registration={profile.registration}
-              location={profile.location}
+              email={profile.academic_info?.email || "—"}
+              role={profile.role}
+              registration={profile.academic_info?.registration || "—"}
+              location={profile.academic_info?.campus_location || "—"}
+              department={profile.department}
+              course={profile.course}
             />
           </aside>
 
@@ -84,10 +179,23 @@ export default function UserProfilePage({
               Atividades recentes
             </h2>
 
-            <ActivityPost
-              displayName={profile.name}
-              coverImage={profile.coverImage}
-            />
+            {posts.length === 0 ? (
+              <div className="mt-5 rounded-[22px] bg-white px-6 py-8 text-center shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+                <p className="text-[13px] font-medium text-[#545d50]">
+                  Este usuário ainda não tem postagens.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {posts.map((post) => (
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                    onPostUpdated={handlePostUpdated}
+                  />
+                ))}
+              </div>
+            )}
           </section>
         </div>
       </div>
@@ -97,17 +205,22 @@ export default function UserProfilePage({
 
 function ProfileAvatar({
   name,
-  color,
+  imageUrl,
 }: {
   name: string;
-  color: string;
+  imageUrl: string;
 }) {
   return (
     <div className="absolute left-6 top-[-58px] h-[116px] w-[116px] rounded-full bg-white p-[5px] shadow-[0_14px_28px_rgba(33,55,30,0.18)] sm:left-8 lg:left-9">
-      <div className={`relative h-full w-full overflow-hidden rounded-full ${color}`}>
+      <div className="relative h-full w-full overflow-hidden rounded-full bg-[#287630]">
         <span className="absolute inset-0 flex items-center justify-center text-[26px] font-black text-white">
           {readInitials(name)}
         </span>
+        <span
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url("${imageUrl}")` }}
+          aria-hidden="true"
+        />
       </div>
     </div>
   );
@@ -115,28 +228,34 @@ function ProfileAvatar({
 
 function AcademicInfoCard({
   email,
-  roleDescription,
+  role,
   registration,
   location,
+  department,
+  course,
 }: {
   email: string;
-  roleDescription: string;
+  role: string;
   registration: string;
   location: string;
+  department?: string | null;
+  course?: string | null;
 }) {
   return (
     <section className="rounded-[22px] bg-white px-6 py-7 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
       <div className="flex items-center gap-2 text-[#1e261e]">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#e9f4e4] text-[#287630]">✓</span>
+        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#e9f4e4] text-[#287630]">
+          ✓
+        </span>
         <h2 className="text-[15px] font-black tracking-[-0.02em]">
-          Informações do Perfil
+          Informações Acadêmicas
         </h2>
       </div>
 
       <dl className="mt-7 space-y-6">
         <div>
           <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-[#a0a69b]">
-            E-mail institucional
+            E-mail
           </dt>
           <dd className="mt-2 break-words text-[12px] font-semibold text-[#333b31]">
             {email}
@@ -145,12 +264,34 @@ function AcademicInfoCard({
 
         <div>
           <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-[#a0a69b]">
-            Cargo / Função
+            Função
           </dt>
           <dd className="mt-2 text-[12px] font-semibold text-[#333b31]">
-            {roleDescription}
+            {role}
           </dd>
         </div>
+
+        {course && (
+          <div>
+            <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-[#a0a69b]">
+              Curso
+            </dt>
+            <dd className="mt-2 text-[12px] font-semibold text-[#333b31]">
+              {course}
+            </dd>
+          </div>
+        )}
+
+        {department && (
+          <div>
+            <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-[#a0a69b]">
+              Departamento
+            </dt>
+            <dd className="mt-2 text-[12px] font-semibold text-[#333b31]">
+              {department}
+            </dd>
+          </div>
+        )}
 
         <div>
           <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-[#a0a69b]">
@@ -172,72 +313,6 @@ function AcademicInfoCard({
         </div>
       </dl>
     </section>
-  );
-}
-
-function ActivityPost({
-  displayName,
-  coverImage,
-}: {
-  displayName: string;
-  coverImage: string;
-}) {
-  return (
-    <article className="mt-5 overflow-hidden rounded-[22px] bg-white shadow-[0_1px_0_rgba(33,55,30,0.04)]">
-      <div className="px-6 pt-6">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-[#205f36] ring-2 ring-[#e8efdf]">
-              <span className="absolute left-[11px] top-[7px] h-[10px] w-[15px] rounded-full bg-[#e9b37f]" />
-              <span className="absolute top-[13px] left-[8px] h-[9px] w-[24px] rounded-t-full bg-[#352a20]" />
-              <span className="absolute bottom-0 left-[7px] h-[18px] w-[27px] rounded-t-[16px] bg-[#dfead7]" />
-              <span className="absolute bottom-[2px] left-[13px] h-[10px] w-[14px] rounded-t-full bg-[#275f35]" />
-            </div>
-            <div className="min-w-0">
-              <h3 className="truncate text-[12px] font-black leading-4 text-[#242b23]">
-                {displayName}
-              </h3>
-              <p className="truncate text-[10px] font-semibold leading-3 text-[#8a9186]">
-                Postado há 2 horas
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#20281f] transition-colors hover:bg-[#f2f3ee]"
-            aria-label="Mais opções da publicação"
-          >
-            <MoreIcon className="h-5 w-5" />
-          </button>
-        </div>
-
-        <p className="mt-6 text-[13px] font-medium leading-6 text-[#30372f]">
-          Ainda não há publicações recentes neste perfil. As atualizações aparecem
-          quando o usuário interage com a plataforma.
-        </p>
-      </div>
-
-      <div
-        className="mt-6 h-[260px] bg-[#d7e6c8] bg-cover bg-center sm:h-[318px]"
-        role="img"
-        aria-label="Mudas verdes em cultivo"
-        style={{
-          backgroundImage: `linear-gradient(180deg, rgba(23, 73, 27, 0), rgba(23, 73, 27, 0.08)), url("${coverImage}")`,
-        }}
-      />
-
-      <div className="flex h-[64px] items-center gap-7 px-6 text-[#20281f]">
-        <span className="inline-flex items-center gap-2 text-[12px] font-semibold">
-          <HeartIcon className="h-[18px] w-[18px]" />
-          24
-        </span>
-        <span className="inline-flex items-center gap-2 text-[12px] font-semibold">
-          <MessageIcon className="h-[18px] w-[18px]" />
-          8
-        </span>
-      </div>
-    </article>
   );
 }
 

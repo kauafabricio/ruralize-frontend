@@ -80,6 +80,12 @@ export async function getPost(postId: string): Promise<PostResponse> {
   return response.data;
 }
 
+// GET /profiles/user/{user_id}/posts
+export async function getPostsByUser(userId: string): Promise<PostResponse[]> {
+  const response = await api.get<PostResponse[]>(`/profiles/user/${userId}/posts`);
+  return response.data;
+}
+
 // PUT /posts/{post_id}
 export async function updatePost(
   postId: string,

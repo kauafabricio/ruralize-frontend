@@ -12,6 +12,7 @@ const PROFILE_AVATAR_STORAGE_KEY = "ruralize.profile.avatarUrl";
 const navItems = [
   { label: "Feed", path: "/feed" },
   { label: "Agendamentos", path: "/agendamentos" },
+  { label: "Explorar", path: "/explore" },
   { label: "Pontos", path: "/pontos" },
 ] as const;
 
@@ -36,6 +37,7 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
   const buttonRefs = useRef<Record<HeaderSection, HTMLElement | null>>({
     Feed: null,
     Agendamentos: null,
+    Explorar: null,
     Pontos: null,
   });
   const [indicatorStyle, setIndicatorStyle] = useState({

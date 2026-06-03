@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { RequireAuth } from "@/app/components/auth/RequireAuth";
 import { useAuth } from "@/app/components/auth/AuthProvider";
 import { FeedHeader } from "@/app/components/feed/FeedHeader";
+import { PostCard } from "@/app/components/feed/PostCard";
+import { getPostsByUser, type PostResponse } from "@/app/services/api/posts.api";
 import {
   HeartIcon,
   MessageIcon,
@@ -136,6 +138,8 @@ function PerfilContent() {
   const [saveFeedbackOpen, setSaveFeedbackOpen] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [savingProfile, setSavingProfile] = useState(false);
+  const [userPosts, setUserPosts] = useState<PostResponse[]>([]);
+  const [loadingPosts, setLoadingPosts] = useState(false);
 
   const subtitle = `${savedProfile.roleDescription || roleLabel} - UFRPE`;
 
@@ -182,6 +186,26 @@ function PerfilContent() {
       window.clearTimeout(syncStoredAvatarTimeout);
     };
   }, []);
+
+  useEffect(() => {
+    if (user?.id) {
+      loadUserPosts();
+    }
+  }, [user?.id]);
+
+  async function loadUserPosts() {
+    if (!user?.id) return;
+
+    setLoadingPosts(true);
+    try {
+      const posts = await getPostsByUser(user.id);
+      setUserPosts(posts);
+    } catch (err) {
+      console.error("Erro ao carregar postagens:", err);
+    } finally {
+      setLoadingPosts(false);
+    }
+  }
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -249,6 +273,9 @@ function PerfilContent() {
             coverImageUrl={savedCoverImage}
             avatarImageUrl={savedAvatarImage}
             onEdit={handleOpenEdit}
+            userPosts={userPosts}
+            loadingPosts={loadingPosts}
+            onPostUpdated={loadUserPosts}
           />
           <Footer />
         </>
@@ -268,6 +295,9 @@ function ProfileOverview({
   coverImageUrl,
   avatarImageUrl,
   onEdit,
+  userPosts,
+  loadingPosts,
+  onPostUpdated,
 }: {
   profile: EditableProfile;
   subtitle: string;
@@ -275,6 +305,9 @@ function ProfileOverview({
   coverImageUrl: string;
   avatarImageUrl: string;
   onEdit: () => void;
+  userPosts: PostResponse[];
+  loadingPosts: boolean;
+  onPostUpdated: () => void;
 }) {
   return (
     <div className="mx-auto w-full max-w-[1132px] flex-1 px-4 pb-20 pt-10 sm:px-6 lg:px-1">
@@ -306,7 +339,32 @@ function ProfileOverview({
             Minhas Atividades
           </h2>
 
-          <ActivityPost displayName={profile.name} />
+          {loadingPosts ? (
+            <div className="mt-5 space-y-6">
+              {[...Array(2)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-[200px] animate-pulse rounded-[22px] bg-[#e0e5d8]"
+                />
+              ))}
+            </div>
+          ) : userPosts.length === 0 ? (
+            <div className="mt-5 rounded-[22px] bg-white px-6 py-8 text-center shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+              <p className="text-[13px] font-medium text-[#545d50]">
+                Você ainda não tem postagens. Comece compartilhando suas ideias no feed!
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {userPosts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  onPostUpdated={onPostUpdated}
+                />
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </div>

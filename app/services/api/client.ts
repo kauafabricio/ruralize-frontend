@@ -25,7 +25,7 @@ export const api = axios.create({
   },
 });
 
-// Interceptor de requisição: adiciona token JWT
+// Interceptor de requisição: adiciona token JWT e X-User-Id
 api.interceptors.request.use((config) => {
   const session = getStoredSession();
 
@@ -40,6 +40,11 @@ api.interceptors.request.use((config) => {
 
   if (session.token) {
     config.headers.Authorization = `Bearer ${session.token}`;
+  }
+
+  // Adicionar X-User-Id se disponível
+  if (session.user?.id) {
+    config.headers["X-User-Id"] = session.user.id;
   }
 
   return config;

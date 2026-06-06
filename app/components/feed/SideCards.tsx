@@ -8,6 +8,7 @@ import { suggestions } from "@/app/lib/suggestions";
 export function SuggestionsCard() {
   const [modalOpen, setModalOpen] = useState(false);
   const visibleSuggestions = suggestions.slice(0, 3);
+  
 
   return (
     <>
@@ -144,12 +145,14 @@ export function NewScheduleCard() {
         Encontre novas atividades e participe da nossa comunidade.
       </p>
 
+      <Link href="/agendamentos">
       <button
-        type="button"
-        className="mt-7 h-11 rounded-full bg-[#287630] px-8 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.22)]"
-      >
-        Explorar Eventos
-      </button>
+      type="button"
+      className="mt-7 h-11 rounded-full bg-[#287630] px-8 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.22)]"
+  >
+    Explorar Eventos
+    </button>
+</Link>
     </aside>
   );
 }

@@ -1,45 +1,30 @@
 import { describe, test, expect } from "@jest/globals";
 
-function perfilValido(perfil: {
-  name: string;
-  email: string;
-  points: number;
-}) {
-  return (
-    perfil.name.length > 0 &&
-    perfil.email.includes("@") &&
-    perfil.points >= 0
-  );
+function atualizarNome(nome: string) {
+  return nome.trim().length > 0;
 }
 
-describe("Perfil", () => {
-  test("deve validar perfil correto", () => {
-    expect(
-      perfilValido({
-        name: "Maria Fernanda",
-        email: "maria@email.com",
-        points: 100,
-      })
-    ).toBe(true);
+function alterarFotoPerfil(foto: string) {
+  return foto.trim().length > 0;
+}
+
+function podeEditarCampo(campo: string) {
+  const camposBloqueados = ["email", "matricula"];
+
+  return !camposBloqueados.includes(campo);
+}
+
+describe("Perfil do Usuário", () => {
+  test("deve permitir atualizar o nome do usuário", () => {
+    expect(atualizarNome("Fernanda Antunes")).toBe(true);
   });
 
-  test("deve rejeitar email inválido", () => {
-    expect(
-      perfilValido({
-        name: "Maria Fernanda",
-        email: "email_invalido",
-        points: 100,
-      })
-    ).toBe(false);
+  test("deve permitir alterar a foto de perfil", () => {
+    expect(alterarFotoPerfil("foto.jpg")).toBe(true);
   });
 
-  test("deve rejeitar pontos negativos", () => {
-    expect(
-      perfilValido({
-        name: "Maria Fernanda",
-        email: "maria@email.com",
-        points: -1,
-      })
-    ).toBe(false);
+  test("não deve permitir editar email ou matrícula", () => {
+    expect(podeEditarCampo("email")).toBe(false);
+    expect(podeEditarCampo("matricula")).toBe(false);
   });
 });

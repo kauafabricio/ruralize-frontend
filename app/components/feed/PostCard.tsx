@@ -13,6 +13,11 @@ import {
 } from "@/app/services/api/posts.api";
 import { useAuth } from "@/app/components/auth/AuthProvider";
 import { Toast } from "@/app/components/Toast";
+import {
+  getActionIcon,
+  getActionName,
+  getAllActions,
+} from "@/app/lib/sustainableActions";
 
 interface PostCardProps {
   post: PostResponse;
@@ -35,7 +40,9 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
   const [isLoadingComment, setIsLoadingComment] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
-  const [editAction, setEditAction] = useState(post.sustainable_action);
+  const [editActionId, setEditActionId] = useState(
+    post.sustainable_action_id || ""
+  );
   const [editLocation, setEditLocation] = useState(post.location ?? "");
   const [editImageUrl, setEditImageUrl] = useState(post.image_url ?? "");
   const [isSavingPost, setIsSavingPost] = useState(false);
@@ -185,7 +192,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
     try {
       await updatePost(post.id, {
         content: editContent.trim(),
-        sustainable_action: editAction.trim() || "general",
+        sustainable_action_id: editActionId || undefined,
         location: editLocation.trim() || null,
         image_url: editImageUrl.trim() || null,
       });
@@ -263,9 +270,14 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
               <p className="text-sm font-black text-[#1f6f2a]">
                 {post.user_name}
               </p>
-              <p className="text-[12px] text-[#6c7b6d]">
-                {post.sustainable_action}
-              </p>
+              <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-[#e7f3e8] px-3 py-1.5">
+                <span className="text-[14px]">
+                  {getActionIcon(post.sustainable_action_id || "")}
+                </span>
+                <span className="text-[12px] font-semibold text-[#287630]">
+                  {getActionName(post.sustainable_action_id || "")}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -308,16 +320,17 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
             </label>
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="block text-[11px] font-black uppercase tracking-[0.08em] text-[#687266]">
-                Categoria
+                Acao Sustentavel
                 <select
-                  value={editAction}
-                  onChange={(event) => setEditAction(event.target.value)}
+                  value={editActionId}
+                  onChange={(event) => setEditActionId(event.target.value)}
                   className="mt-2 h-10 w-full rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none focus:border-[#9ac89c]"
                 >
-                  <option value="general">Geral</option>
-                  <option value="events">Eventos</option>
-                  <option value="warnings">Avisos</option>
-                  <option value="projects">Projetos</option>
+                  {getAllActions().map((action) => (
+                    <option key={action.id} value={action.id}>
+                      {action.icon} {action.name}
+                    </option>
+                  ))}
                 </select>
               </label>
               <label className="block text-[11px] font-black uppercase tracking-[0.08em] text-[#687266]">
@@ -346,7 +359,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                 type="button"
                 onClick={() => {
                   setEditContent(post.content);
-                  setEditAction(post.sustainable_action);
+                  setEditActionId(post.sustainable_action_id || "");
                   setEditLocation(post.location ?? "");
                   setEditImageUrl(post.image_url ?? "");
                   setIsEditing(false);

@@ -4,7 +4,11 @@ import { useId, useRef, useState } from "react";
 import { createPost, type PostCreate } from "@/app/services/api/posts.api";
 import { useAuthenticatedUser } from "@/app/components/auth/useAuthenticatedUser";
 import { Toast } from "@/app/components/Toast";
-
+import {
+  getAllActions,
+  getActionIcon,
+  type SustainableAction,
+} from "@/app/lib/sustainableActions";
 import { ImageIcon } from "./FeedIcons";
 
 export function PostComposer({
@@ -12,15 +16,20 @@ export function PostComposer({
 }: {
   onPostCreated?: () => void;
 }) {
-  const { userId, isAuthenticated, isReady, error: authError } = useAuthenticatedUser();
+  const { userId, isAuthenticated, isReady, error: authError } =
+    useAuthenticatedUser();
   const fileInputId = useId();
   const textInputId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [text, setText] = useState("");
-  const [sustainableAction, setSustainableAction] = useState("general");
+  const [selectedActionId, setSelectedActionId] = useState(
+    getAllActions()[0]?.id || ""
+  );
   const [location, setLocation] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showNewActionModal, setShowNewActionModal] = useState(false);
+  const [newActionName, setNewActionName] = useState("");
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error";
@@ -37,7 +46,7 @@ export function PostComposer({
     const reader = new FileReader();
     reader.onload = () => {
       setSelectedImage(
-        typeof reader.result === "string" ? reader.result : null,
+        typeof reader.result === "string" ? reader.result : null
       );
     };
     reader.readAsDataURL(file);
@@ -51,6 +60,20 @@ export function PostComposer({
     }
   }
 
+  function handleCreateNewAction() {
+    if (!newActionName.trim()) {
+      setToast({
+        message: "Digite um nome para a ação",
+        type: "error",
+      });
+      return;
+    }
+
+    setSelectedActionId(newActionName.trim());
+    setNewActionName("");
+    setShowNewActionModal(false);
+  }
+
   async function handlePublish() {
     console.log("[PostComposer] Iniciando publicacao...");
     console.log("[PostComposer] Estado atual:", {
@@ -58,7 +81,7 @@ export function PostComposer({
       isAuthenticated,
       userId,
       textLength: text.length,
-      authError
+      authError,
     });
 
     if (!text.trim()) {
@@ -69,7 +92,6 @@ export function PostComposer({
       return;
     }
 
-    // Verifica se está ainda carregando dados de auth
     if (!isReady && !isAuthenticated) {
       console.warn("[PostComposer] Sistema ainda está carregando");
       setToast({
@@ -79,7 +101,6 @@ export function PostComposer({
       return;
     }
 
-    // Se não está autenticado, pede para fazer login
     if (!isAuthenticated || !userId) {
       console.error("[PostComposer] Usuário não autenticado", {
         isAuthenticated,
@@ -98,7 +119,7 @@ export function PostComposer({
     try {
       const payload: PostCreate = {
         content: text.trim(),
-        sustainable_action: sustainableAction,
+        sustainable_action_id: selectedActionId || undefined,
         location: location.trim() || undefined,
         image_url: selectedImage || undefined,
       };
@@ -106,7 +127,7 @@ export function PostComposer({
       console.log("[PostComposer] Enviando payload:", {
         userId,
         contentLength: payload.content.length,
-        hasImage: !!payload.image_url
+        hasImage: !!payload.image_url,
       });
 
       const response = await createPost(userId, payload);
@@ -119,7 +140,7 @@ export function PostComposer({
       });
 
       setText("");
-      setSustainableAction("general");
+      setSelectedActionId(getAllActions()[0]?.id || "");
       setLocation("");
       clearImage();
       onPostCreated?.();
@@ -138,8 +159,6 @@ export function PostComposer({
     }
   }
 
-  // Botão só desabilita se: 1) carregando 2) sem texto 3) não autenticado
-  // NÃO desabilita enquanto isReady está False se já está autenticado
   const isDisabled = loading || !text.trim() || (!isAuthenticated && isReady);
 
   return (
@@ -149,6 +168,18 @@ export function PostComposer({
           message={toast.message}
           type={toast.type}
           onClose={() => setToast(null)}
+        />
+      )}
+
+      {showNewActionModal && (
+        <NewActionModal
+          newActionName={newActionName}
+          onNameChange={setNewActionName}
+          onConfirm={handleCreateNewAction}
+          onCancel={() => {
+            setShowNewActionModal(false);
+            setNewActionName("");
+          }}
         />
       )}
 
@@ -175,18 +206,30 @@ export function PostComposer({
 
           <div className="mt-4 grid gap-3 sm:grid-cols-[160px_1fr]">
             <label className="block text-[11px] font-black uppercase tracking-[0.08em] text-[#687266]">
-              Categoria
-              <select
-                value={sustainableAction}
-                onChange={(event) => setSustainableAction(event.target.value)}
-                disabled={!isAuthenticated && isReady}
-                className="mt-2 h-10 w-full rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none focus:border-[#9ac89c] disabled:opacity-50"
-              >
-                <option value="general">Geral</option>
-                <option value="events">Eventos</option>
-                <option value="warnings">Avisos</option>
-                <option value="projects">Projetos</option>
-              </select>
+              Acao Sustentavel
+              <div className="mt-2 flex gap-2">
+                <select
+                  value={selectedActionId}
+                  onChange={(event) => setSelectedActionId(event.target.value)}
+                  disabled={!isAuthenticated && isReady}
+                  className="flex-1 h-10 rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none focus:border-[#9ac89c] disabled:opacity-50"
+                >
+                  {getAllActions().map((action) => (
+                    <option key={action.id} value={action.id}>
+                      {action.icon} {action.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setShowNewActionModal(true)}
+                  disabled={!isAuthenticated && isReady}
+                  className="h-10 px-4 rounded-full bg-[#e7f3e8] text-[#287630] font-black text-[12px] hover:bg-[#d4ebda] transition disabled:opacity-50"
+                  title="Criar nova acao"
+                >
+                  ➕
+                </button>
+              </div>
             </label>
             <label className="block text-[11px] font-black uppercase tracking-[0.08em] text-[#687266]">
               Local
@@ -259,3 +302,69 @@ export function PostComposer({
     </section>
   );
 }
+
+function NewActionModal({
+  newActionName,
+  onNameChange,
+  onConfirm,
+  onCancel,
+}: {
+  newActionName: string;
+  onNameChange: (value: string) => void;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1f281f]/35 px-4 py-8 backdrop-blur-[4px]">
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="new-action-title"
+        className="w-full max-w-[380px] rounded-[24px] bg-white px-7 pb-7 pt-8 shadow-[0_24px_50px_rgba(33,55,30,0.24)]"
+      >
+        <h2
+          id="new-action-title"
+          className="text-[21px] font-black tracking-[-0.04em] text-[#1e261e]"
+        >
+          Nova Acao
+        </h2>
+        <p className="mt-3 text-[12px] font-semibold text-[#65705f]">
+          Digite o nome da acao sustentavel que voce deseja criar
+        </p>
+
+        <input
+          type="text"
+          value={newActionName}
+          onChange={(e) => onNameChange(e.target.value)}
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              onConfirm();
+            }
+          }}
+          placeholder="Ex: Limpeza de praia"
+          autoFocus
+          className="mt-5 w-full h-10 rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold text-[#30372f] outline-none focus:border-[#9ac89c]"
+        />
+
+        <div className="mt-7 grid gap-3 sm:grid-cols-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="h-11 rounded-full bg-[#eef0ea] px-5 text-[11px] font-black text-[#4f5b4e] transition hover:bg-[#e3e7dd]"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={!newActionName.trim()}
+            className="h-11 rounded-full bg-[#287630] px-5 text-[11px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)] transition hover:bg-[#1f6428] disabled:opacity-50"
+          >
+            Criar
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+

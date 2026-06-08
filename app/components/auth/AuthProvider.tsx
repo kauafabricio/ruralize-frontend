@@ -109,29 +109,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     // Listener para erro 401 (sincronia entre requisição e AuthProvider)
-    function handleUnauthorized(
-      event: Event & { detail?: { message: string } },
-    ) {
+    const handleUnauthorized = () => {
       console.log("[AuthProvider] Erro 401 detectado, atualizando status");
       setSession(null);
       setStatus("unauthenticated");
-    }
+    };
 
     // Listener para sessão limpa por outros motivos
-    function handleSessionCleared() {
+    const handleSessionCleared = () => {
       console.log("[AuthProvider] Sessão limpa, atualizando status");
       setSession(null);
       setStatus("unauthenticated");
-    }
+    };
 
     window.addEventListener("storage", handleStorage);
-    window.addEventListener("auth:unauthorized", handleUnauthorized as EventListener);
-    window.addEventListener("auth:session-cleared", handleSessionCleared as EventListener);
+    window.addEventListener("auth:unauthorized", handleUnauthorized);
+    window.addEventListener("auth:session-cleared", handleSessionCleared);
 
     return () => {
       window.removeEventListener("storage", handleStorage);
-      window.removeEventListener("auth:unauthorized", handleUnauthorized as EventListener);
-      window.removeEventListener("auth:session-cleared", handleSessionCleared as EventListener);
+      window.removeEventListener("auth:unauthorized", handleUnauthorized);
+      window.removeEventListener("auth:session-cleared", handleSessionCleared);
       unsubscribeSync();
     };
   }, [applySession, refreshSession]);

@@ -29,7 +29,8 @@ export interface LikedUser {
 
 export interface PostCreate {
   content: string;
-  sustainable_action: string;
+  sustainable_action_id?: string | null;
+  sustainable_action?: string;
   location?: string | null;
   event_id?: string | null;
   image_url?: string | null;
@@ -38,6 +39,7 @@ export interface PostCreate {
 export interface PostUpdate {
   content?: string | null;
   location?: string | null;
+  sustainable_action_id?: string | null;
   sustainable_action?: string | null;
   event_id?: string | null;
   image_url?: string | null;
@@ -48,6 +50,7 @@ export interface PostResponse {
   user_id: string;
   content: string;
   location: string | null;
+  sustainable_action_id: string | null;
   sustainable_action: string;
   event_id: string | null;
   image_url: string | null;
@@ -55,6 +58,7 @@ export interface PostResponse {
   liked_by: Array<string | LikedUser>;
   comments: Comment[];
   created_at: string;
+  user_name?: string;
 }
 
 // GET /posts/

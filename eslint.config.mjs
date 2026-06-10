@@ -11,6 +11,8 @@ const eslintConfig = defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    "ruralize-frontend/**",
+    "jest.config.js",
     "next-env.d.ts",
   ]),
 ]);

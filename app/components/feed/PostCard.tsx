@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import {
   likePost,
@@ -26,6 +27,7 @@ interface PostCardProps {
 
 export function PostCard({ post, onPostUpdated }: PostCardProps) {
   const { user } = useAuth();
+  const authorName = post.user_name || "Usuário";
   const [isLiked, setIsLiked] = useState(
     post.liked_by?.some(
       (like) =>
@@ -262,13 +264,17 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
 
       <div className="px-6 pt-6">
         <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-4">
+          <Link
+            href={`/perfil/${post.user_id}`}
+            className="group flex items-center gap-4 rounded-[18px] pr-2 transition hover:bg-[#f4f6f1]"
+            aria-label={`Abrir perfil de ${authorName}`}
+          >
             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#205f36] text-[12px] font-black uppercase text-white">
-              {post.user_id.substring(0, 2).toUpperCase()}
+              {readInitials(authorName)}
             </div>
             <div>
-              <p className="text-sm font-black text-[#1f6f2a]">
-                {post.user_name}
+              <p className="text-sm font-black text-[#1f6f2a] transition group-hover:text-[#287630]">
+                {authorName}
               </p>
               <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-[#e7f3e8] px-3 py-1.5">
                 <span className="text-[14px]">
@@ -279,7 +285,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                 </span>
               </div>
             </div>
-          </div>
+          </Link>
 
           <div className="flex shrink-0 items-center gap-3">
             {canManagePost ? (
@@ -444,9 +450,12 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1">
-                    <p className="text-[12px] font-black text-[#1f6f2a]">
-                      {comment.user_name}
-                    </p>
+                    <Link
+                      href={`/perfil/${comment.user_id}`}
+                      className="text-[12px] font-black text-[#1f6f2a] transition hover:text-[#287630]"
+                    >
+                      {comment.user_name || "Usuário"}
+                    </Link>
                     <p className="mt-1 text-[12px] text-[#20281f]">
                       {comment.content}
                     </p>
@@ -619,5 +628,16 @@ function CheckIcon({ className = "h-4 w-4" }: { className?: string }) {
     >
       <path d="m5 12 5 5L20 7" />
     </svg>
+  );
+}
+
+function readInitials(name: string) {
+  return (
+    name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join("") || "R"
   );
 }

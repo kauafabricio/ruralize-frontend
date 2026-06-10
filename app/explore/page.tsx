@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { RequireAuth } from "@/app/components/auth/RequireAuth";
 import { FeedHeader } from "@/app/components/feed/FeedHeader";
 import {
@@ -29,23 +29,7 @@ function ExploreContent() {
     type: "success" | "error";
   } | null>(null);
 
-  useEffect(() => {
-    loadUsers();
-  }, []);
-
-  useEffect(() => {
-    const delayTimer = setTimeout(() => {
-      if (searchTerm.trim()) {
-        searchUsers();
-      } else {
-        loadUsers();
-      }
-    }, 500);
-
-    return () => clearTimeout(delayTimer);
-  }, [searchTerm]);
-
-  async function loadUsers() {
+  const loadUsers = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -67,9 +51,9 @@ function ExploreContent() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  async function searchUsers() {
+  const searchUsers = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -91,7 +75,27 @@ function ExploreContent() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [searchTerm]);
+
+  useEffect(() => {
+    const delayTimer = window.setTimeout(() => {
+      void loadUsers();
+    }, 0);
+
+    return () => window.clearTimeout(delayTimer);
+  }, [loadUsers]);
+
+  useEffect(() => {
+    const delayTimer = window.setTimeout(() => {
+      if (searchTerm.trim()) {
+        void searchUsers();
+      } else {
+        void loadUsers();
+      }
+    }, 500);
+
+    return () => window.clearTimeout(delayTimer);
+  }, [loadUsers, searchTerm, searchUsers]);
 
   return (
     <main className="min-h-screen bg-[#f4f6f1]">

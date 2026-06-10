@@ -20,7 +20,6 @@ import {
   loginRequest,
   storeSession,
   updateProfileRequest,
-  onSessionChange,
 } from "@/app/lib/auth";
 import { initializeSessionSync } from "@/app/services/api/client";
 
@@ -43,7 +42,6 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [status, setStatus] = useState<AuthStatus>("loading");
-  const [initialized, setInitialized] = useState(false);
 
   const applySession = useCallback((nextSession: AuthSession | null) => {
     if (!nextSession || isSessionExpired(nextSession)) {
@@ -94,9 +92,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     // Inicializar sessão no cliente
-    const initialSession = getStoredSession();
-    applySession(initialSession);
-    setInitialized(true);
+    const initialSessionTimeout = window.setTimeout(() => {
+      applySession(getStoredSession());
+    }, 0);
 
     // Sincronizar com client.ts
     const unsubscribeSync = initializeSessionSync();
@@ -130,6 +128,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener("storage", handleStorage);
       window.removeEventListener("auth:unauthorized", handleUnauthorized);
       window.removeEventListener("auth:session-cleared", handleSessionCleared);
+      window.clearTimeout(initialSessionTimeout);
       unsubscribeSync();
     };
   }, [applySession, refreshSession]);

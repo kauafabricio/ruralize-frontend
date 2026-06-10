@@ -1,14 +1,53 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { PlusIcon } from "./FeedIcons";
-import { suggestions } from "@/app/lib/suggestions";
+import {
+  getAllProfiles,
+  type UserProfileResponse,
+} from "@/app/services/api/profile.api";
 
 export function SuggestionsCard() {
   const [modalOpen, setModalOpen] = useState(false);
-  const visibleSuggestions = suggestions.slice(0, 3);
-  
+  const [profiles, setProfiles] = useState<UserProfileResponse[]>([]);
+  const [loadingProfiles, setLoadingProfiles] = useState(true);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const visibleSuggestions = profiles.slice(0, 3);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadProfiles() {
+      setLoadingProfiles(true);
+      setProfileError(null);
+
+      try {
+        const data = await getAllProfiles();
+
+        if (!cancelled) {
+          setProfiles(data);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setProfileError(
+            err instanceof Error ? err.message : "Erro ao carregar sugestões",
+          );
+          setProfiles([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingProfiles(false);
+        }
+      }
+    }
+
+    loadProfiles();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <>
@@ -18,29 +57,44 @@ export function SuggestionsCard() {
         </h2>
 
         <div className="mt-6 space-y-4">
-          {visibleSuggestions.map((person, index) => (
-            <Link
-              key={person.slug}
-              href={`/perfil/${person.slug}`}
-              className="group flex items-center gap-3 rounded-[18px] px-3 py-3 transition hover:bg-[#f4f6f1]"
-            >
-              <ProfileAvatar color={person.color} variant={index} />
-              <div className="min-w-0">
-                <p className="truncate text-[12px] font-black leading-4 text-[#242b23] group-hover:text-[#1f6f2a]">
-                  {person.name}
-                </p>
-                <p className="truncate text-[10px] font-semibold leading-3 text-[#8a9186]">
-                  {person.role}
-                </p>
-              </div>
-            </Link>
-          ))}
+          {loadingProfiles ? (
+            <p className="text-[12px] font-semibold text-[#8a9186]">
+              Carregando perfis...
+            </p>
+          ) : profileError ? (
+            <p className="text-[12px] font-semibold text-[#b42318]">
+              {profileError}
+            </p>
+          ) : visibleSuggestions.length === 0 ? (
+            <p className="text-[12px] font-semibold text-[#8a9186]">
+              Nenhuma sugestão encontrada.
+            </p>
+          ) : (
+            visibleSuggestions.map((person) => (
+              <Link
+                key={person.id}
+                href={`/perfil/${person.id}`}
+                className="group flex items-center gap-3 rounded-[18px] px-3 py-3 transition hover:bg-[#f4f6f1]"
+              >
+                <ProfileAvatar profile={person} />
+                <div className="min-w-0">
+                  <p className="truncate text-[12px] font-black leading-4 text-[#242b23] group-hover:text-[#1f6f2a]">
+                    {person.name}
+                  </p>
+                  <p className="truncate text-[10px] font-semibold leading-3 text-[#8a9186]">
+                    {person.course || person.department || person.role}
+                  </p>
+                </div>
+              </Link>
+            ))
+          )}
         </div>
 
         <button
           type="button"
           onClick={() => setModalOpen(true)}
-          className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-[#f1f5ed] px-4 py-3 text-[11px] font-black text-[#287630] transition hover:bg-[#e7f1df]"
+          disabled={profiles.length === 0}
+          className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-[#f1f5ed] px-4 py-3 text-[11px] font-black text-[#287630] transition hover:bg-[#e7f1df] disabled:cursor-not-allowed disabled:opacity-60"
         >
           Ver todas as sugestões
         </button>
@@ -63,7 +117,7 @@ export function SuggestionsCard() {
                   Todas as sugestões
                 </h2>
                 <p className="mt-1 text-[12px] text-[#525b4f]">
-                  Conecte-se com perfis que combinam com seu interesse em sustentabilidade e produção rural.
+                  Perfis carregados diretamente do backend Ruralize.
                 </p>
               </div>
               <button
@@ -78,46 +132,42 @@ export function SuggestionsCard() {
 
             <div className="max-h-[calc(100vh-210px)] overflow-y-auto px-6 py-5 scrollbar-thin scrollbar-thumb-[#c7dabd] scrollbar-track-[#f4f6f1]">
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {suggestions.map((person) => (
-                <Link
-                  key={person.slug}
-                  href={`/perfil/${person.slug}`}
-                  className="group overflow-hidden rounded-[22px] border border-[#e6efe4] bg-[#fbfbf7] p-5 transition hover:border-[#c7dabd] hover:bg-white"
-                >
-                  <div className="mb-4 flex items-center gap-3">
-                    <div className={`h-12 w-12 rounded-full ${person.color} ring-2 ring-[#e8efdf]`}>
-                      <span className="flex h-full items-center justify-center text-[18px] font-black text-white">
-                        {readInitials(person.name)}
-                      </span>
+                {profiles.map((person) => (
+                  <Link
+                    key={person.id}
+                    href={`/perfil/${person.id}`}
+                    className="group overflow-hidden rounded-[22px] border border-[#e6efe4] bg-[#fbfbf7] p-5 transition hover:border-[#c7dabd] hover:bg-white"
+                  >
+                    <div className="mb-4 flex items-center gap-3">
+                      <ProfileAvatar profile={person} size="large" />
+                      <div className="min-w-0">
+                        <p className="truncate text-[13px] font-black text-[#1e261e] group-hover:text-[#1f6f2a]">
+                          {person.name}
+                        </p>
+                        <p className="truncate text-[11px] font-semibold text-[#8a9186]">
+                          {person.course || person.department || person.role}
+                        </p>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <p className="truncate text-[13px] font-black text-[#1e261e] group-hover:text-[#1f6f2a]">
-                        {person.name}
-                      </p>
-                      <p className="truncate text-[11px] font-semibold text-[#8a9186]">
-                        {person.role}
-                      </p>
+                    <p className="mb-4 text-[12px] leading-6 text-[#545d50]">
+                      {person.description || "Perfil Ruralize"}
+                    </p>
+                    <div className="space-y-2 text-[11px] text-[#333b31]">
+                      {person.course ? (
+                        <div>
+                          <span className="font-black">Curso: </span>
+                          {person.course}
+                        </div>
+                      ) : null}
+                      {person.department ? (
+                        <div>
+                          <span className="font-black">Departamento: </span>
+                          {person.department}
+                        </div>
+                      ) : null}
                     </div>
-                  </div>
-                  <p className="mb-4 text-[12px] leading-6 text-[#545d50]">
-                    {person.bio}
-                  </p>
-                  <div className="space-y-2 text-[11px] text-[#333b31]">
-                    <div>
-                      <span className="font-black">Email: </span>
-                      {person.email}
-                    </div>
-                    <div>
-                      <span className="font-black">Matrícula: </span>
-                      {person.registration}
-                    </div>
-                    <div>
-                      <span className="font-black">Local: </span>
-                      {person.location}
-                    </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))}
               </div>
             </div>
           </div>
@@ -130,13 +180,13 @@ export function SuggestionsCard() {
 export function NewScheduleCard() {
   return (
     <aside className="flex min-h-[318px] flex-col items-center justify-center rounded-[28px] border border-dashed border-[#d8dbd2] bg-[#fbfbf7] px-8 text-center">
-      <button
-        type="button"
+      <Link
+        href="/agendamentos"
         className="flex h-12 w-12 items-center justify-center rounded-full bg-[#3b8b42] text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)]"
         aria-label="Novo agendamento"
       >
         <PlusIcon className="h-6 w-6" />
-      </button>
+      </Link>
 
       <h2 className="mt-8 text-[18px] font-black tracking-[-0.03em] text-[#1e261e]">
         Novo Agendamento
@@ -145,48 +195,51 @@ export function NewScheduleCard() {
         Encontre novas atividades e participe da nossa comunidade.
       </p>
 
-      <Link href="/agendamentos">
-      <button
-      type="button"
-      className="mt-7 h-11 rounded-full bg-[#287630] px-8 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.22)]"
-  >
-    Explorar Eventos
-    </button>
-</Link>
+      <Link
+        href="/agendamentos"
+        className="mt-7 inline-flex h-11 items-center justify-center rounded-full bg-[#287630] px-8 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.22)]"
+      >
+        Explorar Eventos
+      </Link>
     </aside>
   );
 }
 
 function ProfileAvatar({
-  color,
-  variant,
+  profile,
+  size = "small",
 }: {
-  color: string;
-  variant: number;
+  profile: UserProfileResponse;
+  size?: "small" | "large";
 }) {
+  const sizeClass =
+    size === "large" ? "h-12 w-12 text-[18px]" : "h-10 w-10 text-[14px]";
+
   return (
     <div
-      className={`relative h-10 w-10 shrink-0 overflow-hidden rounded-full ${color} ring-2 ring-[#e8efdf]`}
+      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#205f36] font-black text-white ring-2 ring-[#e8efdf] ${sizeClass}`}
     >
-      <span className="absolute left-[11px] top-[7px] h-[10px] w-[15px] rounded-full bg-[#e9b37f]" />
-      <span
-        className={`absolute top-[13px] h-[9px] rounded-t-full ${
-          variant === 0
-            ? "left-[8px] w-[24px] bg-[#352a20]"
-            : "left-[10px] w-[20px] bg-[#183f42]"
-        }`}
-      />
-      <span className="absolute bottom-0 left-[7px] h-[18px] w-[27px] rounded-t-[16px] bg-[#dfead7]" />
-      <span className="absolute bottom-[2px] left-[13px] h-[10px] w-[14px] rounded-t-full bg-[#275f35]" />
+      {profile.profile_photo_url ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={profile.profile_photo_url}
+          alt={profile.name}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        readInitials(profile.name)
+      )}
     </div>
   );
 }
 
 function readInitials(name: string) {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join("") || "R";
+  return (
+    name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join("") || "R"
+  );
 }

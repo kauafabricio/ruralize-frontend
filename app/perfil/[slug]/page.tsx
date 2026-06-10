@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 import { FeedHeader } from "@/app/components/feed/FeedHeader";
 import { PostCard } from "@/app/components/feed/PostCard";
 import { FollowButton } from "@/app/components/FollowButton";
@@ -9,11 +10,8 @@ import { Toast } from "@/app/components/Toast";
 import { getProfileByUser, type ProfileResponse } from "@/app/services/api/profile.api";
 import { getPostsByUser, type PostResponse } from "@/app/services/api/posts.api";
 
-export default function UserProfilePage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default function UserProfilePage() {
+  const params = useParams<{ slug: string }>();
   const userId = params.slug;
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
   const [posts, setPosts] = useState<PostResponse[]>([]);
@@ -24,11 +22,7 @@ export default function UserProfilePage({
     type: "success" | "error";
   } | null>(null);
 
-  useEffect(() => {
-    loadUserData();
-  }, [userId]);
-
-  async function loadUserData() {
+  const loadUserData = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -51,7 +45,17 @@ export default function UserProfilePage({
     } finally {
       setLoading(false);
     }
-  }
+  }, [userId]);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      void loadUserData();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [loadUserData]);
 
   function handlePostUpdated() {
     loadUserData();

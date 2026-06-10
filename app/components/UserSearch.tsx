@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useState } from "react";
 import {
   searchProfilesByName,
   searchProfilesByCourse,
@@ -9,6 +10,7 @@ import {
   getAllProfiles,
   type UserProfileResponse,
 } from "@/app/services/api/profile.api";
+import type { UserRole } from "@/app/services/api/auth.api";
 import { Toast } from "@/app/components/Toast";
 
 type SearchType = "name" | "course" | "role" | "tags" | "all";
@@ -48,7 +50,7 @@ export function UserSearch() {
       } else if (searchType === "course" && searchQuery) {
         data = await searchProfilesByCourse(searchQuery);
       } else if (searchType === "role" && searchQuery) {
-        data = await searchProfilesByRole(searchQuery as any);
+        data = await searchProfilesByRole(searchQuery as UserRole);
       } else if (searchType === "tags" && searchQuery.trim()) {
         const tags = searchQuery.split(",").map((t) => t.trim());
         data = await searchProfilesByTags(tags);
@@ -211,8 +213,9 @@ export function UserSearch() {
               </p>
 
               {results.map((profile) => (
-                <div
+                <Link
                   key={profile.id}
+                  href={`/perfil/${profile.id}`}
                   className="flex items-center gap-4 rounded-[18px] border border-[#e5eadf] bg-[#f8f8f3] p-4 hover:shadow-[0_4px_12px_rgba(33,55,30,0.08)] transition-shadow"
                 >
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#205f36] text-[12px] font-black uppercase text-white">
@@ -253,10 +256,10 @@ export function UserSearch() {
                     )}
                   </div>
 
-                  <button className="rounded-full bg-[#287630] px-4 py-2 text-[11px] font-black text-white transition-colors hover:bg-[#1f6428]">
+                  <span className="rounded-full bg-[#287630] px-4 py-2 text-[11px] font-black text-white transition-colors hover:bg-[#1f6428]">
                     Ver Perfil
-                  </button>
-                </div>
+                  </span>
+                </Link>
               ))}
             </div>
           )}

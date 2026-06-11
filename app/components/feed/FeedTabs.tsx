@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { getGeneralFeed, getFriendsFeed } from "@/app/services/api/feed.api";
 import type { PostResponse } from "@/app/services/api/posts.api";
@@ -63,27 +63,33 @@ function FeedPostList({
 
 export function FeedTabs({ searchTerm }: { searchTerm: string }) {
   const { user } = useAuth();
+  const userId = user?.id;
   const [activeTab, setActiveTab] = useState<FeedTabId>("friends");
   const [activeFilter, setActiveFilter] = useState<FeedFilterId>("all");
   const [posts, setPosts] = useState<PostResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [recentThreshold] = useState(() => Date.now() - 3600000);
 
-  useEffect(() => {
-    loadPosts();
-  }, [activeTab, user?.id]);
-
-  async function loadPosts() {
+  const loadPosts = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
       let data: PostResponse[] = [];
 
-      if (activeTab === "friends" && user?.id) {
-        data = await getFriendsFeed(user.id);
+      if (activeTab === "friends" && userId) {
+        try {
+          data = await getFriendsFeed(userId);
+        } catch (friendsFeedError) {
+          console.warn(
+            "Erro ao carregar feed de amigos, usando feed geral:",
+            friendsFeedError,
+          );
+          data = await getGeneralFeed(userId);
+        }
       } else {
-        data = await getGeneralFeed(user?.id);
+        data = await getGeneralFeed(userId);
       }
 
       setPosts(data);
@@ -96,7 +102,17 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [activeTab, userId]);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      void loadPosts();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [loadPosts]);
 
   async function handlePostCreated() {
     await loadPosts();
@@ -109,7 +125,7 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
     const matchesFilter =
       activeFilter === "all" ||
       (activeFilter === "recent" &&
-        new Date(post.created_at).getTime() > Date.now() - 3600000) ||
+        new Date(post.created_at).getTime() > recentThreshold) ||
       post.sustainable_action_id === activeFilter;
 
     if (!matchesFilter) {

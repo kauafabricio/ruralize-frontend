@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 
+import { useAuth } from "@/app/components/auth/AuthProvider";
 import { storeRegisteredEvent } from "@/app/lib/eventRegistration";
+import { subscribeEvent } from "@/app/services/api/events.api";
 
 type RegistrationConfirmationModalProps = {
   eventHref: string;
@@ -17,6 +19,8 @@ export function RegistrationConfirmationModal({
   onClose,
   registerOnConfirm = false,
 }: RegistrationConfirmationModalProps) {
+  const { user } = useAuth();
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#d7ddd3]/70 px-4 py-8 backdrop-blur-[5px]">
       <section
@@ -45,6 +49,9 @@ export function RegistrationConfirmationModal({
             onClick={() => {
               if (registerOnConfirm) {
                 storeRegisteredEvent(eventId);
+              }
+              if (user?.id) {
+                subscribeEvent(eventSlug, user.id).catch(() => undefined);
               }
             }}
             className="flex h-12 w-full items-center justify-center rounded-full bg-[#287630] px-5 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.2)] transition hover:bg-[#1f6428]"

@@ -3,12 +3,16 @@
 import { useId, useRef, useState } from "react";
 import { createPost, type PostCreate } from "@/app/services/api/posts.api";
 import { useAuthenticatedUser } from "@/app/components/auth/useAuthenticatedUser";
+import { useAuth } from "@/app/components/auth/AuthProvider";
 import { Toast } from "@/app/components/Toast";
+import { getAllActions } from "@/app/lib/sustainableActions";
+import { getEvent, listEvents } from "@/app/services/api/events.api";
 import {
-  getAllActions,
-  getActionIcon,
-  type SustainableAction,
-} from "@/app/lib/sustainableActions";
+  eventToUserCreatedEvent,
+  isTeacherUser,
+  readEventsByCreator,
+  type UserCreatedEvent,
+} from "@/app/lib/userEvents";
 import { ImageIcon } from "./FeedIcons";
 
 export function PostComposer({
@@ -18,6 +22,7 @@ export function PostComposer({
 }) {
   const { userId, isAuthenticated, isReady, error: authError } =
     useAuthenticatedUser();
+  const { user } = useAuth();
   const fileInputId = useId();
   const textInputId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -30,6 +35,11 @@ export function PostComposer({
   const [loading, setLoading] = useState(false);
   const [showNewActionModal, setShowNewActionModal] = useState(false);
   const [newActionName, setNewActionName] = useState("");
+  const [promoteDialogOpen, setPromoteDialogOpen] = useState(false);
+  const [createdEvents, setCreatedEvents] = useState<UserCreatedEvent[]>([]);
+  const [selectedEvent, setSelectedEvent] = useState<UserCreatedEvent | null>(
+    null,
+  );
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error";
@@ -74,6 +84,45 @@ export function PostComposer({
     setShowNewActionModal(false);
   }
 
+  async function openPromoteDialog() {
+    if (!user?.id) {
+      return;
+    }
+
+    setPromoteDialogOpen(true);
+    setCreatedEvents(readEventsByCreator(user.id));
+
+    try {
+      const listedEvents = await listEvents();
+      const detailedEvents = await Promise.all(
+        listedEvents.map((event) => getEvent(event.id).catch(() => null)),
+      );
+      setCreatedEvents(
+        detailedEvents
+          .filter(
+            (event): event is NonNullable<typeof event> =>
+              Boolean(event && event.promoter_id === user.id),
+          )
+          .map(eventToUserCreatedEvent),
+      );
+    } catch {
+      setCreatedEvents(readEventsByCreator(user.id));
+    }
+  }
+
+  function selectEventToPromote(event: UserCreatedEvent) {
+    setSelectedEvent(event);
+    setSelectedActionId(event.actionId ?? selectedActionId);
+    setLocation(event.location);
+    setSelectedImage(event.image);
+    setText((currentText) =>
+      currentText.trim()
+        ? currentText
+        : `Participe do evento "${event.title}" em ${event.compactDate}. ${event.shortDescription}`,
+    );
+    setPromoteDialogOpen(false);
+  }
+
   async function handlePublish() {
     console.log("[PostComposer] Iniciando publicacao...");
     console.log("[PostComposer] Estado atual:", {
@@ -84,7 +133,7 @@ export function PostComposer({
       authError,
     });
 
-    if (!text.trim()) {
+    if (!text.trim() && !selectedEvent) {
       setToast({
         message: "Digite algo para publicar",
         type: "error",
@@ -118,9 +167,12 @@ export function PostComposer({
 
     try {
       const payload: PostCreate = {
-        content: text.trim(),
+        content:
+          text.trim() ||
+          `Participe do evento "${selectedEvent?.title}" em ${selectedEvent?.compactDate}.`,
         sustainable_action_id: selectedActionId || undefined,
         location: location.trim() || undefined,
+        event_id: selectedEvent?.id,
         image_url: selectedImage || undefined,
       };
 
@@ -142,6 +194,7 @@ export function PostComposer({
       setText("");
       setSelectedActionId(getAllActions()[0]?.id || "");
       setLocation("");
+      setSelectedEvent(null);
       clearImage();
       onPostCreated?.();
     } catch (err) {
@@ -159,7 +212,9 @@ export function PostComposer({
     }
   }
 
-  const isDisabled = loading || !text.trim() || (!isAuthenticated && isReady);
+  const isDisabled =
+    loading || (!text.trim() && !selectedEvent) || (!isAuthenticated && isReady);
+  const canPromoteEvents = isTeacherUser(user);
 
   return (
     <section className="rounded-[28px] bg-white px-6 py-6 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
@@ -266,6 +321,31 @@ export function PostComposer({
             </div>
           )}
 
+          {selectedEvent ? (
+            <div className="mt-4 rounded-[16px] border border-[#cfe7c7] bg-[#f4fbf1] px-4 py-3">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[#287630]">
+                    Evento selecionado
+                  </p>
+                  <p className="mt-1 text-[13px] font-black text-[#1e261e]">
+                    {selectedEvent.title}
+                  </p>
+                  <p className="text-[11px] font-semibold text-[#65705f]">
+                    {selectedEvent.compactDate}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedEvent(null)}
+                  className="rounded-full px-3 py-1.5 text-[11px] font-black text-[#687266] transition hover:bg-white"
+                >
+                  Remover
+                </button>
+              </div>
+            </div>
+          ) : null}
+
           <div className="mt-5 flex items-center justify-between">
             <input
               ref={fileInputRef}
@@ -276,17 +356,30 @@ export function PostComposer({
               onChange={handleFileChange}
               disabled={!isAuthenticated && isReady}
             />
-            <label
-              htmlFor={fileInputId}
-              className={`inline-flex items-center gap-2 text-[12px] font-semibold ${
-                isAuthenticated || !isReady
-                  ? "cursor-pointer text-[#26372a]"
-                  : "cursor-not-allowed text-[#a4aaa0]"
-              }`}
-            >
-              <ImageIcon className="h-[17px] w-[17px] text-[#287630]" />
-              Foto
-            </label>
+            <div className="flex flex-wrap items-center gap-4">
+              <label
+                htmlFor={fileInputId}
+                className={`inline-flex items-center gap-2 text-[12px] font-semibold ${
+                  isAuthenticated || !isReady
+                    ? "cursor-pointer text-[#26372a]"
+                    : "cursor-not-allowed text-[#a4aaa0]"
+                }`}
+              >
+                <ImageIcon className="h-[17px] w-[17px] text-[#287630]" />
+                Foto
+              </label>
+              {canPromoteEvents ? (
+                <button
+                  type="button"
+                  onClick={openPromoteDialog}
+                  disabled={!isAuthenticated && isReady}
+                  className="inline-flex items-center gap-2 text-[12px] font-semibold text-[#26372a] disabled:text-[#a4aaa0]"
+                >
+                  <CalendarIcon className="h-[17px] w-[17px] text-[#287630]" />
+                  Promover evento
+                </button>
+              ) : null}
+            </div>
 
             <button
               type="button"
@@ -299,7 +392,71 @@ export function PostComposer({
           </div>
         </div>
       </div>
+      {promoteDialogOpen ? (
+        <PromoteEventDialog
+          events={createdEvents}
+          onSelect={selectEventToPromote}
+          onClose={() => setPromoteDialogOpen(false)}
+        />
+      ) : null}
     </section>
+  );
+}
+
+function PromoteEventDialog({
+  events,
+  onSelect,
+  onClose,
+}: {
+  events: UserCreatedEvent[];
+  onSelect: (event: UserCreatedEvent) => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#1f281f]/35 px-4 py-8 backdrop-blur-[4px]">
+      <section className="mx-auto w-full max-w-[620px] rounded-[18px] bg-white px-6 py-7 shadow-[0_24px_50px_rgba(33,55,30,0.22)]">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#287630]">
+              Promover evento
+            </p>
+            <h2 className="mt-2 text-[24px] font-black tracking-[-0.04em] text-[#1f6f2a]">
+              Eventos criados por voce
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full px-3 py-2 text-[11px] font-black text-[#687266] transition hover:bg-[#f4f5f0]"
+          >
+            Fechar
+          </button>
+        </div>
+        {events.length > 0 ? (
+          <div className="mt-6 space-y-3">
+            {events.map((event) => (
+              <button
+                key={event.slug}
+                type="button"
+                onClick={() => onSelect(event)}
+                className="w-full rounded-[16px] border border-[#e6e8e0] px-4 py-4 text-left transition hover:border-[#9ac89c] hover:bg-[#f7fbf4]"
+              >
+                <span className="block text-[13px] font-black text-[#1e261e]">
+                  {event.title}
+                </span>
+                <span className="mt-1 block text-[11px] font-semibold text-[#65705f]">
+                  {event.compactDate} - {event.location}
+                </span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-6 rounded-[16px] border border-dashed border-[#d8dbd2] px-5 py-8 text-center text-[12px] font-semibold text-[#65705f]">
+            Voce ainda nao criou eventos para promover.
+          </p>
+        )}
+      </section>
+    </div>
   );
 }
 
@@ -365,6 +522,26 @@ function NewActionModal({
         </div>
       </section>
     </div>
+  );
+}
+
+function CalendarIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.8"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M8 2v4" />
+      <path d="M16 2v4" />
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M3 10h18" />
+    </svg>
   );
 }
 

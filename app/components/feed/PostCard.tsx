@@ -85,11 +85,11 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
     setIsLoadingLike(true);
     try {
       if (isLiked) {
-        await removeLike(post.id, user.id);
+        await removeLike(post.id);
         setIsLiked(false);
         setLikes((prev) => Math.max(0, prev - 1));
       } else {
-        await likePost(post.id, user.id);
+        await likePost(post.id);
         setIsLiked(true);
         setLikes((prev) => prev + 1);
       }
@@ -124,7 +124,6 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
     setIsLoadingComment(true);
     try {
       const payload: CommentCreate = {
-        user_id: user.id,
         content: newComment,
       };
 
@@ -163,7 +162,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
     if (!user?.id) return;
 
     try {
-      await removeComment(post.id, commentIndex, user.id);
+      await removeComment(post.id, commentIndex);
 
       setToast({
         message: "Comentário removido",
@@ -223,7 +222,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
 
     setIsDeletingPost(true);
     try {
-      await deletePost(post.id, user.id);
+      await deletePost(post.id);
       setDeleteConfirmationOpen(false);
       setDeleteSuccessOpen(true);
     } catch (err) {

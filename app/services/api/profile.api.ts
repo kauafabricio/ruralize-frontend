@@ -129,11 +129,3 @@ export async function getAllProfiles(): Promise<UserProfileResponse[]> {
   const response = await api.get<UserProfileResponse[]>("/profiles/");
   return response.data;
 }
-
-// GET /profiles/{profile_id}
-export async function getProfile(
-  profileId: string,
-): Promise<UserProfileResponse> {
-  const response = await api.get<UserProfileResponse>(`/profiles/${profileId}`);
-  return response.data;
-}

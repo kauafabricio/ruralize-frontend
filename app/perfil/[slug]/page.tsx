@@ -11,8 +11,12 @@ import { getProfileByUser, type ProfileResponse } from "@/app/services/api/profi
 import { getPostsByUser, type PostResponse } from "@/app/services/api/posts.api";
 
 export default function UserProfilePage() {
-  const params = useParams<{ slug: string }>();
-  const userId = params.slug;
+  const params = useParams<{ slug: string | string[] }>();
+  const slugValue = params.slug;
+  
+  // Garantir que slug é uma string e não um array
+  const userId = Array.isArray(slugValue) ? slugValue[0] : slugValue;
+  
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
   const [posts, setPosts] = useState<PostResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,13 +31,17 @@ export default function UserProfilePage() {
     setError(null);
 
     try {
+      if (!userId) {
+        throw new Error("ID do usuário não fornecido");
+      }
+
       const [profileData, postsData] = await Promise.all([
         getProfileByUser(userId),
         getPostsByUser(userId),
       ]);
 
       setProfile(profileData);
-      setPosts(postsData);
+      setPosts(postsData || []);
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Erro ao carregar perfil";

@@ -79,17 +79,9 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
       let data: PostResponse[] = [];
 
       if (activeTab === "friends" && userId) {
-        try {
-          data = await getFriendsFeed(userId);
-        } catch (friendsFeedError) {
-          console.warn(
-            "Erro ao carregar feed de amigos, usando feed geral:",
-            friendsFeedError,
-          );
-          data = await getGeneralFeed(userId);
-        }
+        data = await getFriendsFeed(userId);
       } else {
-        data = await getGeneralFeed(userId);
+        data = await getGeneralFeed();
       }
 
       setPosts(data);

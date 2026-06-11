@@ -17,7 +17,6 @@ export interface Comment {
 }
 
 export interface CommentCreate {
-  user_id: string;
   content: string;
 }
 
@@ -69,12 +68,9 @@ export async function getPosts(): Promise<PostResponse[]> {
 
 // POST /posts/
 export async function createPost(
-  userId: string,
   payload: PostCreate,
 ): Promise<CreatedResponse> {
-  const response = await api.post<CreatedResponse>("/posts/", payload, {
-    params: { user_id: userId },
-  });
+  const response = await api.post<CreatedResponse>("/posts/", payload);
   return response.data;
 }
 
@@ -84,9 +80,11 @@ export async function getPost(postId: string): Promise<PostResponse> {
   return response.data;
 }
 
-// GET /profiles/user/{user_id}/posts
+// GET /posts/ - filtrando por user_id
 export async function getPostsByUser(userId: string): Promise<PostResponse[]> {
-  const response = await api.get<PostResponse[]>(`/profiles/user/${userId}/posts`);
+  const response = await api.get<PostResponse[]>("/posts/", {
+    params: { user_id: userId },
+  });
   return response.data;
 }
 
@@ -100,39 +98,20 @@ export async function updatePost(
 }
 
 // DELETE /posts/{post_id}
-export async function deletePost(
-  postId: string,
-  userId: string,
-): Promise<MessageResponse> {
-  const response = await api.delete<MessageResponse>(`/posts/${postId}`, {
-    params: { user_id: userId },
-  });
+export async function deletePost(postId: string): Promise<MessageResponse> {
+  const response = await api.delete<MessageResponse>(`/posts/${postId}`);
   return response.data;
 }
 
 // POST /posts/{post_id}/like
-export async function likePost(
-  postId: string,
-  userId: string,
-): Promise<MessageResponse> {
-  const response = await api.post<MessageResponse>(
-    `/posts/${postId}/like`,
-    null,
-    {
-      params: { user_id: userId },
-    },
-  );
+export async function likePost(postId: string): Promise<MessageResponse> {
+  const response = await api.post<MessageResponse>(`/posts/${postId}/like`);
   return response.data;
 }
 
 // DELETE /posts/{post_id}/like
-export async function removeLike(
-  postId: string,
-  userId: string,
-): Promise<MessageResponse> {
-  const response = await api.delete<MessageResponse>(`/posts/${postId}/like`, {
-    params: { user_id: userId },
-  });
+export async function removeLike(postId: string): Promise<MessageResponse> {
+  const response = await api.delete<MessageResponse>(`/posts/${postId}/like`);
   return response.data;
 }
 
@@ -152,13 +131,9 @@ export async function addComment(
 export async function removeComment(
   postId: string,
   commentIndex: number,
-  userId: string,
 ): Promise<MessageResponse> {
   const response = await api.delete<MessageResponse>(
     `/posts/${postId}/comment/${commentIndex}`,
-    {
-      params: { user_id: userId },
-    },
   );
   return response.data;
 }

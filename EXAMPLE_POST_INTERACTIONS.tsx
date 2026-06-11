@@ -36,11 +36,11 @@ export function PostCardWithInteractions({
     setIsLoadingLike(true);
     try {
       if (isLiked) {
-        await removeLike(post.id, user.id);
+        await removeLike(post.id);
         setIsLiked(false);
         setLikes((prev) => Math.max(0, prev - 1));
       } else {
-        await likePost(post.id, user.id);
+        await likePost(post.id);
         setIsLiked(true);
         setLikes((prev) => prev + 1);
       }
@@ -58,7 +58,6 @@ export function PostCardWithInteractions({
     setIsLoadingComment(true);
     try {
       const payload: CommentCreate = {
-        user_id: user.id,
         content: newComment,
       };
 
@@ -76,7 +75,7 @@ export function PostCardWithInteractions({
     if (!user?.id) return;
 
     try {
-      await removeComment(post.id, commentIndex, user.id);
+      await removeComment(post.id, commentIndex);
       onPostUpdated?.();
     } catch (err) {
       console.error("Erro ao remover comentário:", err);

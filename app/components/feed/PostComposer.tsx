@@ -177,12 +177,11 @@ export function PostComposer({
       };
 
       console.log("[PostComposer] Enviando payload:", {
-        userId,
         contentLength: payload.content.length,
         hasImage: !!payload.image_url,
       });
 
-      const response = await createPost(userId, payload);
+      const response = await createPost(payload);
 
       console.log("[PostComposer] Resposta da API:", response);
 

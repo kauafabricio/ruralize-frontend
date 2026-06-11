@@ -2,12 +2,8 @@ import { api } from "./client";
 import type { PostResponse } from "./posts.api";
 
 // GET /feed/
-export async function getGeneralFeed(
-  userId?: string,
-): Promise<PostResponse[]> {
-  const response = await api.get<PostResponse[]>("/feed/", {
-    params: userId ? { user_id: userId } : undefined,
-  });
+export async function getGeneralFeed(): Promise<PostResponse[]> {
+  const response = await api.get<PostResponse[]>("/feed/");
   return response.data;
 }
 

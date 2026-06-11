@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useEffect, useState } from "react";
 
 import { RequireAuth } from "@/app/components/auth/RequireAuth";
 import { FeedHeader } from "@/app/components/feed/FeedHeader";
@@ -201,35 +200,7 @@ export default function ExplorarEventosPage() {
               <p className="mt-8 text-[12px] font-semibold text-[#687266]">
                 Verificando permissoes de docente...
               </p>
-            ) : isTeacher ? (
-              <div className="mt-8">
-                <button
-                  type="button"
-                  onClick={() => setFormOpen(true)}
-                  className="inline-flex h-11 items-center justify-center rounded-full bg-[#287630] px-7 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)] transition hover:bg-[#1f6428]"
-                >
-                  Criar evento
-                </button>
-              </div>
             ) : null}
-
-            {error ? (
-              <p className="mt-5 rounded-[14px] border border-[#f1c4c4] bg-[#fff7f7] px-4 py-3 text-[12px] font-semibold text-[#b92828]">
-                {error}
-              </p>
-            ) : null}
-
-            {loadingEvents ? (
-              <p className="mt-10 text-[12px] font-semibold text-[#687266]">
-                Carregando eventos...
-              </p>
-            ) : null}
-
-            {loading && (
-              <div className="mt-10 text-center text-gray-600">
-                Carregando eventos...
-              </div>
-            )}
 
             {error && (
               <div className="mt-10 rounded-lg bg-red-50 p-4 text-red-700">
@@ -261,15 +232,6 @@ export default function ExplorarEventosPage() {
         </div>
 
         <EventsFooter />
-        {formOpen ? (
-          <EventFormDialog
-            form={form}
-            onChange={setForm}
-            onCancel={() => setFormOpen(false)}
-            onSubmit={handleCreateEvent}
-            saving={savingEvent}
-          />
-        ) : null}
       </main>
     </RequireAuth>
   );
@@ -336,199 +298,6 @@ function EventCard({
   );
 }
 
-function EventFormDialog({
-  form,
-  onChange,
-  onCancel,
-  onSubmit,
-  saving,
-}: {
-  form: UserEventInput;
-  onChange: (form: UserEventInput) => void;
-  onCancel: () => void;
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-  saving: boolean;
-}) {
-  function updateField(field: keyof UserEventInput, value: string) {
-    onChange({
-      ...form,
-      [field]: value,
-    });
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#1f281f]/35 px-4 py-8 backdrop-blur-[4px]">
-      <form
-        onSubmit={onSubmit}
-        className="mx-auto w-full max-w-[760px] rounded-[18px] bg-white px-6 py-7 shadow-[0_24px_50px_rgba(33,55,30,0.22)] sm:px-8"
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#287630]">
-              Evento docente
-            </p>
-            <h2 className="mt-2 text-[25px] font-black tracking-[-0.04em] text-[#1f6f2a]">
-              Criar evento
-            </h2>
-          </div>
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-full px-3 py-2 text-[11px] font-black text-[#687266] transition hover:bg-[#f4f5f0]"
-          >
-            Fechar
-          </button>
-        </div>
-
-        <div className="mt-7 grid gap-5 md:grid-cols-2">
-          <EventFormField
-            label="Titulo"
-            value={form.title}
-            onChange={(value) => updateField("title", value)}
-            required
-          />
-          <EventFormField
-            label="Acao/categoria"
-            value={form.category}
-            onChange={(value) => updateField("category", value)}
-            required
-          />
-          <EventFormField
-            label="Data"
-            type="date"
-            value={form.date}
-            onChange={(value) => updateField("date", value)}
-            required
-          />
-          <EventFormField
-            label="Horario"
-            type="time"
-            value={form.time}
-            onChange={(value) => updateField("time", value)}
-            required
-          />
-          <EventFormField
-            label="Local"
-            value={form.location}
-            onChange={(value) => updateField("location", value)}
-            required
-          />
-          <EventFormField
-            label="Endereco"
-            value={form.address}
-            onChange={(value) => updateField("address", value)}
-            required
-          />
-          <EventFormField
-            label="Imagem"
-            value={form.image}
-            onChange={(value) => updateField("image", value)}
-            placeholder="https://..."
-          />
-          <EventFormField
-            label="Vagas"
-            type="number"
-            value={form.maxParticipants}
-            onChange={(value) => updateField("maxParticipants", value)}
-            required
-          />
-          <EventFormField
-            label="Pontos"
-            type="number"
-            value={form.points}
-            onChange={(value) => updateField("points", value)}
-            required
-          />
-        </div>
-
-        <EventFormArea
-          label="Resumo curto"
-          value={form.shortDescription}
-          onChange={(value) => updateField("shortDescription", value)}
-          required
-        />
-        <EventFormArea
-          label="Descricao completa"
-          value={form.summary}
-          onChange={(value) => updateField("summary", value)}
-          required
-        />
-
-        <div className="mt-7 flex flex-col gap-3 border-t border-[#edf0e9] pt-6 sm:flex-row sm:justify-end">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="h-11 rounded-full bg-[#eef0ea] px-6 text-[11px] font-black text-[#4f5b4e]"
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            disabled={saving}
-            className="h-11 rounded-full bg-[#287630] px-7 text-[11px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)] disabled:opacity-60"
-          >
-            {saving ? "Salvando..." : "Salvar evento"}
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-}
-
-function EventFormField({
-  label,
-  value,
-  onChange,
-  placeholder,
-  type = "text",
-  required = false,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  type?: string;
-  required?: boolean;
-}) {
-  return (
-    <label className="block text-[11px] font-black text-[#3c463b]">
-      {label}
-      <input
-        type={type}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={placeholder}
-        required={required}
-        className="mt-2 h-11 w-full rounded-[14px] border border-[#e0e4db] bg-[#f7f8f3] px-4 text-[13px] font-medium text-[#262d25] outline-none transition focus:border-[#b6d8b8] focus:bg-white"
-      />
-    </label>
-  );
-}
-
-function EventFormArea({
-  label,
-  value,
-  onChange,
-  required = false,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  required?: boolean;
-}) {
-  return (
-    <label className="mt-5 block text-[11px] font-black text-[#3c463b]">
-      {label}
-      <textarea
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        required={required}
-        rows={4}
-        className="mt-2 w-full resize-none rounded-[14px] border border-[#e0e4db] bg-[#f7f8f3] px-4 py-3 text-[13px] font-medium leading-6 text-[#262d25] outline-none transition focus:border-[#b6d8b8] focus:bg-white"
-      />
-    </label>
-  );
-}
 
 function EventsFooter() {
   return (

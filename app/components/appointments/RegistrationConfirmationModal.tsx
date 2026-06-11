@@ -51,7 +51,7 @@ export function RegistrationConfirmationModal({
                 storeRegisteredEvent(eventId);
               }
               if (user?.id) {
-                subscribeEvent(eventSlug, user.id).catch(() => undefined);
+                subscribeEvent(eventId, user.id).catch(() => undefined);
               }
             }}
             className="flex h-12 w-full items-center justify-center rounded-full bg-[#287630] px-5 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.2)] transition hover:bg-[#1f6428]"

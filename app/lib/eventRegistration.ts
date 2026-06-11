@@ -8,8 +8,15 @@ export type EventRegistrationData = {
   consent: boolean;
 };
 
+export type EventRegistrationRecord = EventRegistrationData & {
+  id: string;
+  eventSlug: string;
+  registeredAt: string;
+};
+
 const FORM_STORAGE_KEY = "ruralize.eventRegistrationForms";
 const REGISTERED_EVENTS_STORAGE_KEY = "ruralize.registeredEvents";
+const EVENT_REGISTRATIONS_STORAGE_KEY = "ruralize.eventRegistrations";
 
 export function readRegistrationForm(eventSlug: string) {
   if (typeof window === "undefined") {
@@ -40,6 +47,21 @@ export function saveRegistrationForm(
       [eventSlug]: data,
     }),
   );
+  saveRegistrationRecord(eventSlug, data);
+}
+
+export function readEventRegistrations(eventSlug: string) {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  const registrations = readJsonRecord<EventRegistrationRecord[]>(
+    EVENT_REGISTRATIONS_STORAGE_KEY,
+  );
+
+  return Array.isArray(registrations[eventSlug])
+    ? registrations[eventSlug]
+    : [];
 }
 
 export function storeRegisteredEvent(eventSlug: string) {
@@ -75,6 +97,15 @@ export function unregisterEvent(eventSlug: string, removeForm = false) {
     const forms = readJsonRecord<EventRegistrationData>(FORM_STORAGE_KEY);
     delete forms[eventSlug];
     window.localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(forms));
+
+    const registrations = readJsonRecord<EventRegistrationRecord[]>(
+      EVENT_REGISTRATIONS_STORAGE_KEY,
+    );
+    delete registrations[eventSlug];
+    window.localStorage.setItem(
+      EVENT_REGISTRATIONS_STORAGE_KEY,
+      JSON.stringify(registrations),
+    );
   }
 
   return registeredEvents;
@@ -116,6 +147,46 @@ function readJsonRecord<T>(storageKey: string) {
   } catch {
     return {} as Record<string, T>;
   }
+}
+
+function saveRegistrationRecord(eventSlug: string, data: EventRegistrationData) {
+  const registrations = readJsonRecord<EventRegistrationRecord[]>(
+    EVENT_REGISTRATIONS_STORAGE_KEY,
+  );
+  const eventRegistrations = Array.isArray(registrations[eventSlug])
+    ? registrations[eventSlug]
+    : [];
+  const participantKey =
+    data.email.trim().toLowerCase() ||
+    data.registration.trim().toLowerCase() ||
+    data.name.trim().toLowerCase();
+  const existingRecord = eventRegistrations.find((registration) => {
+    const existingKey =
+      registration.email.trim().toLowerCase() ||
+      registration.registration.trim().toLowerCase() ||
+      registration.name.trim().toLowerCase();
+
+    return existingKey === participantKey;
+  });
+  const nextRecord: EventRegistrationRecord = {
+    ...data,
+    id: existingRecord?.id ?? `${eventSlug}-${Date.now()}`,
+    eventSlug,
+    registeredAt: existingRecord?.registeredAt ?? new Date().toISOString(),
+  };
+  const nextEventRegistrations = existingRecord
+    ? eventRegistrations.map((registration) =>
+        registration.id === existingRecord.id ? nextRecord : registration,
+      )
+    : [...eventRegistrations, nextRecord];
+
+  window.localStorage.setItem(
+    EVENT_REGISTRATIONS_STORAGE_KEY,
+    JSON.stringify({
+      ...registrations,
+      [eventSlug]: nextEventRegistrations,
+    }),
+  );
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

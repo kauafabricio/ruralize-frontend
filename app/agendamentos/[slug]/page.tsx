@@ -1,27 +1,104 @@
-import { notFound } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { RegistrationActions } from "@/app/components/appointments/RegistrationActions";
 import { RequireAuth } from "@/app/components/auth/RequireAuth";
 import { FeedHeader } from "@/app/components/feed/FeedHeader";
-import { events, findAppointment } from "@/app/lib/appointments";
+import { getEvent, type EventResponse } from "@/app/services/api/events.api";
 
-export function generateStaticParams() {
-  return events.map((appointment) => ({
-    slug: appointment.slug,
-  }));
-}
-
-export default async function AppointmentDetailsPage({
+export default function AppointmentDetailsPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
-  const { slug } = await params;
-  const appointment = findAppointment(slug);
+  const eventId = params.slug;
+  const router = useRouter();
+  const [event, setEvent] = useState<EventResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!appointment) {
-    notFound();
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await getEvent(eventId);
+        setEvent(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Erro ao carregar evento");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvent();
+  }, [eventId]);
+
+  if (loading) {
+    return (
+      <RequireAuth>
+        <main className="min-h-screen bg-[#fbfbf7] text-[#1e261e]">
+          <FeedHeader showSearch={false} />
+          <div className="mx-auto w-full max-w-[1220px] px-4 pb-16 pt-10 sm:px-7">
+            <div className="animate-pulse space-y-4">
+              <div className="h-[53px] rounded bg-[#e0e5d8] w-2/3" />
+              <div className="h-4 rounded bg-[#e0e5d8] w-full" />
+              <div className="h-[360px] rounded bg-[#e0e5d8]" />
+            </div>
+          </div>
+        </main>
+      </RequireAuth>
+    );
   }
+
+  if (error || !event) {
+    return (
+      <RequireAuth>
+        <main className="min-h-screen bg-[#fbfbf7] text-[#1e261e]">
+          <FeedHeader showSearch={false} />
+          <div className="mx-auto w-full max-w-[1220px] px-4 pb-16 pt-10 sm:px-7">
+            <div className="rounded-[10px] bg-red-50 p-4 text-red-700">
+              {error || "Evento não encontrado"}
+            </div>
+            <button
+              onClick={() => router.back()}
+              className="mt-4 rounded-full bg-[#287630] px-6 py-2 text-white font-black"
+            >
+              Voltar
+            </button>
+          </div>
+        </main>
+      </RequireAuth>
+    );
+  }
+
+  const formatDate = (dateStr: string) => {
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString("pt-BR", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const formatTime = (dateStr: string) => {
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return "";
+    }
+  };
 
   return (
     <RequireAuth>
@@ -34,46 +111,42 @@ export default async function AppointmentDetailsPage({
               id="event-title"
               className="max-w-[560px] text-[39px] font-black leading-[1.04] tracking-[-0.05em] text-[#1f6f2a] sm:text-[53px]"
             >
-              {appointment.title}
+              {event.title}
             </h1>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              {appointment.tags.map((tag, index) => (
-                <span
-                  key={tag}
-                  className={`rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-[0.08em] ${
-                    index === 0
-                      ? "bg-[#c9f7ca] text-[#287630]"
-                      : "bg-[#e5e6e1] text-[#596255]"
-                  }`}
-                >
-                  {tag}
+              {event.action_name && (
+                <span className="rounded-full bg-[#c9f7ca] px-4 py-2 text-[10px] font-black uppercase tracking-[0.08em] text-[#287630]">
+                  {event.action_name}
                 </span>
-              ))}
+              )}
+              <span className="rounded-full bg-[#e5e6e1] px-4 py-2 text-[10px] font-black uppercase tracking-[0.08em] text-[#596255]">
+                {event.status}
+              </span>
             </div>
 
             <p className="mt-12 max-w-[620px] text-[14px] font-medium leading-7 text-[#465142]">
-              {appointment.summary}
+              {event.description}
             </p>
 
             <dl className="mt-12 space-y-8">
               <DetailItem
                 icon={<LocationIcon className="h-[17px] w-[17px]" />}
                 label="Local"
-                title={appointment.location}
-                description={appointment.address}
+                title={event.location_name}
+                description={event.address}
               />
               <DetailItem
                 icon={<ClockIcon className="h-[17px] w-[17px]" />}
                 label="Horário"
-                title={appointment.time}
-                description="Duração prevista: 2 horas"
+                title={`${formatDate(event.start_date)} às ${formatTime(event.start_date)}`}
+                description={`Encerra às ${formatTime(event.end_date)}`}
               />
               <DetailItem
                 icon={<PersonIcon className="h-[17px] w-[17px]" />}
                 label="Responsável"
-                title={appointment.organizer}
-                description={appointment.organizerRole}
+                title={event.promoter_name || "—"}
+                description={event.status}
                 avatar
               />
             </dl>
@@ -83,8 +156,12 @@ export default async function AppointmentDetailsPage({
             <div
               className="h-[260px] rounded-[8px] bg-[#dce9d3] bg-cover bg-center shadow-[0_18px_40px_rgba(33,55,30,0.12)] sm:h-[360px]"
               role="img"
-              aria-label={appointment.title}
-              style={{ backgroundImage: `url("${appointment.image}")` }}
+              aria-label={event.title}
+              style={{
+                backgroundImage: event.photo_url
+                  ? `url("${event.photo_url}")`
+                  : "linear-gradient(135deg, #c9f7ca 0%, #dfe8d8 100%)",
+              }}
             />
 
             <section className="mt-8 rounded-[10px] border border-[#e6e8e0] bg-white px-8 py-8 shadow-[0_10px_28px_rgba(33,55,30,0.05)]">
@@ -92,15 +169,13 @@ export default async function AppointmentDetailsPage({
                 Garanta sua vaga
               </h2>
               <p className="mt-4 text-[12px] font-medium leading-5 text-[#566052]">
-                As vagas são limitadas para garantir o aprendizado prático de
-                todos os participantes. Inscreva-se agora para receber o
-                material de apoio.
+                Vagas disponíveis: {Math.max(0, event.max_participants - (event.participant_count || 0))} de {event.max_participants}
               </p>
 
               <RegistrationActions
                 eventHref="/agendamentos"
-                eventSlug={appointment.slug}
-                formHref={`/agendamentos/${appointment.slug}/formulario`}
+                eventId={eventId}
+                formHref={`/agendamentos/${eventId}/formulario`}
               />
 
               <p className="mt-6 flex items-center justify-center gap-2 text-[10px] font-semibold text-[#a0a69b]">

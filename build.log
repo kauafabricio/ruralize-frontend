@@ -1,0 +1,148 @@
+npm warn exec The following package was not found and will be installed: next@16.2.7
+▲ Next.js 16.2.7 (Turbopack)
+
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 5 errors:
+./app/agendamentos/explorar/page.tsx:10:1
+Module not found: Can't resolve '@/app/lib/useTeacherAccess'
+  [90m 8 |[0m [36mimport[0m { useAuthenticatedUser } [36mfrom[0m [32m"@/app/components/auth/useAuthenticatedUser"[0m;
+  [90m 9 |[0m [36mimport[0m { listEvents, createEvent, [33mEventListResponse[0m, [33mEventCreate[0m } [36mfrom[0m [32m"@/app/services/ap...[0m
+[31m[1m>[0m [90m10 |[0m [36mimport[0m { useTeacherAccess } [36mfrom[0m [32m"@/app/lib/useTeacherAccess"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mExplorarEventosPage[0m() {
+  [90m13 |[0m   [36mconst[0m user = useAuthenticatedUser();
+
+Import map: aliased to relative './app/lib/useTeacherAccess' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./app/agendamentos/explorar/page.tsx [Client Component Browser]
+    ./app/agendamentos/explorar/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/agendamentos/explorar/page.tsx [Client Component SSR]
+    ./app/agendamentos/explorar/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./app/agendamentos/[slug/]/page.tsx:9:1
+Module not found: Can't resolve '@/app/services/api/events.api'
+  [90m 7 |[0m [36mimport[0m { [33mRequireAuth[0m } [36mfrom[0m [32m"@/app/components/auth/RequireAuth"[0m;
+  [90m 8 |[0m [36mimport[0m { [33mFeedHeader[0m } [36mfrom[0m [32m"@/app/components/feed/FeedHeader"[0m;
+[31m[1m>[0m [90m 9 |[0m [36mimport[0m { getEvent, [33mEventResponse[0m } [36mfrom[0m [32m"@/app/services/api/events.api"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m
+  [90m11 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mAppointmentDetailsPage[0m() {
+  [90m12 |[0m   [36mconst[0m params = useParams();
+
+Import map: aliased to relative './app/services/api/events.api' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./app/agendamentos/[slug/]/page.tsx [Client Component Browser]
+    ./app/agendamentos/[slug/]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/agendamentos/[slug/]/page.tsx [Client Component SSR]
+    ./app/agendamentos/[slug/]/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./app/agendamentos/explorar/page.tsx:9:1
+Module not found: Can't resolve '@/app/services/api/events.api'
+  [90m 7 |[0m ...[33mFeedHeader[0m } [36mfrom[0m [32m"@/app/components/feed/FeedHeader"[0m;
+  [90m 8 |[0m ...useAuthenticatedUser } [36mfrom[0m [32m"@/app/components/auth/useAuthenticatedUser"[0m;
+[31m[1m>[0m [90m 9 |[0m ...listEvents, createEvent, [33mEventListResponse[0m, [33mEventCreate[0m } [36mfrom[0m [32m"@/app/services/api/even...[0m
+  [90m   |[0m    [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m ...useTeacherAccess } [36mfrom[0m [32m"@/app/lib/useTeacherAccess"[0m;
+  [90m11 |[0m ...
+  [90m12 |[0m ...[36mfault[0m [36mfunction[0m [33mExplorarEventosPage[0m() {
+
+Import map: aliased to relative './app/services/api/events.api' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./app/agendamentos/explorar/page.tsx [Client Component Browser]
+    ./app/agendamentos/explorar/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/agendamentos/explorar/page.tsx [Client Component SSR]
+    ./app/agendamentos/explorar/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./app/agendamentos/page.tsx:9:1
+Module not found: Can't resolve '@/app/services/api/events.api'
+  [90m 7 |[0m [36mimport[0m { [33mFeedHeader[0m } [36mfrom[0m [32m"@/app/components/feed/FeedHeader"[0m;
+  [90m 8 |[0m [36mimport[0m { useAuthenticatedUser } [36mfrom[0m [32m"@/app/components/auth/useAuthenticatedUser"[0m;
+[31m[1m>[0m [90m 9 |[0m [36mimport[0m { getMyEvents, [33mEventResponse[0m, unsubscribeEvent } [36mfrom[0m [32m"@/app/services/api/events.api"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m
+  [90m11 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mAgendamentosPage[0m() {
+  [90m12 |[0m   [36mconst[0m user = useAuthenticatedUser();
+
+Import map: aliased to relative './app/services/api/events.api' inside of [project]/
+
+
+Import traces:
+  Client Component Browser:
+    ./app/agendamentos/page.tsx [Client Component Browser]
+    ./app/agendamentos/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/agendamentos/page.tsx [Client Component SSR]
+    ./app/agendamentos/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./app/components/appointments/RegistrationActions.tsx:7:1
+Module not found: Can't resolve '@/app/services/api/events.api'
+  [90m 5 |[0m
+  [90m 6 |[0m [36mimport[0m { useAuthenticatedUser } [36mfrom[0m [32m"../auth/useAuthenticatedUser"[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m { subscribeEvent, unsubscribeEvent } [36mfrom[0m [32m"@/app/services/api/events.api"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m {
+  [90m 9 |[0m   hasRegistrationForm,
+  [90m10 |[0m   saveRegistrationForm,
+
+Import map: aliased to relative './app/services/api/events.api' inside of [project]/
+
+
+Import traces:
+  Server Component:
+    ./app/components/appointments/RegistrationActions.tsx
+    ./app/agendamentos/[slug]/page.tsx
+
+  Client Component Browser:
+    ./app/components/appointments/RegistrationActions.tsx [Client Component Browser]
+    ./app/agendamentos/[slug/]/page.tsx [Client Component Browser]
+    ./app/agendamentos/[slug/]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/components/appointments/RegistrationActions.tsx [Client Component SSR]
+    ./app/agendamentos/[slug/]/page.tsx [Client Component SSR]
+    ./app/agendamentos/[slug/]/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (./app/agendamentos/explorar/page.tsx:10:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (./app/agendamentos/[slug/]/page.tsx:9:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (./app/agendamentos/explorar/page.tsx:9:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (./app/agendamentos/page.tsx:9:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (./app/components/appointments/RegistrationActions.tsx:7:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)

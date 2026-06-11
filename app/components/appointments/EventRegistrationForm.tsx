@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import type { Appointment } from "@/app/lib/appointments";
+import type { EventResponse } from "@/app/services/api/events.api";
 import {
   EventRegistrationData,
   readRegistrationForm,
@@ -12,10 +12,11 @@ import { useAuth } from "@/app/components/auth/AuthProvider";
 import { RegistrationConfirmationModal } from "./RegistrationConfirmationModal";
 
 type EventRegistrationFormProps = {
-  event: Appointment;
+  eventId: string;
+  event: EventResponse;
 };
 
-export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
+export function EventRegistrationForm({ eventId, event }: EventRegistrationFormProps) {
   const { user } = useAuth();
   const initialForm = useMemo<EventRegistrationData>(
     () => ({
@@ -38,13 +39,13 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
 
   useEffect(() => {
     const syncSavedFormTimeout = window.setTimeout(() => {
-      setForm(readRegistrationForm(event.slug) ?? initialForm);
+      setForm(readRegistrationForm(eventId) ?? initialForm);
     }, 0);
 
     return () => {
       window.clearTimeout(syncSavedFormTimeout);
     };
-  }, [event.slug, initialForm]);
+  }, [eventId, initialForm]);
 
   function handleFieldChange(
     field: keyof EventRegistrationData,
@@ -76,7 +77,7 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
           className="mt-9 space-y-7"
           onSubmit={(eventSubmit) => {
             eventSubmit.preventDefault();
-            saveRegistrationForm(event.slug, form);
+            saveRegistrationForm(eventId, form);
             setConfirmationOpen(true);
           }}
         >
@@ -167,7 +168,7 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
       {confirmationOpen ? (
         <RegistrationConfirmationModal
           eventHref="/agendamentos"
-          eventSlug={event.slug}
+          eventId={eventId}
           registerOnConfirm
           onClose={() => setConfirmationOpen(false)}
         />

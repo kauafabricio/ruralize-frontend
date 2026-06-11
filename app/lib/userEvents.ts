@@ -1,4 +1,3 @@
-import type { Appointment } from "./appointments";
 import type { AuthUser } from "./auth";
 import type {
   EventCreate,
@@ -6,6 +5,24 @@ import type {
   EventResponse,
   EventUpdate,
 } from "@/app/services/api/events.api";
+
+export type Appointment = {
+  slug: string;
+  status: string;
+  date: string;
+  compactDate: string;
+  title: string;
+  location: string;
+  address: string;
+  time: string;
+  organizer: string;
+  organizerRole: string;
+  tags: string[];
+  category: string;
+  shortDescription: string;
+  summary: string;
+  image: string;
+};
 
 export type UserCreatedEvent = Appointment & {
   id: string;
@@ -50,11 +67,12 @@ export function isTeacherRole(role: string | null | undefined) {
   return ["teacher", "professor", "docente"].includes(normalizeRole(role));
 }
 
-export function eventToAppointment(event: EventListResponse | EventResponse) {
+export function eventToAppointment(event: EventListResponse | EventResponse): Appointment {
   const startDate = parseApiDate(event.start_date);
-  const endDate = parseApiDate(
-    "end_date" in event ? event.end_date : event.start_date,
-  );
+  const isEventResponse = "end_date" in event;
+  const endDate = isEventResponse
+    ? parseApiDate((event as EventResponse).end_date)
+    : startDate;
   const category = event.action_name ?? "Evento";
   const appointment: Appointment = {
     slug: event.id,
@@ -184,7 +202,7 @@ export function saveUserCreatedEvent(
       input.image.trim() ||
       "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1100&q=85",
     id: eventSlug,
-    creatorId: user.id,
+    creatorId: user.id ?? "",
     creatorName: user.name ?? "Docente Ruralize",
     createdAt: existingEvent?.createdAt ?? new Date().toISOString(),
     updatedAt: new Date().toISOString(),

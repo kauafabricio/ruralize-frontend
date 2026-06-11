@@ -6,14 +6,14 @@ import { storeRegisteredEvent } from "@/app/lib/eventRegistration";
 
 type RegistrationConfirmationModalProps = {
   eventHref: string;
-  eventSlug: string;
+  eventId: string;
   onClose: () => void;
   registerOnConfirm?: boolean;
 };
 
 export function RegistrationConfirmationModal({
   eventHref,
-  eventSlug,
+  eventId,
   onClose,
   registerOnConfirm = false,
 }: RegistrationConfirmationModalProps) {
@@ -44,7 +44,7 @@ export function RegistrationConfirmationModal({
             href={eventHref}
             onClick={() => {
               if (registerOnConfirm) {
-                storeRegisteredEvent(eventSlug);
+                storeRegisteredEvent(eventId);
               }
             }}
             className="flex h-12 w-full items-center justify-center rounded-full bg-[#287630] px-5 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.2)] transition hover:bg-[#1f6428]"

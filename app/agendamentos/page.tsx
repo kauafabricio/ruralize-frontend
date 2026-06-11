@@ -5,29 +5,50 @@ import { useEffect, useState } from "react";
 
 import { RequireAuth } from "@/app/components/auth/RequireAuth";
 import { FeedHeader } from "@/app/components/feed/FeedHeader";
-import { events } from "@/app/lib/appointments";
-import {
-  readRegisteredEventSlugs,
-  unregisterEvent,
-} from "@/app/lib/eventRegistration";
+import { useAuthenticatedUser } from "@/app/components/auth/useAuthenticatedUser";
+import { getMyEvents, EventResponse, unsubscribeEvent } from "@/app/services/api/events.api";
 
 export default function AgendamentosPage() {
-  const [registeredEventSlugs, setRegisteredEventSlugs] = useState<string[]>(
-    [],
-  );
-  const registeredEvents = events.filter((event) =>
-    registeredEventSlugs.includes(event.slug),
-  );
+  const user = useAuthenticatedUser();
+  const [registeredEvents, setRegisteredEvents] = useState<EventResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  // Fetch user's events from backend
   useEffect(() => {
-    const syncRegisteredEventsTimeout = window.setTimeout(() => {
-      setRegisteredEventSlugs(readRegisteredEventSlugs());
-    }, 0);
+    if (!user || !user.userId) return;
 
-    return () => {
-      window.clearTimeout(syncRegisteredEventsTimeout);
+    const fetchMyEvents = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await getMyEvents(user.userId as string);
+        setRegisteredEvents(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Erro ao carregar agendamentos");
+        setRegisteredEvents([]);
+      } finally {
+        setLoading(false);
+      }
     };
-  }, []);
+
+    fetchMyEvents();
+  }, [user?.userId]);
+
+  const handleCancel = async (eventId: string, eventTitle: string) => {
+    const confirmed = window.confirm(
+      `Cancelar sua inscrição em "${eventTitle}"?`
+    );
+
+    if (!confirmed || !user || !user.userId) return;
+
+    try {
+      await unsubscribeEvent(eventId, user.userId as string);
+      setRegisteredEvents(registeredEvents.filter(e => e.id !== eventId));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erro ao cancelar inscrição");
+    }
+  };
 
   return (
     <RequireAuth>
@@ -49,30 +70,37 @@ export default function AgendamentosPage() {
               </p>
             </div>
 
-            {registeredEvents.length > 0 ? (
+            {loading && (
+              <div className="mt-10 text-center text-gray-600">
+                Carregando seus agendamentos...
+              </div>
+            )}
+
+            {error && (
+              <div className="mt-10 rounded-lg bg-red-50 p-4 text-red-700">
+                {error}
+              </div>
+            )}
+
+            {!loading && registeredEvents.length > 0 ? (
               <div className="mt-10 grid gap-7 md:grid-cols-2 xl:grid-cols-3">
-                {registeredEvents.map((appointment) => (
+                {registeredEvents.map((event) => (
                   <AppointmentCard
-                    key={appointment.title}
-                    status="Confirmado"
-                    date={appointment.date}
-                    title={appointment.title}
-                    location={appointment.location}
-                    href={`/agendamentos/${appointment.slug}`}
-                    onCancel={() => {
-                      const nextRegisteredEvents = unregisterEvent(
-                        appointment.slug,
-                      );
-                      setRegisteredEventSlugs(nextRegisteredEvents);
-                    }}
+                    key={event.id}
+                    id={event.id}
+                    title={event.title}
+                    date={formatDate(event.start_date)}
+                    location={event.location_name}
+                    href={`/agendamentos/${event.id}`}
+                    onCancel={() => handleCancel(event.id, event.title)}
                   />
                 ))}
               </div>
-            ) : (
+            ) : !loading ? (
               <EmptyAppointmentsState />
-            )}
+            ) : null}
 
-            {registeredEvents.length > 0 ? (
+            {!loading && registeredEvents.length > 0 ? (
               <div className="mt-11 flex justify-center">
                 <NewAppointmentCard />
               </div>
@@ -86,6 +114,15 @@ export default function AgendamentosPage() {
   );
 }
 
+function formatDate(dateStr: string): string {
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("pt-BR");
+  } catch {
+    return dateStr;
+  }
+}
+
 function EmptyAppointmentsState() {
   return (
     <section className="mt-10 flex min-h-[230px] flex-col items-center justify-center rounded-[26px] border border-dashed border-[#d8dbd2] bg-[#fbfbf7] px-8 text-center">
@@ -96,7 +133,7 @@ function EmptyAppointmentsState() {
         Nenhum agendamento confirmado
       </h2>
       <p className="mt-3 max-w-[360px] text-[12px] font-semibold leading-5 text-[#777f72]">
-        Preencha o formulário de um evento em Explorar Eventos para que ele
+        Inscreva-se em um evento em Explorar Eventos para que ele
         apareça aqui.
       </p>
       <Link
@@ -110,16 +147,16 @@ function EmptyAppointmentsState() {
 }
 
 function AppointmentCard({
-  status,
-  date,
+  id,
   title,
+  date,
   location,
   href,
   onCancel,
 }: {
-  status: string;
-  date: string;
+  id: string;
   title: string;
+  date: string;
   location: string;
   href: string;
   onCancel: () => void;
@@ -128,7 +165,7 @@ function AppointmentCard({
     <article className="flex min-h-[264px] flex-col rounded-[26px] bg-white px-7 py-7 shadow-[0_20px_45px_rgba(33,55,30,0.08)]">
       <div className="flex items-start justify-between gap-4">
         <span className="rounded-full bg-[#c9f7ca] px-4 py-2 text-[10px] font-black uppercase tracking-[0.08em] text-[#287630]">
-          {status}
+          Confirmado
         </span>
         <CalendarIcon className="mt-1 h-[17px] w-[17px] text-[#aab2a5]" />
       </div>
@@ -162,18 +199,10 @@ function AppointmentCard({
       </div>
       <button
         type="button"
-        onClick={() => {
-          const confirmed = window.confirm(
-            `Cancelar sua inscricao em "${title}"?`,
-          );
-
-          if (confirmed) {
-            onCancel();
-          }
-        }}
+        onClick={onCancel}
         className="mt-4 h-10 rounded-full border border-[#f1c4c4] bg-white px-5 text-[11px] font-black text-[#b92828] transition hover:bg-[#fff3f3]"
       >
-        Cancelar inscricao
+        Cancelar inscrição
       </button>
     </article>
   );
@@ -215,7 +244,7 @@ function AppointmentsFooter() {
             Privacidade
           </a>
         </nav>
-        <p>© 2024 SustentaRural - UFRPE</p>
+        <p>© 2026 SustentaRural - UFRPE</p>
       </div>
     </footer>
   );
@@ -276,4 +305,3 @@ function ArrowIcon({ className = "h-4 w-4" }: { className?: string }) {
     </svg>
   );
 }
-

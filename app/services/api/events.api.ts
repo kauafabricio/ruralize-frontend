@@ -106,7 +106,7 @@ export async function subscribeEvent(
   userId: string,
 ): Promise<Record<string, unknown>> {
   const response = await api.post<Record<string, unknown>>(
-    `/events/${eventId}/subscribe`,
+    `/events/${eventId}/register`,
     null,
     {
       headers: { "x-user-id": userId },
@@ -120,7 +120,7 @@ export async function unsubscribeEvent(
   userId: string,
 ): Promise<Record<string, unknown>> {
   const response = await api.delete<Record<string, unknown>>(
-    `/events/${eventId}/unsubscribe`,
+    `/events/${eventId}/register`,
     {
       headers: { "x-user-id": userId },
     },

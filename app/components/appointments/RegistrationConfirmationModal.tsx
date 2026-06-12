@@ -1,25 +1,45 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { useAuth } from "@/app/components/auth/AuthProvider";
-import { storeRegisteredEvent } from "@/app/lib/eventRegistration";
 import { subscribeEvent } from "@/app/services/api/events.api";
 
 type RegistrationConfirmationModalProps = {
   eventHref: string;
   eventId: string;
   onClose: () => void;
-  registerOnConfirm?: boolean;
 };
 
 export function RegistrationConfirmationModal({
   eventHref,
   eventId,
   onClose,
-  registerOnConfirm = false,
 }: RegistrationConfirmationModalProps) {
+  const router = useRouter();
   const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleConfirm = async () => {
+    if (!user?.id) {
+      setError("Usuário não autenticado");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      await subscribeEvent(eventId, user.id);
+      router.push(eventHref);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao confirmar inscrição");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#d7ddd3]/70 px-4 py-8 backdrop-blur-[5px]">
@@ -43,21 +63,21 @@ export function RegistrationConfirmationModal({
           Você preencheu o formulário de inscrição corretamente?
         </p>
 
+        {error ? (
+          <div className="mt-4 rounded-[14px] bg-red-50 px-4 py-3 text-[12px] font-semibold text-red-700">
+            {error}
+          </div>
+        ) : null}
+
         <div className="mt-7 space-y-3">
-          <Link
-            href={eventHref}
-            onClick={() => {
-              if (registerOnConfirm) {
-                storeRegisteredEvent(eventId);
-              }
-              if (user?.id) {
-                subscribeEvent(eventId, user.id).catch(() => undefined);
-              }
-            }}
-            className="flex h-12 w-full items-center justify-center rounded-full bg-[#287630] px-5 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.2)] transition hover:bg-[#1f6428]"
+          <button
+            type="button"
+            onClick={handleConfirm}
+            disabled={loading}
+            className="flex h-12 w-full items-center justify-center rounded-full bg-[#287630] px-5 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.2)] transition hover:bg-[#1f6428] disabled:opacity-50"
           >
-            Sim, preenchi corretamente
-          </Link>
+            {loading ? "Confirmando..." : "Sim, preenchi corretamente"}
+          </button>
           <button
             type="button"
             onClick={onClose}

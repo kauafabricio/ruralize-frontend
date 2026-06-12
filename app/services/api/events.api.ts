@@ -106,7 +106,7 @@ export async function subscribeEvent(
   userId: string,
 ): Promise<Record<string, unknown>> {
   const response = await api.post<Record<string, unknown>>(
-    `/events/${eventId}/register`,
+    `/events/${eventId}/subscribe`,
     null,
     {
       headers: { "x-user-id": userId },
@@ -120,7 +120,23 @@ export async function unsubscribeEvent(
   userId: string,
 ): Promise<Record<string, unknown>> {
   const response = await api.delete<Record<string, unknown>>(
-    `/events/${eventId}/register`,
+    `/events/${eventId}/unsubscribe`,
+    {
+      headers: { "x-user-id": userId },
+    },
+  );
+  return response.data;
+}
+
+export async function updateParticipantStatus(
+  eventId: string,
+  participantUserId: string,
+  status: string,
+  userId: string,
+): Promise<Record<string, unknown>> {
+  const response = await api.patch<Record<string, unknown>>(
+    `/events/${eventId}/participants/${participantUserId}/status`,
+    { status },
     {
       headers: { "x-user-id": userId },
     },

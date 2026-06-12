@@ -1,19 +1,24 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import type { EventResponse } from "@/app/services/api/events.api";
-import {
-  EventRegistrationData,
-  readRegistrationForm,
-  saveRegistrationForm,
-} from "@/app/lib/eventRegistration";
 import { useAuth } from "@/app/components/auth/AuthProvider";
 import { RegistrationConfirmationModal } from "./RegistrationConfirmationModal";
 
 type EventRegistrationFormProps = {
   eventId: string;
   event: EventResponse;
+};
+
+type EventRegistrationData = {
+  name: string;
+  email: string;
+  registration: string;
+  course: string;
+  phone: string;
+  motivation: string;
+  consent: boolean;
 };
 
 export function EventRegistrationForm({ eventId, event }: EventRegistrationFormProps) {
@@ -34,18 +39,8 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
     }),
     [user?.email, user?.name, user?.raw],
   );
-  const [form, setForm] = useState<EventRegistrationData>(initialForm);
+  const [form, setForm] = useState(initialForm);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
-
-  useEffect(() => {
-    const syncSavedFormTimeout = window.setTimeout(() => {
-      setForm(readRegistrationForm(eventId) ?? initialForm);
-    }, 0);
-
-    return () => {
-      window.clearTimeout(syncSavedFormTimeout);
-    };
-  }, [eventId, initialForm]);
 
   function handleFieldChange(
     field: keyof EventRegistrationData,
@@ -77,7 +72,7 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
           className="mt-9 space-y-7"
           onSubmit={(eventSubmit) => {
             eventSubmit.preventDefault();
-            saveRegistrationForm(eventId, form);
+            setSubmitError(null);
             setConfirmationOpen(true);
           }}
         >
@@ -167,9 +162,8 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
 
       {confirmationOpen ? (
         <RegistrationConfirmationModal
-          eventHref="/agendamentos"
+          eventHref={`/agendamentos/${eventId}`}
           eventId={eventId}
-          registerOnConfirm
           onClose={() => setConfirmationOpen(false)}
         />
       ) : null}

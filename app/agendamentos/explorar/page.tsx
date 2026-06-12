@@ -47,9 +47,13 @@ export default function ExplorarEventosPage() {
 
     setCreatingEvent(true);
     setCreateError(null);
+    const form = e.currentTarget;
 
     try {
-      const formData = new FormData(e.currentTarget);
+      const formData = new FormData(form);
+      const file = formData.get("photo_file") as File | null;
+      const photoUrl = file?.name ? await readFileAsDataUrl(file) : undefined;
+
       const eventData: EventCreate = {
         title: formData.get("title") as string,
         description: formData.get("description") as string,
@@ -60,24 +64,35 @@ export default function ExplorarEventosPage() {
         address: formData.get("address") as string,
         max_participants: parseInt(formData.get("max_participants") as string),
         points: parseInt(formData.get("points") as string),
-        photo_url: (formData.get("photo_url") as string) || undefined,
+        photo_url: photoUrl,
       };
 
-      const result = await createEvent(user.userId as string, eventData);
+      await createEvent(user.userId as string, eventData);
 
-      // Refresh events list
       const updatedEvents = await listEvents();
       setEvents(updatedEvents);
 
-      // Reset form
-      e.currentTarget.reset();
-      setCreatingEvent(false);
+      form.reset();
     } catch (err) {
       setCreateError(err instanceof Error ? err.message : "Erro ao criar evento");
     } finally {
       setCreatingEvent(false);
     }
   };
+
+  const readFileAsDataUrl = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          resolve(reader.result);
+        } else {
+          reject(new Error("Falha ao ler o arquivo de imagem"));
+        }
+      };
+      reader.onerror = () => reject(new Error("Falha ao ler o arquivo de imagem"));
+      reader.readAsDataURL(file);
+    });
 
   return (
     <RequireAuth>
@@ -163,12 +178,17 @@ export default function ExplorarEventosPage() {
                   className="col-span-2 rounded-lg border border-gray-300 px-4 py-2"
                   rows={3}
                 />
-                <input
-                  type="url"
-                  name="photo_url"
-                  placeholder="URL da imagem (opcional)"
-                  className="col-span-2 rounded-lg border border-gray-300 px-4 py-2"
-                />
+                <label className="col-span-2 block rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-[#434845]">
+                  <span className="block text-xs font-black uppercase tracking-[0.14em] text-[#5e6a55]">
+                    Imagem do evento (opcional)
+                  </span>
+                  <input
+                    type="file"
+                    name="photo_file"
+                    accept="image/*"
+                    className="mt-3 w-full text-sm text-[#2e372f]"
+                  />
+                </label>
                 <button
                   type="submit"
                   disabled={creatingEvent}

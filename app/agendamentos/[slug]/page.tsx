@@ -173,9 +173,11 @@ export default function AppointmentDetailsPage({
               </p>
 
               <RegistrationActions
-                eventHref="/agendamentos"
                 eventId={eventId}
                 formHref={`/agendamentos/${eventId}/formulario`}
+                promoterId={event.promoter_id}
+                startDate={event.start_date}
+                endDate={event.end_date}
               />
 
               <p className="mt-6 flex items-center justify-center gap-2 text-[10px] font-semibold text-[#a0a69b]">

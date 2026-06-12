@@ -7,11 +7,14 @@ import { FeedHeader } from "@/app/components/feed/FeedHeader";
 import { PostCard } from "@/app/components/feed/PostCard";
 import { FollowButton } from "@/app/components/FollowButton";
 import { Toast } from "@/app/components/Toast";
+import { useAuth } from "@/app/components/auth/AuthProvider";
 import { getProfileByUser, type ProfileResponse } from "@/app/services/api/profile.api";
 import { getPostsByUser, type PostResponse } from "@/app/services/api/posts.api";
+import { translateRole } from "@/app/lib/roleTranslator";
 
 export default function UserProfilePage() {
   const params = useParams<{ slug: string }>();
+  const { user: currentUser } = useAuth();
   const userId = params.slug;
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
   const [posts, setPosts] = useState<PostResponse[]>([]);
@@ -21,6 +24,9 @@ export default function UserProfilePage() {
     message: string;
     type: "success" | "error";
   } | null>(null);
+
+  // Check if viewing own profile
+  const isOwnProfile = currentUser?.id === userId;
 
   const loadUserData = useCallback(async () => {
     setLoading(true);
@@ -131,9 +137,25 @@ export default function UserProfilePage() {
           >
             Voltar à exploração
           </Link>
-          <span className="rounded-full bg-[#e9f4e4] px-4 py-2 text-[#225f35]">
-            Perfil público
-          </span>
+          <div className="flex items-center gap-3">
+            {isOwnProfile && currentUser ? (
+              <>
+                <span className="rounded-full bg-[#e9f4e4] px-4 py-2 text-[#225f35]">
+                  Seu Perfil
+                </span>
+                <Link
+                  href="/perfil"
+                  className="rounded-full bg-[#287630] px-4 py-2 text-white transition hover:bg-[#1f6428]"
+                >
+                  Editar
+                </Link>
+              </>
+            ) : (
+              <span className="rounded-full bg-[#e9f4e4] px-4 py-2 text-[#225f35]">
+                Perfil público
+              </span>
+            )}
+          </div>
         </div>
 
         <section className="overflow-hidden rounded-[28px] bg-white shadow-[0_1px_0_rgba(33,55,30,0.04)]">
@@ -155,14 +177,14 @@ export default function UserProfilePage() {
                   {profile.name}
                 </h1>
                 <p className="mt-1 text-[13px] font-black text-[#287630]">
-                  {profile.role}
+                  {translateRole(profile.role)}
                 </p>
                 <p className="mt-6 max-w-[590px] text-[12px] font-medium leading-6 text-[#545d50]">
                   {profile.description || "Sem descrição adicionada"}
                 </p>
               </div>
 
-              <FollowButton />
+              {!isOwnProfile && <FollowButton />}
             </div>
           </div>
         </section>

@@ -15,8 +15,7 @@ import { AuthInput } from "@/app/components/AuthInput";
 import { AuthShell } from "@/app/components/AuthShell";
 import { MatriculaInput } from "@/app/components/MatriculaInput";
 import { Toast } from "@/app/components/Toast";
-import { ProfileCompletionModal } from "@/app/components/ProfileCompletionModal";
-import { registerUser, type UserCreate, getProfileCompletionStatus } from "../services/api/auth.api";
+import { registerUser, type UserCreate } from "../services/api/auth.api";
 
 export default function CadastroPage() {
   const [role, setRole] = useState<"student" | "teacher">("student");
@@ -26,10 +25,10 @@ export default function CadastroPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [registration, setRegistration] = useState("");
+  const [department, setDepartment] = useState("");
+  const [course, setCourse] = useState("");
+  const [campus_location, setCampusLocation] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showCompletionModal, setShowCompletionModal] = useState(false);
-  const [missingFields, setMissingFields] = useState<string[]>([]);
-  const [userId, setUserId] = useState<string | null>(null);
 
   const [toast, setToast] = useState<{
     message: string;
@@ -57,14 +56,23 @@ export default function CadastroPage() {
         email,
         password,
         role,
+        campus_location,
       };
 
       if (role === "student") {
         if (!registration) {
-          throw new Error("Preencha todos os campos de aluno");
+          throw new Error("Matrícula é obrigatória");
         }
-
+        if (!course) {
+          throw new Error("Curso é obrigatório");
+        }
         body.registration = registration;
+        body.course = course;
+      } else {
+        if (!department) {
+          throw new Error("Departamento é obrigatório");
+        }
+        body.department = department;
       }
 
       await registerUser(body);
@@ -75,7 +83,7 @@ export default function CadastroPage() {
       });
 
       setTimeout(() => {
-        window.location.href = "/login";
+        window.location.href = "/perfil";
       }, 1500);
     } catch (err: unknown) {
       setToast({
@@ -97,15 +105,6 @@ export default function CadastroPage() {
           message={toast.message}
           type={toast.type}
           onClose={() => setToast(null)}
-        />
-      )}
-
-      {showCompletionModal && (
-        <ProfileCompletionModal
-          missingFields={missingFields}
-          onContinue={() => {
-            window.location.href = "/perfil?edit=true&incomplete=true";
-          }}
         />
       )}
 
@@ -143,6 +142,31 @@ export default function CadastroPage() {
               }
             />
           )}
+
+          {role === "student" && (
+            <AuthInput
+              label="Curso"
+              placeholder="Ex: Agronomia"
+              value={course}
+              onChange={(e) => setCourse(e.target.value)}
+            />
+          )}
+
+          {role === "teacher" && (
+            <AuthInput
+              label="Departamento"
+              placeholder="Ex: Engenharia Agrícola"
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+            />
+          )}
+
+          <AuthInput
+            label="Campus"
+            placeholder="Ex: Campus Recife"
+            value={campus_location}
+            onChange={(e) => setCampusLocation(e.target.value)}
+          />
 
           <AuthInput
             label="Senha"

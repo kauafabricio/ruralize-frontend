@@ -8,6 +8,7 @@ export interface UserCreate {
   password: string;
   role: UserRole | string;
   registration?: string | null;
+  course?: string | null;
   department?: string | null;
   campus_location?: string | null;
   description?: string | null;

@@ -24,9 +24,12 @@ export interface ProfileResponse {
 }
 
 export interface ProfileUpdate {
+  name?: string | null;
   description?: string | null;
   profile_photo_url?: string | null;
   cover_photo_url?: string | null;
+  campus_location?: string | null;
+  department?: string | null;
 }
 
 export interface UserProfileResponse {

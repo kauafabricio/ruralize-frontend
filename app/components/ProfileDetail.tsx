@@ -73,16 +73,14 @@ export function ProfileDetail() {
 
       await updateProfile(user.id, payload);
 
+      // Refetch profile to get updated data
+      const updatedProfile = await getProfileByUser(user.id);
+      setProfile(updatedProfile);
+
       setToast({
         message: "Perfil atualizado com sucesso!",
         type: "success",
       });
-
-      setProfile((prev) =>
-        prev
-          ? { ...prev, ...payload }
-          : null
-      );
 
       setIsEditing(false);
     } catch (err) {

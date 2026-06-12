@@ -7,6 +7,7 @@ import { useAuth } from "@/app/components/auth/AuthProvider";
 import { FeedHeader } from "@/app/components/feed/FeedHeader";
 import { PostCard } from "@/app/components/feed/PostCard";
 import { getPostsByUser, type PostResponse } from "@/app/services/api/posts.api";
+import { getProfileByUser, updateProfile as updateProfileAPI } from "@/app/services/api/profile.api";
 import {
   HeartIcon,
   MessageIcon,
@@ -30,10 +31,6 @@ const avatarImage =
 const PROFILE_AVATAR_STORAGE_KEY = "ruralize.profile.avatarUrl";
 const activityImage =
   "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=1400&q=85";
-
-const defaultBio =
-  "Entusiasta da agricultura sintrópica e tecnologias de monitoramento de solo. Atualmente pesquisando o impacto da regeneração de matas ciliares no Campus Dois Irmãos.";
-const defaultLocation = "Recife, PE - UFRPE Campus Sede";
 
 const suggestions = [
   {
@@ -68,27 +65,17 @@ function PerfilContent() {
       "studentRegistration",
     ]) ?? "Não informada";
   const roleLabel = formatRole(user?.role);
-  const initialRoleDescription =
-    readProfileValue(user?.raw, [
-      "roleDescription",
-      "cargo",
-      "position",
-      "function",
-      "funcao",
-    ]) ?? formatRoleDescription(roleLabel);
-  const initialBio =
-    readProfileValue(user?.raw, ["bio", "biography", "resumo", "summary"]) ??
-    defaultBio;
-  const initialLocation =
-    readProfileValue(user?.raw, ["location", "localizacao", "campus"]) ??
-    defaultLocation;
 
-  const initialProfile = {
+  // States for profile loading
+  const [profileLoaded, setProfileLoaded] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+
+  const initialProfile: EditableProfile = {
     name: initialDisplayName,
     email: initialEmail,
-    roleDescription: initialRoleDescription,
-    bio: initialBio,
-    location: initialLocation,
+    roleDescription: roleLabel,
+    bio: "",
+    location: "",
   };
 
   const [editMode, setEditMode] = useState(false);
@@ -98,42 +85,8 @@ function PerfilContent() {
     useState<EditableProfile>(initialProfile);
   const [savedCoverImage, setSavedCoverImage] = useState(coverImage);
   const [draftCoverImage, setDraftCoverImage] = useState(coverImage);
-  const [savedAvatarImage, setSavedAvatarImage] = useState(
-    readProfileValue(user?.raw, [
-      "avatar",
-      "avatarUrl",
-      "avatar_url",
-      "photo",
-      "photoUrl",
-      "picture",
-      "pictureUrl",
-      "image",
-      "imageUrl",
-      "image_url",
-      "foto",
-      "imagem",
-      "profileImage",
-      "profile_image",
-    ]) ?? user?.avatarUrl ?? avatarImage,
-  );
-  const [draftAvatarImage, setDraftAvatarImage] = useState(
-    readProfileValue(user?.raw, [
-      "avatar",
-      "avatarUrl",
-      "avatar_url",
-      "photo",
-      "photoUrl",
-      "picture",
-      "pictureUrl",
-      "image",
-      "imageUrl",
-      "image_url",
-      "foto",
-      "imagem",
-      "profileImage",
-      "profile_image",
-    ]) ?? user?.avatarUrl ?? avatarImage,
-  );
+  const [savedAvatarImage, setSavedAvatarImage] = useState(avatarImage);
+  const [draftAvatarImage, setDraftAvatarImage] = useState(avatarImage);
   const [saveFeedbackOpen, setSaveFeedbackOpen] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -141,6 +94,49 @@ function PerfilContent() {
   const [loadingPosts, setLoadingPosts] = useState(false);
 
   const subtitle = `${savedProfile.roleDescription || roleLabel} - UFRPE`;
+
+  // Load profile from API
+  useEffect(() => {
+    async function loadProfileFromAPI() {
+      if (!user?.id) return;
+
+      try {
+        setProfileError(null);
+        const profileData = await getProfileByUser(user.id);
+
+        const newProfile: EditableProfile = {
+          name: profileData.name || initialDisplayName,
+          email: profileData.academic_info?.email || initialEmail,
+          roleDescription: formatRole(profileData.role) || roleLabel,
+          bio: profileData.description || "",
+          location: profileData.academic_info?.campus_location || "",
+        };
+
+        setSavedProfile(newProfile);
+        setDraftProfile(newProfile);
+
+        if (profileData.profile_photo_url) {
+          setSavedAvatarImage(profileData.profile_photo_url);
+          setDraftAvatarImage(profileData.profile_photo_url);
+        }
+
+        if (profileData.cover_photo_url) {
+          setSavedCoverImage(profileData.cover_photo_url);
+          setDraftCoverImage(profileData.cover_photo_url);
+        }
+
+        setProfileLoaded(true);
+      } catch (err) {
+        console.error("Erro ao carregar perfil da API:", err);
+        setProfileError(err instanceof Error ? err.message : "Erro ao carregar perfil");
+        // Keep using initial profile on error
+        setProfileLoaded(true);
+      }
+    }
+
+    loadProfileFromAPI();
+  }, [user?.id]);
+
 
   function handleDraftChange(field: ProfileFieldName, value: string) {
     setDraftProfile((current) => ({
@@ -223,18 +219,33 @@ function PerfilContent() {
     setSaveError(null);
 
     try {
-      await updateProfile({
-        ...draftProfile,
-        coverImageUrl: draftCoverImage,
-        avatarUrl: draftAvatarImage,
-      });
+      if (!user?.id) {
+        throw new Error("ID do usuário não encontrado");
+      }
+
+      // Prepare update payload - only send editable fields
+      const updatePayload = {
+        name: draftProfile.name,
+        description: draftProfile.bio,
+        campus_location: draftProfile.location,
+      };
+
+      console.log("Enviando atualização:", { userId: user.id, payload: updatePayload });
+
+      // Call API to update profile
+      const result = await updateProfileAPI(user.id, updatePayload);
+
+      console.log("Resposta da API:", result);
+
+      // Refetch profile to confirm changes
+      const updatedProfile = await getProfileByUser(user.id);
+      console.log("Perfil atualizado do banco:", updatedProfile);
 
       setSavedProfile(draftProfile);
-      setSavedCoverImage(draftCoverImage);
-      setSavedAvatarImage(draftAvatarImage);
       setEditMode(false);
       setSaveFeedbackOpen(true);
     } catch (error) {
+      console.error("Erro ao salvar:", error);
       setSaveError(
         error instanceof Error
           ? error.message
@@ -252,12 +263,7 @@ function PerfilContent() {
       {editMode ? (
         <EditProfileScreen
           profile={draftProfile}
-          registration={registration}
-          coverImageUrl={draftCoverImage}
-          avatarImageUrl={draftAvatarImage}
           onChange={handleDraftChange}
-          onCoverChange={setDraftCoverImage}
-          onAvatarChange={setDraftAvatarImage}
           onCancel={handleCancelEdit}
           onSave={handleSaveEdit}
           saveError={saveError}
@@ -428,48 +434,19 @@ function ProfileHero({
 
 function EditProfileScreen({
   profile,
-  registration,
-  coverImageUrl,
-  avatarImageUrl,
   onChange,
-  onCoverChange,
-  onAvatarChange,
   onCancel,
   onSave,
   saveError,
   saving,
 }: {
   profile: EditableProfile;
-  registration: string;
-  coverImageUrl: string;
-  avatarImageUrl: string;
   onChange: (field: ProfileFieldName, value: string) => void;
-  onCoverChange: (value: string) => void;
-  onAvatarChange: (value: string) => void;
   onCancel: () => void;
   onSave: () => Promise<void>;
   saveError: string | null;
   saving: boolean;
 }) {
-  function handleImageFileChange(
-    event: React.ChangeEvent<HTMLInputElement>,
-    onImageChange: (value: string) => void,
-  ) {
-    const file = event.target.files?.[0];
-
-    if (!file) {
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        onImageChange(reader.result);
-      }
-    };
-    reader.readAsDataURL(file);
-    event.target.value = "";
-  }
 
   return (
     <div className="mx-auto flex w-full max-w-[1132px] flex-1 flex-col px-4 pb-12 pt-10 sm:px-6 lg:px-1">
@@ -482,44 +459,12 @@ function EditProfileScreen({
             Editar Perfil
           </h1>
           <p className="mt-2 text-[13px] font-medium text-[#4f594c]">
-            Gerencie suas informações públicas e institucionais na rede SustentaRural.
+            Atualize suas informações básicas.
           </p>
         </div>
 
-        <div className="relative mt-9">
-          <div
-            className="h-[164px] rounded-[28px] bg-[#5aa37a] bg-cover bg-center shadow-[0_1px_0_rgba(33,55,30,0.05)] sm:h-[172px]"
-            role="img"
-            aria-label="Capa do perfil"
-            style={{
-              backgroundImage: `linear-gradient(90deg, rgba(76, 134, 128, 0.92), rgba(79, 163, 109, 0.9)), url("${coverImageUrl}")`,
-            }}
-          >
-            <label className="absolute bottom-5 right-5 inline-flex h-9 cursor-pointer items-center gap-2 rounded-full bg-[#eef8ea] px-4 text-[12px] font-black text-[#1f6f2a] shadow-[0_8px_18px_rgba(33,55,30,0.12)] transition-colors hover:bg-white">
-              <PencilIcon className="h-[13px] w-[13px]" />
-              Alterar Capa
-              <input
-                type="file"
-                accept="image/*"
-                className="sr-only"
-                onChange={(event) =>
-                  handleImageFileChange(event, onCoverChange)
-                }
-              />
-            </label>
-          </div>
-
-          <EditAvatar
-            name={profile.name}
-            imageUrl={avatarImageUrl}
-            onImageChange={(event) =>
-              handleImageFileChange(event, onAvatarChange)
-            }
-          />
-        </div>
-
         <form
-          className="mt-8 rounded-[28px] bg-white px-6 pb-8 pt-[82px] shadow-[0_22px_50px_rgba(33,55,30,0.08)] sm:px-9 lg:px-10"
+          className="mt-9 rounded-[28px] bg-white px-6 pb-8 pt-8 shadow-[0_22px_50px_rgba(33,55,30,0.08)] sm:px-9 lg:px-10"
           onSubmit={(event) => {
             event.preventDefault();
             onSave();
@@ -533,31 +478,11 @@ function EditProfileScreen({
             />
 
             <ProfileField
-              label="Cargo / Função"
-              value={profile.roleDescription}
-              onChange={(value) => onChange("roleDescription", value)}
-            />
-
-            <ProfileField
               label="Bio / Resumo Profissional"
               value={profile.bio}
               onChange={(value) => onChange("bio", value)}
               multiline
               className="lg:col-span-2"
-            />
-
-            <ProfileField
-              label="E-mail Institucional"
-              value={profile.email}
-              type="email"
-              icon={<AtSignIcon className="h-[15px] w-[15px]" />}
-              onChange={(value) => onChange("email", value)}
-            />
-
-            <ProfileField
-              label="Matrícula"
-              value={registration}
-              disabled
             />
 
             <ProfileField
@@ -595,7 +520,7 @@ function EditProfileScreen({
       </section>
 
       <p className="mt-10 text-center text-[11px] font-medium text-[#a0a69b]">
-        Suas informações institucionais como Matrícula são gerenciadas pelo SIGA e não podem ser alteradas.
+        Outros dados como matrícula, curso e departamento são gerenciados pelo SIGA.
       </p>
     </div>
   );

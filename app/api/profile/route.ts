@@ -1,3 +1,12 @@
+/**
+ * @deprecated This endpoint is no longer used. Use the backend API at /profiles/user/{user_id} instead.
+ * This file is kept for reference but all profile operations should go through:
+ * - GET /profiles/user/{user_id} to fetch profile
+ * - PUT /profiles/user/{user_id} to update profile
+ *
+ * The profile data is now persisted to MongoDB via the Python backend.
+ */
+
 import type { AuthUser, ProfileUpdatePayload } from "@/app/lib/auth";
 
 type ProfileRequestBody = {

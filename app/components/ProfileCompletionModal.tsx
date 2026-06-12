@@ -1,14 +1,29 @@
 "use client";
 
+import { useState } from "react";
+import { updateProfile } from "@/app/services/api/profile.api";
+
 interface ProfileCompletionModalProps {
   missingFields: string[];
+  userId: string | null;
+  userRole: "student" | "teacher";
   onContinue: () => void;
 }
 
 export function ProfileCompletionModal({
   missingFields,
+  userId,
+  userRole,
   onContinue,
 }: ProfileCompletionModalProps) {
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    description: "",
+    campus_location: "",
+    department: "",
+  });
+  const [error, setError] = useState<string | null>(null);
+
   const fieldLabels: Record<string, string> = {
     description: "Descrição de perfil",
     campus_location: "Localização do campus",
@@ -17,19 +32,59 @@ export function ProfileCompletionModal({
     cover_photo_url: "Foto de capa",
   };
 
-  const requiredFields = [
-    "description",
-    "campus_location",
-    "department",
-  ];
+  const requiredFields = missingFields.filter((f) =>
+    ["description", "campus_location", "department"].includes(f)
+  );
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      if (!userId) {
+        throw new Error("ID do usuário não encontrado");
+      }
+
+      // Validate all required fields are filled
+      for (const field of requiredFields) {
+        const value = formData[field as keyof typeof formData];
+        if (!value || !value.trim()) {
+          throw new Error(`${fieldLabels[field]} é obrigatório`);
+        }
+      }
+
+      // Prepare update payload
+      const updatePayload: Record<string, string> = {};
+      if (missingFields.includes("description")) {
+        updatePayload.description = formData.description;
+      }
+      if (missingFields.includes("campus_location")) {
+        updatePayload.campus_location = formData.campus_location;
+      }
+      if (missingFields.includes("department")) {
+        updatePayload.department = formData.department;
+      }
+
+      // Call update API
+      await updateProfile(userId, updatePayload);
+
+      // Success
+      onContinue();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Erro ao atualizar perfil");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#173b22]/72 px-4 py-8 backdrop-blur-[5px]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#173b22]/72 px-4 py-8 backdrop-blur-[5px] overflow-y-auto">
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="completion-modal-title"
-        className="relative w-full max-w-[480px] overflow-hidden rounded-[24px] bg-[#fffef9] px-8 pb-10 pt-10 text-center shadow-[0_24px_70px_rgba(11,35,17,0.28)]"
+        className="relative w-full max-w-[480px] rounded-[24px] bg-[#fffef9] px-8 pb-10 pt-10 text-center shadow-[0_24px_70px_rgba(11,35,17,0.28)] my-8"
       >
         <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#e9f4e4] shadow-[0_0_40px_rgba(149,238,157,0.64)]">
           <span className="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-[#287630]">
@@ -41,43 +96,79 @@ export function ProfileCompletionModal({
           id="completion-modal-title"
           className="mx-auto mt-6 max-w-[320px] text-[26px] font-black leading-tight tracking-[-0.02em] text-[#1f6f2a]"
         >
-          Perfil Incompleto
+          Complete Seu Perfil
         </h2>
 
         <p className="mx-auto mt-4 max-w-[360px] text-[13px] font-medium leading-6 text-[#5d6659]">
-          Para usar plenamente a plataforma, você precisa completar alguns campos de seu perfil.
+          Para usar a plataforma, preencha os campos obrigatórios abaixo.
         </p>
 
-        <div className="mt-8 rounded-[16px] bg-[#f8faf6] p-6 text-left">
-          <p className="text-[12px] font-black uppercase tracking-[0.12em] text-[#287630]">
-            Campos necessários
-          </p>
-          <ul className="mt-4 space-y-3">
-            {missingFields.map((field) => (
-              <li
-                key={field}
-                className="flex items-start gap-3 text-[13px] font-medium text-[#545d50]"
-              >
-                <span className="mt-1 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#287630]">
-                  <span className="text-white">✓</span>
-                </span>
-                <span>{fieldLabels[field] || field}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <form onSubmit={handleSubmit} className="mt-8 text-left space-y-4">
+          {missingFields.includes("description") && (
+            <div>
+              <label className="block text-[12px] font-bold uppercase text-[#287630] mb-2">
+                {fieldLabels.description}
+              </label>
+              <textarea
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                placeholder="Conte um pouco sobre você..."
+                className="w-full rounded-[8px] border border-[#d0d4cc] bg-white px-4 py-3 text-[13px] font-medium text-[#30372f] placeholder-[#a8b09f] focus:outline-none focus:border-[#287630]"
+                rows={3}
+              />
+            </div>
+          )}
 
-        <button
-          type="button"
-          onClick={onContinue}
-          className="mt-8 h-12 w-full rounded-full bg-[#287630] text-[13px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.26)] transition-colors hover:bg-[#1f6428]"
-        >
-          Completar Perfil Agora
-        </button>
+          {missingFields.includes("campus_location") && (
+            <div>
+              <label className="block text-[12px] font-bold uppercase text-[#287630] mb-2">
+                {fieldLabels.campus_location}
+              </label>
+              <input
+                type="text"
+                value={formData.campus_location}
+                onChange={(e) =>
+                  setFormData({ ...formData, campus_location: e.target.value })
+                }
+                placeholder="Ex: Campus Recife"
+                className="w-full rounded-[8px] border border-[#d0d4cc] bg-white px-4 py-3 text-[13px] font-medium text-[#30372f] placeholder-[#a8b09f] focus:outline-none focus:border-[#287630]"
+              />
+            </div>
+          )}
 
-        <p className="mt-5 text-center text-[12px] font-medium text-[#8c9388]">
-          Você será redirecionado para editar seu perfil
-        </p>
+          {missingFields.includes("department") && userRole === "teacher" && (
+            <div>
+              <label className="block text-[12px] font-bold uppercase text-[#287630] mb-2">
+                {fieldLabels.department}
+              </label>
+              <input
+                type="text"
+                value={formData.department}
+                onChange={(e) =>
+                  setFormData({ ...formData, department: e.target.value })
+                }
+                placeholder="Ex: Agronomia"
+                className="w-full rounded-[8px] border border-[#d0d4cc] bg-white px-4 py-3 text-[13px] font-medium text-[#30372f] placeholder-[#a8b09f] focus:outline-none focus:border-[#287630]"
+              />
+            </div>
+          )}
+
+          {error && (
+            <div className="rounded-[8px] bg-[#fee] px-4 py-3 text-[12px] font-medium text-[#c33]">
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="mt-6 h-12 w-full rounded-full bg-[#287630] text-[13px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.26)] transition-colors hover:bg-[#1f6428] disabled:opacity-50"
+          >
+            {loading ? "Salvando..." : "Continuar"}
+          </button>
+        </form>
 
         <span
           className="pointer-events-none absolute -bottom-6 -right-6 h-24 w-24 rounded-full border-[10px] border-[#dfeedd]"

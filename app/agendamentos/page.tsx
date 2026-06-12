@@ -35,29 +35,6 @@ export default function AgendamentosPage() {
     fetchMyEvents();
   }, [user?.userId]);
 
-  // Listen for events:updated event to refresh the list
-  useEffect(() => {
-    const handleEventsUpdated = () => {
-      if (!user || !user.userId) return;
-
-      const fetchMyEvents = async () => {
-        try {
-          const data = await getMyEvents();
-          setRegisteredEvents(data);
-        } catch (err) {
-          console.error("Erro ao recarregar agendamentos:", err);
-        }
-      };
-
-      fetchMyEvents();
-    };
-
-    if (typeof window !== "undefined") {
-      window.addEventListener("events:updated", handleEventsUpdated);
-      return () => window.removeEventListener("events:updated", handleEventsUpdated);
-    }
-  }, [user?.userId]);
-
   const handleCancel = async (eventId: string, eventTitle: string) => {
     const confirmed = window.confirm(
       `Cancelar sua inscrição em "${eventTitle}"?`
@@ -67,11 +44,20 @@ export default function AgendamentosPage() {
 
     try {
       await unsubscribeEvent(eventId);
-      setRegisteredEvents(registeredEvents.filter(e => e.id !== eventId));
+      setRegisteredEvents(registeredEvents.filter((e) => e.id !== eventId));
     } catch (err) {
       alert(err instanceof Error ? err.message : "Erro ao cancelar inscrição");
     }
   };
+
+  // Separate events into upcoming and past
+  const now = new Date();
+  const agendadosEvents = registeredEvents.filter(
+    (event) => new Date(event.start_date) > now
+  );
+  const realizadosEvents = registeredEvents.filter(
+    (event) => new Date(event.start_date) <= now
+  );
 
   return (
     <RequireAuth>
@@ -105,30 +91,86 @@ export default function AgendamentosPage() {
               </div>
             )}
 
-            {!loading && registeredEvents.length > 0 ? (
-              <div className="mt-10 grid gap-7 md:grid-cols-2 xl:grid-cols-3">
-                {registeredEvents.map((event) => (
-                  <AppointmentCard
-                    key={event.id}
-                    id={event.id}
-                    title={event.title}
-                    date={formatDate(event.start_date)}
-                    location={event.location_name}
-                    href={`/agendamentos/${event.id}`}
-                    onCancel={() => handleCancel(event.id, event.title)}
-                  />
-                ))}
-              </div>
-            ) : !loading ? (
+            {!loading && registeredEvents.length === 0 && (
               <EmptyAppointmentsState />
-            ) : null}
+            )}
 
-            {!loading && registeredEvents.length > 0 ? (
-              <div className="mt-11 flex justify-center">
-                <NewAppointmentCard />
-              </div>
-            ) : null}
+            {!loading && registeredEvents.length > 0 && (
+              <>
+                {/* Agendados Section */}
+                <div className="mt-12">
+                  <h2 className="text-[24px] font-black tracking-[-0.03em] text-[#1e261e] flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e4f5df] text-[#287630]">
+                      📅
+                    </span>
+                    Próximos Eventos
+                  </h2>
 
+                  {agendadosEvents.length > 0 ? (
+                    <div className="mt-6 grid gap-7 md:grid-cols-2 xl:grid-cols-3">
+                      {agendadosEvents.map((event) => (
+                        <AppointmentCard
+                          key={event.id}
+                          id={event.id}
+                          title={event.title}
+                          date={formatDate(event.start_date)}
+                          location={event.location_name}
+                          href={`/agendamentos/${event.id}`}
+                          onCancel={() => handleCancel(event.id, event.title)}
+                          status="Confirmado"
+                          showCancel={true}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="mt-6 flex min-h-[150px] flex-col items-center justify-center rounded-[18px] border border-dashed border-[#d8dbd2] bg-[#fbfbf7]">
+                      <p className="text-[14px] font-semibold text-[#777f72]">
+                        Nenhum evento agendado no momento
+                      </p>
+                      <Link
+                        href="/agendamentos/explorar"
+                        className="mt-3 text-[12px] font-black text-[#287630] hover:text-[#1f6428]"
+                      >
+                        Explorar Eventos →
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* Realizados Section */}
+                {realizadosEvents.length > 0 && (
+                  <div className="mt-14">
+                    <h2 className="text-[24px] font-black tracking-[-0.03em] text-[#1e261e] flex items-center gap-3">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e8efdf] text-[#556050]">
+                        ✅
+                      </span>
+                      Eventos Realizados
+                    </h2>
+
+                    <div className="mt-6 grid gap-7 md:grid-cols-2 xl:grid-cols-3">
+                      {realizadosEvents.map((event) => (
+                        <AppointmentCard
+                          key={event.id}
+                          id={event.id}
+                          title={event.title}
+                          date={formatDate(event.start_date)}
+                          location={event.location_name}
+                          href={`/agendamentos/${event.id}`}
+                          onCancel={() => handleCancel(event.id, event.title)}
+                          status="Realizado"
+                          showCancel={false}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* New Appointment Card */}
+                <div className="mt-11 flex justify-center">
+                  <NewAppointmentCard />
+                </div>
+              </>
+            )}
           </section>
         </div>
 
@@ -157,8 +199,7 @@ function EmptyAppointmentsState() {
         Nenhum agendamento confirmado
       </h2>
       <p className="mt-3 max-w-[360px] text-[12px] font-semibold leading-5 text-[#777f72]">
-        Inscreva-se em um evento em Explorar Eventos para que ele
-        apareça aqui.
+        Inscreva-se em um evento em Explorar Eventos para que ele apareça aqui.
       </p>
       <Link
         href="/agendamentos/explorar"
@@ -177,6 +218,8 @@ function AppointmentCard({
   location,
   href,
   onCancel,
+  status,
+  showCancel,
 }: {
   id: string;
   title: string;
@@ -184,17 +227,20 @@ function AppointmentCard({
   location: string;
   href: string;
   onCancel: () => void;
+  status: "Confirmado" | "Realizado";
+  showCancel: boolean;
 }) {
+  const isRealized = status === "Realizado";
   return (
-    <article className="flex min-h-[264px] flex-col rounded-[26px] bg-white px-7 py-7 shadow-[0_20px_45px_rgba(33,55,30,0.08)]">
+    <article className={`flex min-h-[264px] flex-col rounded-[26px] px-7 py-7 shadow-[0_20px_45px_rgba(33,55,30,0.08)] ${isRealized ? "border border-[#d8dbd2] bg-[#f7f7f3]" : "bg-white"}`}>
       <div className="flex items-start justify-between gap-4">
-        <span className="rounded-full bg-[#c9f7ca] px-4 py-2 text-[10px] font-black uppercase tracking-[0.08em] text-[#287630]">
-          Confirmado
+        <span className={`rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-[0.08em] ${isRealized ? "bg-[#e8efdf] text-[#556050]" : "bg-[#c9f7ca] text-[#287630]"}`}>
+          {status}
         </span>
         <CalendarIcon className="mt-1 h-[17px] w-[17px] text-[#aab2a5]" />
       </div>
 
-      <p className="mt-7 text-[10px] font-black uppercase tracking-[0.08em] text-[#287630]">
+      <p className={`mt-7 text-[10px] font-black uppercase tracking-[0.08em] ${isRealized ? "text-[#a0a69b]" : "text-[#287630]"}`}>
         {date}
       </p>
       <h2 className="mt-3 max-w-[270px] text-[21px] font-black leading-[1.12] tracking-[-0.03em] text-[#1e261e]">
@@ -206,28 +252,31 @@ function AppointmentCard({
         <span>{location}</span>
       </p>
 
-      <div className="mt-auto flex items-center justify-between gap-4 border-t border-[#edf0e9] pt-6">
+      <div className={`mt-auto border-t pt-6 ${isRealized ? "border-[#e0e4db]" : "border-[#edf0e9]"}`}>
         <Link
           href={href}
-          className="text-[11px] font-black text-[#287630] transition hover:text-[#1f6428]"
+          className={`text-[11px] font-black transition ${isRealized ? "text-[#a0a69b] hover:text-[#778372]" : "text-[#287630] hover:text-[#1f6428]"}`}
         >
           Ver Detalhes
         </Link>
         <Link
           href={href}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-[#c5cbbf] transition hover:bg-[#f2f5ef] hover:text-[#287630]"
+          className={`ml-auto flex h-8 w-8 items-center justify-center rounded-full transition ${isRealized ? "text-[#d4d9d0] hover:bg-[#efefef] hover:text-[#a0a69b]" : "text-[#c5cbbf] hover:bg-[#f2f5ef] hover:text-[#287630]"}`}
           aria-label={`Ver detalhes de ${title}`}
         >
           <ArrowIcon className="h-4 w-4" />
         </Link>
       </div>
-      <button
-        type="button"
-        onClick={onCancel}
-        className="mt-4 h-10 rounded-full border border-[#f1c4c4] bg-white px-5 text-[11px] font-black text-[#b92828] transition hover:bg-[#fff3f3]"
-      >
-        Cancelar inscrição
-      </button>
+
+      {showCancel && (
+        <button
+          type="button"
+          onClick={onCancel}
+          className="mt-4 h-10 rounded-full border border-[#f1c4c4] bg-white px-5 text-[11px] font-black text-[#b92828] transition hover:bg-[#fff3f3]"
+        >
+          Cancelar inscrição
+        </button>
+      )}
     </article>
   );
 }

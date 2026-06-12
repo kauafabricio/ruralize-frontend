@@ -88,8 +88,22 @@ export async function updateEvent(
 }
 
 export async function getMyEvents(): Promise<EventResponse[]> {
-  const response = await api.get<EventResponse[]>("/events/my/events");
-  return Array.isArray(response.data) ? response.data : [];
+  const response = await api.get<unknown>("/events/my/events");
+  const data = response.data;
+
+  // Handle direct array response
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  // Handle nested structures
+  if (isRecord(data)) {
+    const candidates = [data.events, data.data, data.items];
+    const list = candidates.find(Array.isArray);
+    if (Array.isArray(list)) return list;
+  }
+
+  return [];
 }
 
 export async function subscribeEvent(

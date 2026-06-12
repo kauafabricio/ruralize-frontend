@@ -65,11 +65,6 @@ export function RegistrationConfirmationModal({
       }
 
       // 3. Notificar e redirecionar
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(
-          new CustomEvent("events:updated", { detail: { eventId } })
-        );
-      }
       router.push("/agendamentos");
     } catch (err) {
       setError(

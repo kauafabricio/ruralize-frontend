@@ -41,6 +41,7 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
   );
   const [form, setForm] = useState(initialForm);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   function handleFieldChange(
     field: keyof EventRegistrationData,
@@ -50,6 +51,30 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
       ...current,
       [field]: value,
     }));
+    if (error) setError(null);
+  }
+
+  function validateRegistrationData(data: EventRegistrationData): string | null {
+    if (!data.name?.trim()) return "Nome é obrigatório";
+    if (!data.email?.trim()) return "E-mail é obrigatório";
+    if (!isValidEmail(data.email)) return "E-mail inválido";
+    if (!data.registration?.trim()) return "Matrícula é obrigatória";
+    if (!data.course?.trim()) return "Curso é obrigatório";
+    if (!data.phone?.trim()) return "Telefone é obrigatório";
+    if (!data.motivation?.trim()) return "Motivação é obrigatória";
+    if (!data.consent) return "Você deve aceitar os termos";
+    return null;
+  }
+
+  function handleSubmit(eventSubmit: React.FormEvent) {
+    eventSubmit.preventDefault();
+    const validationError = validateRegistrationData(form);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    setError(null);
+    setConfirmationOpen(true);
   }
 
   return (
@@ -70,11 +95,13 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
 
         <form
           className="mt-9 space-y-7"
-          onSubmit={(eventSubmit) => {
-            eventSubmit.preventDefault();
-            setConfirmationOpen(true);
-          }}
+          onSubmit={handleSubmit}
         >
+          {error && (
+            <div className="rounded-[14px] bg-red-50 px-4 py-3 text-[12px] font-semibold text-red-700">
+              {error}
+            </div>
+          )}
           <div className="grid gap-6 md:grid-cols-2">
             <FormField
               label="Nome completo"
@@ -227,4 +254,8 @@ function readProfileValue(
   return "";
 }
 
+function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
 

@@ -35,6 +35,29 @@ export default function AgendamentosPage() {
     fetchMyEvents();
   }, [user?.userId]);
 
+  // Listen for events:updated event to refresh the list
+  useEffect(() => {
+    const handleEventsUpdated = () => {
+      if (!user || !user.userId) return;
+
+      const fetchMyEvents = async () => {
+        try {
+          const data = await getMyEvents();
+          setRegisteredEvents(data);
+        } catch (err) {
+          console.error("Erro ao recarregar agendamentos:", err);
+        }
+      };
+
+      fetchMyEvents();
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("events:updated", handleEventsUpdated);
+      return () => window.removeEventListener("events:updated", handleEventsUpdated);
+    }
+  }, [user?.userId]);
+
   const handleCancel = async (eventId: string, eventTitle: string) => {
     const confirmed = window.confirm(
       `Cancelar sua inscrição em "${eventTitle}"?`

@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuthenticatedUser } from "../auth/useAuthenticatedUser";
 import {
   getEventParticipants,
-  subscribeEvent,
   unsubscribeEvent,
   updateParticipantStatus,
 } from "@/app/services/api/events.api";
@@ -78,30 +77,6 @@ export function RegistrationActions({
     loadParticipants();
   }, [eventId, user?.userId]);
 
-  const handleSubscribe = async () => {
-    if (!user || !user.userId) {
-      setError("Usuário não autenticado");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      await subscribeEvent(eventId);
-      // reload participants to ensure UI reflects server state
-      const list = await getEventParticipants(eventId);
-      setParticipants(list.map((participant) => ({
-        user_id: participant.user_id ?? "",
-        status: typeof participant.status === "string" ? participant.status : "subscribed",
-      })));
-      if (user?.userId) setIsRegistered(list.some((p) => p.user_id === user.userId));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao se inscrever");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleCancelRegistration = async () => {
     if (!user || !user.userId) {
@@ -186,14 +161,12 @@ export function RegistrationActions({
       </Link>
 
       {!isRegistered && (
-        <button
-          type="button"
-          onClick={handleSubscribe}
-          disabled={loading || registrationClosed}
-          className="h-12 w-full rounded-full bg-[#287630] px-5 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(33,55,30,0.16)] transition hover:bg-[#1f6428] disabled:opacity-60"
+        <Link
+          href={formHref}
+          className="flex h-12 w-full items-center justify-center rounded-full bg-[#287630] px-5 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(33,55,30,0.16)] transition hover:bg-[#1f6428]"
         >
-          {loading ? "Processando..." : registrationClosed ? "Inscrições encerradas" : "Confirmar inscrição"}
-        </button>
+          Confirmar inscrição
+        </Link>
       )}
 
       {isRegistered && (

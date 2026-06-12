@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { useAuth } from "@/app/components/auth/AuthProvider";
-import { subscribeEvent } from "@/app/services/api/events.api";
+import { subscribeEvent, getEventParticipants } from "@/app/services/api/events.api";
 
 type RegistrationConfirmationModalProps = {
   eventHref: string;
@@ -34,14 +34,28 @@ export function RegistrationConfirmationModal({
     setError(null);
 
     try {
+      // 1. Inscrever
       await subscribeEvent(eventId, registrationData);
-      // Notify app and redirect to user's agendamentos so the list reloads
+
+      // 2. Recarregar participantes para validar
+      const participants = await getEventParticipants(eventId);
+      const isSubscribed = participants.some((p) => p.user_id === user.id);
+
+      if (!isSubscribed) {
+        throw new Error("Inscrição não foi confirmada pelo servidor. Tente novamente.");
+      }
+
+      // 3. Notificar e redirecionar
       if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("events:updated", { detail: { eventId } }));
+        window.dispatchEvent(
+          new CustomEvent("events:updated", { detail: { eventId } })
+        );
       }
       router.push("/agendamentos");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao confirmar inscrição");
+      setError(
+        err instanceof Error ? err.message : "Erro ao confirmar inscrição"
+      );
     } finally {
       setLoading(false);
     }

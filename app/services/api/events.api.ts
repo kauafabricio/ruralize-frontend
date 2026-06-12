@@ -98,8 +98,23 @@ export async function subscribeEvent(
 ): Promise<Record<string, unknown>> {
   const response = await api.post<Record<string, unknown>>(
     `/events/${eventId}/subscribe`,
-    payload ?? null,
+    payload ?? {},
   );
+
+  if (!response.data) {
+    throw new Error("Resposta vazia do servidor");
+  }
+
+  if (response.data.error) {
+    const errorMessage =
+      typeof response.data.message === "string"
+        ? response.data.message
+        : typeof response.data.error === "string"
+          ? response.data.error
+          : "Falha ao inscrever";
+    throw new Error(errorMessage);
+  }
+
   return response.data;
 }
 

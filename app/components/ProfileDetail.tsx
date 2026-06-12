@@ -26,10 +26,8 @@ export function ProfileDetail() {
     description: "",
     profile_photo_url: "",
     cover_photo_url: "",
-    tags: [] as string[],
   });
 
-  const [newTag, setNewTag] = useState("");
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error";
@@ -47,7 +45,6 @@ export function ProfileDetail() {
           description: data.description || "",
           profile_photo_url: data.profile_photo_url || "",
           cover_photo_url: data.cover_photo_url || "",
-          tags: data.tags || [],
         });
       } catch (err) {
         setToast({
@@ -72,7 +69,6 @@ export function ProfileDetail() {
         description: formData.description || undefined,
         profile_photo_url: formData.profile_photo_url || undefined,
         cover_photo_url: formData.cover_photo_url || undefined,
-        tags: formData.tags.length > 0 ? formData.tags : undefined,
       };
 
       await updateProfile(user.id, payload);
@@ -98,23 +94,6 @@ export function ProfileDetail() {
     } finally {
       setIsSaving(false);
     }
-  }
-
-  function handleAddTag() {
-    if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
-      setFormData({
-        ...formData,
-        tags: [...formData.tags, newTag.trim()],
-      });
-      setNewTag("");
-    }
-  }
-
-  function handleRemoveTag(tag: string) {
-    setFormData({
-      ...formData,
-      tags: formData.tags.filter((t) => t !== tag),
-    });
   }
 
   if (loading) {
@@ -194,14 +173,8 @@ export function ProfileDetail() {
                 {profile.role === "student" ? "Estudante" : "Professor"}
               </p>
 
-              {profile.course && (
-                <p className="mt-2 text-[#4f5b4e]">
-                  Curso: <strong>{profile.course}</strong>
-                </p>
-              )}
-
               {profile.department && (
-                <p className="text-[#4f5b4e]">
+                <p className="mt-2 text-[#4f5b4e]">
                   Departamento: <strong>{profile.department}</strong>
                 </p>
               )}
@@ -237,55 +210,6 @@ export function ProfileDetail() {
                 <p className="text-[#20281f]">
                   {formData.description || "Sem descrição"}
                 </p>
-              )}
-            </section>
-
-            {/* Tags */}
-            <section className="rounded-[18px] bg-white p-6 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
-              <h2 className="mb-4 text-lg font-black text-[#1f6f2a]">
-                Interesses
-              </h2>
-
-              <div className="flex flex-wrap gap-2">
-                {formData.tags.map((tag) => (
-                  <div
-                    key={tag}
-                    className="flex items-center gap-2 rounded-full bg-[#e7f1e5] px-3 py-1 text-[#287630]"
-                  >
-                    {tag}
-                    {isEditing && (
-                      <button
-                        onClick={() => handleRemoveTag(tag)}
-                        className="ml-1 text-red-600 hover:text-red-700"
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {isEditing && (
-                <div className="mt-4 flex gap-2">
-                  <input
-                    type="text"
-                    value={newTag}
-                    onChange={(e) => setNewTag(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") {
-                        handleAddTag();
-                      }
-                    }}
-                    placeholder="Adicionar interesse..."
-                    className="flex-1 rounded-full border border-[#e5eadf] bg-[#f4f5f0] px-4 py-2 text-[13px] outline-none"
-                  />
-                  <button
-                    onClick={handleAddTag}
-                    className="rounded-full bg-[#287630] px-4 py-2 text-white font-bold"
-                  >
-                    +
-                  </button>
-                </div>
               )}
             </section>
 

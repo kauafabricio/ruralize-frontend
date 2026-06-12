@@ -156,7 +156,6 @@ export default function UserProfilePage() {
                 </h1>
                 <p className="mt-1 text-[13px] font-black text-[#287630]">
                   {profile.role}
-                  {profile.course && ` de ${profile.course}`}
                 </p>
                 <p className="mt-6 max-w-[590px] text-[12px] font-medium leading-6 text-[#545d50]">
                   {profile.description || "Sem descrição adicionada"}
@@ -279,17 +278,6 @@ function AcademicInfoCard({
             {role}
           </dd>
         </div>
-
-        {course && (
-          <div>
-            <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-[#a0a69b]">
-              Curso
-            </dt>
-            <dd className="mt-2 text-[12px] font-semibold text-[#333b31]">
-              {course}
-            </dd>
-          </div>
-        )}
 
         {department && (
           <div>

@@ -13,10 +13,10 @@ import {
 } from "@/app/components/AuthIcons";
 import { AuthInput } from "@/app/components/AuthInput";
 import { AuthShell } from "@/app/components/AuthShell";
-import { CourseSelect } from "@/app/components/CourseSelect";
 import { MatriculaInput } from "@/app/components/MatriculaInput";
 import { Toast } from "@/app/components/Toast";
-import { registerUser, type UserCreate } from "../services/api/auth.api";
+import { ProfileCompletionModal } from "@/app/components/ProfileCompletionModal";
+import { registerUser, type UserCreate, getProfileCompletionStatus } from "../services/api/auth.api";
 
 export default function CadastroPage() {
   const [role, setRole] = useState<"student" | "teacher">("student");
@@ -26,8 +26,10 @@ export default function CadastroPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [registration, setRegistration] = useState("");
-  const [course, setCourse] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [missingFields, setMissingFields] = useState<string[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const [toast, setToast] = useState<{
     message: string;
@@ -58,12 +60,11 @@ export default function CadastroPage() {
       };
 
       if (role === "student") {
-        if (!registration || !course) {
+        if (!registration) {
           throw new Error("Preencha todos os campos de aluno");
         }
 
         body.registration = registration;
-        body.course = course;
       }
 
       await registerUser(body);
@@ -99,6 +100,15 @@ export default function CadastroPage() {
         />
       )}
 
+      {showCompletionModal && (
+        <ProfileCompletionModal
+          missingFields={missingFields}
+          onContinue={() => {
+            window.location.href = "/perfil?edit=true&incomplete=true";
+          }}
+        />
+      )}
+
       <AuthCard className="max-w-[530px]">
         <p className="mx-auto mb-8 max-w-[285px] text-center text-[12px] font-semibold leading-5 text-[#30372f]">
           Crie sua conta para começar sua jornada sustentável na UFRPE
@@ -126,19 +136,12 @@ export default function CadastroPage() {
           />
 
           {role === "student" && (
-            <div className="grid grid-cols-2 gap-5">
-              <MatriculaInput
-                value={registration}
-                onChange={(e) =>
-                  setRegistration(e.target.value)
-                }
-              />
-
-              <CourseSelect
-                value={course}
-                onChange={(value) => setCourse(value)}
-              />
-            </div>
+            <MatriculaInput
+              value={registration}
+              onChange={(e) =>
+                setRegistration(e.target.value)
+              }
+            />
           )}
 
           <AuthInput

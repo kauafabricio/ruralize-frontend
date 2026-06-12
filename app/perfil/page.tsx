@@ -60,7 +60,6 @@ function PerfilContent() {
   const { updateProfile, user } = useAuth();
   const initialEmail = user?.email ?? "";
   const initialDisplayName = user?.name ?? readNameFromEmail(user?.email) ?? "";
-  const initialCourse = readProfileValue(user?.raw, ["course", "curso"]) ?? "";
   const registration =
     readProfileValue(user?.raw, [
       "registration",
@@ -76,7 +75,7 @@ function PerfilContent() {
       "position",
       "function",
       "funcao",
-    ]) ?? formatRoleDescription(roleLabel, initialCourse);
+    ]) ?? formatRoleDescription(roleLabel);
   const initialBio =
     readProfileValue(user?.raw, ["bio", "biography", "resumo", "summary"]) ??
     defaultBio;
@@ -1108,6 +1107,6 @@ function formatRole(role: string | undefined) {
   return "Estudante";
 }
 
-function formatRoleDescription(roleLabel: string, course: string) {
-  return `${roleLabel}${course ? ` de ${course}` : ""}`;
+function formatRoleDescription(roleLabel: string) {
+  return roleLabel;
 }

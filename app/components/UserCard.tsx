@@ -32,41 +32,18 @@ export function UserCard({ user }: { user: UserProfileResponse }) {
         </div>
       </div>
 
-      <div className="mb-4 space-y-1">
-        {user.course && (
-          <p className="text-[11px] text-[#687266]">
-            <span className="font-black">Curso:</span> {user.course}
-          </p>
-        )}
-        {user.department && (
+      {user.department && (
+        <div className="mb-4">
           <p className="text-[11px] text-[#687266]">
             <span className="font-black">Depto:</span> {user.department}
           </p>
-        )}
-      </div>
-
-      {user.description && (
-        <p className="mb-4 text-[12px] leading-6 text-[#545d50]">
-          {user.description}
-        </p>
+        </div>
       )}
 
-      {user.tags && user.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {user.tags.slice(0, 3).map((tag) => (
-            <span
-              key={tag}
-              className="inline-block rounded-full bg-[#e7f1df] px-2 py-1 text-[10px] font-semibold text-[#287630]"
-            >
-              #{tag}
-            </span>
-          ))}
-          {user.tags.length > 3 && (
-            <span className="inline-block px-2 py-1 text-[10px] font-semibold text-[#8a9186]">
-              +{user.tags.length - 3}
-            </span>
-          )}
-        </div>
+      {user.description && (
+        <p className="text-[12px] leading-6 text-[#545d50]">
+          {user.description}
+        </p>
       )}
     </Link>
   );

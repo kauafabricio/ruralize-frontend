@@ -18,7 +18,6 @@ export interface ProfileResponse {
   description?: string | null;
   profile_photo_url?: string | null;
   cover_photo_url?: string | null;
-  tags?: string[] | null;
   academic_info?: ProfileAcademicInfo | null;
   created_at?: string | null;
   updated_at?: string | null;
@@ -28,7 +27,6 @@ export interface ProfileUpdate {
   description?: string | null;
   profile_photo_url?: string | null;
   cover_photo_url?: string | null;
-  tags?: string[] | null;
 }
 
 export interface UserProfileResponse {
@@ -39,7 +37,6 @@ export interface UserProfileResponse {
   department?: string | null;
   profile_photo_url?: string | null;
   description?: string | null;
-  tags?: string[] | null;
 }
 
 // GET /profiles/user/{user_id}
@@ -81,19 +78,6 @@ export async function searchProfilesByName(
   return response.data;
 }
 
-// GET /profiles/search/by-course
-export async function searchProfilesByCourse(
-  course: string,
-): Promise<UserProfileResponse[]> {
-  const response = await api.get<UserProfileResponse[]>(
-    "/profiles/search/by-course",
-    {
-      params: { course },
-    },
-  );
-  return response.data;
-}
-
 // GET /profiles/search/by-department
 export async function searchProfilesByDepartment(
   department: string,
@@ -113,19 +97,6 @@ export async function searchProfilesByRole(
 ): Promise<UserProfileResponse[]> {
   const response = await api.get<UserProfileResponse[]>(
     `/profiles/search/by-role/${role}`,
-  );
-  return response.data;
-}
-
-// GET /profiles/search/by-tags
-export async function searchProfilesByTags(
-  tags: string[],
-): Promise<UserProfileResponse[]> {
-  const response = await api.get<UserProfileResponse[]>(
-    "/profiles/search/by-tags",
-    {
-      params: { tags },
-    },
   );
   return response.data;
 }

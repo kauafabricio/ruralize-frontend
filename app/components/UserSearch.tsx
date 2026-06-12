@@ -4,16 +4,14 @@ import Link from "next/link";
 import { useState } from "react";
 import {
   searchProfilesByName,
-  searchProfilesByCourse,
   searchProfilesByRole,
-  searchProfilesByTags,
   getAllProfiles,
   type UserProfileResponse,
 } from "@/app/services/api/profile.api";
 import type { UserRole } from "@/app/services/api/auth.api";
 import { Toast } from "@/app/components/Toast";
 
-type SearchType = "name" | "course" | "role" | "tags" | "all";
+type SearchType = "name" | "role" | "all";
 
 export function UserSearch() {
   const [searchType, setSearchType] = useState<SearchType>("name");
@@ -25,15 +23,6 @@ export function UserSearch() {
     message: string;
     type: "success" | "error";
   } | null>(null);
-
-  const courses = [
-    "Agronomia",
-    "Engenharia Florestal",
-    "Engenharia de Alimentos",
-    "Zootecnia",
-    "Medicina Veterinária",
-    "Educação Física",
-  ];
 
   const roles = ["student", "teacher"] as const;
 
@@ -47,13 +36,8 @@ export function UserSearch() {
 
       if (searchType === "name" && searchQuery.trim()) {
         data = await searchProfilesByName(searchQuery);
-      } else if (searchType === "course" && searchQuery) {
-        data = await searchProfilesByCourse(searchQuery);
       } else if (searchType === "role" && searchQuery) {
         data = await searchProfilesByRole(searchQuery as UserRole);
-      } else if (searchType === "tags" && searchQuery.trim()) {
-        const tags = searchQuery.split(",").map((t) => t.trim());
-        data = await searchProfilesByTags(tags);
       } else if (searchType === "all") {
         data = await getAllProfiles();
       }
@@ -100,7 +84,7 @@ export function UserSearch() {
       <form onSubmit={handleSearch} className="space-y-5">
         {/* Search Type Selection */}
         <div className="flex gap-2 flex-wrap">
-          {(["name", "course", "role", "tags", "all"] as const).map((type) => (
+          {(["name", "role", "all"] as const).map((type) => (
             <button
               key={type}
               type="button"
@@ -118,13 +102,9 @@ export function UserSearch() {
             >
               {type === "name"
                 ? "Por Nome"
-                : type === "course"
-                  ? "Por Curso"
-                  : type === "role"
-                    ? "Por Papel"
-                    : type === "tags"
-                      ? "Por Tags"
-                      : "Todos"}
+                : type === "role"
+                  ? "Por Papel"
+                  : "Todos"}
             </button>
           ))}
         </div>
@@ -142,21 +122,6 @@ export function UserSearch() {
               />
             )}
 
-            {searchType === "course" && (
-              <select
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-full border border-[#e5eadf] bg-[#f4f5f0] px-6 py-3 text-[13px] outline-none"
-              >
-                <option value="">Selecione um curso...</option>
-                {courses.map((course) => (
-                  <option key={course} value={course}>
-                    {course}
-                  </option>
-                ))}
-              </select>
-            )}
-
             {searchType === "role" && (
               <select
                 value={searchQuery}
@@ -170,16 +135,6 @@ export function UserSearch() {
                   </option>
                 ))}
               </select>
-            )}
-
-            {searchType === "tags" && (
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Digite as tags separadas por vírgula..."
-                className="w-full rounded-full border border-[#e5eadf] bg-[#f4f5f0] px-6 py-3 text-[13px] outline-none placeholder:text-[#a4aaa0]"
-              />
             )}
           </div>
         )}
@@ -228,31 +183,12 @@ export function UserSearch() {
                     </p>
                     <p className="text-[12px] text-[#6c7b6d]">
                       {profile.role === "student" ? "Estudante" : "Professor"}
-                      {profile.course && ` • ${profile.course}`}
                     </p>
 
                     {profile.description && (
                       <p className="mt-1 text-[12px] text-[#4f5b4e] truncate">
                         {profile.description}
                       </p>
-                    )}
-
-                    {profile.tags && profile.tags.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-1">
-                        {profile.tags.slice(0, 3).map((tag) => (
-                          <span
-                            key={tag}
-                            className="inline-block rounded-full bg-[#e7f1e5] px-2 py-0.5 text-[11px] text-[#287630]"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                        {profile.tags.length > 3 && (
-                          <span className="text-[11px] text-[#8a9186]">
-                            +{profile.tags.length - 3}
-                          </span>
-                        )}
-                      </div>
                     )}
                   </div>
 

@@ -35,11 +35,16 @@ export default function UserProfilePage() {
       setProfile(profileData);
       setPosts(postsData);
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Erro ao carregar perfil";
-      setError(message);
+      const errorMessage = err instanceof Error ? err.message : "Erro ao carregar perfil";
+
+      // Log detalhado do erro
+      console.error("Erro completo:", err);
+      console.error("Tipo de erro:", err instanceof Error ? "Error" : typeof err);
+      console.error("Mensagem:", errorMessage);
+
+      setError(errorMessage);
       setToast({
-        message,
+        message: errorMessage,
         type: "error",
       });
     } finally {

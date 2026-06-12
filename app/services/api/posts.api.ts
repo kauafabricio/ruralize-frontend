@@ -84,10 +84,18 @@ export async function getPost(postId: string): Promise<PostResponse> {
   return response.data;
 }
 
-// GET /profiles/user/{user_id}/posts
+// GET /posts/?user_id={user_id}
 export async function getPostsByUser(userId: string): Promise<PostResponse[]> {
-  const response = await api.get<PostResponse[]>(`/profiles/user/${userId}/posts`);
-  return response.data;
+  try {
+    const response = await api.get<PostResponse[]>("/posts/", {
+      params: { user_id: userId },
+    });
+    console.log(`✅ Posts carregados para ${userId}:`, response.data.length);
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Erro ao carregar posts para ${userId}:`, error);
+    throw error;
+  }
 }
 
 // PUT /posts/{post_id}

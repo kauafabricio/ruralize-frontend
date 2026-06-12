@@ -10,7 +10,7 @@ export interface ProfileAcademicInfo {
 
 export interface ProfileResponse {
   id: string;
-  user_id: string;
+  user_id?: string | null;
   name: string;
   role: UserRole | string;
   course?: string | null;
@@ -20,8 +20,8 @@ export interface ProfileResponse {
   cover_photo_url?: string | null;
   tags?: string[] | null;
   academic_info?: ProfileAcademicInfo | null;
-  created_at: string;
-  updated_at: string;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
 export interface ProfileUpdate {
@@ -46,8 +46,14 @@ export interface UserProfileResponse {
 export async function getProfileByUser(
   userId: string,
 ): Promise<ProfileResponse> {
-  const response = await api.get<ProfileResponse>(`/profiles/user/${userId}`);
-  return response.data;
+  try {
+    const response = await api.get<ProfileResponse>(`/profiles/user/${userId}`);
+    console.log(`✅ Perfil carregado para ${userId}:`, response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Erro ao carregar perfil para ${userId}:`, error);
+    throw error;
+  }
 }
 
 // PUT /profiles/user/{user_id}

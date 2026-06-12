@@ -6,6 +6,23 @@ import { useState } from "react";
 import { useAuth } from "@/app/components/auth/AuthProvider";
 import { subscribeEvent, getEventParticipants } from "@/app/services/api/events.api";
 
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function retryGetParticipants(eventId: string, maxRetries = 3) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const waitTime = 500 * Math.pow(2, i);
+      await delay(waitTime);
+      return await getEventParticipants(eventId);
+    } catch (err) {
+      if (i === maxRetries - 1) throw err;
+    }
+  }
+  return [];
+}
+
 type RegistrationConfirmationModalProps = {
   eventHref: string;
   eventId: string;
@@ -37,9 +54,11 @@ export function RegistrationConfirmationModal({
       // 1. Inscrever
       await subscribeEvent(eventId, registrationData);
 
-      // 2. Recarregar participantes para validar
-      const participants = await getEventParticipants(eventId);
-      const isSubscribed = participants.some((p) => p.user_id === user.id);
+      // 2. Recarregar participantes para validar (com retry para race condition)
+      const participants = await retryGetParticipants(eventId);
+      const isSubscribed = participants.some(
+        (p) => p.user_id && p.user_id === user.id
+      );
 
       if (!isSubscribed) {
         throw new Error("Inscrição não foi confirmada pelo servidor. Tente novamente.");

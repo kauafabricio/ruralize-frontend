@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 import type { EventResponse } from "@/app/services/api/events.api";
+import { getMyEventRegistration } from "@/app/services/api/events.api";
 import { useAuth } from "@/app/components/auth/AuthProvider";
 import { RegistrationConfirmationModal } from "./RegistrationConfirmationModal";
 
@@ -42,6 +43,38 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
   const [form, setForm] = useState(initialForm);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [formDisabled, setFormDisabled] = useState(false);
+
+  // Check if event has already started
+  useEffect(() => {
+    if (!event) return;
+
+    const now = new Date();
+    const eventStart = new Date(event.start_date);
+
+    if (now >= eventStart) {
+      setError(
+        "Este evento já foi iniciado. Novas inscrições não são mais permitidas."
+      );
+      setFormDisabled(true);
+    }
+  }, [event]);
+
+  // Load previous registration data if available
+  useEffect(() => {
+    const loadPreviousRegistration = async () => {
+      if (!eventId) return;
+      const previous = await getMyEventRegistration(eventId);
+      if (previous) {
+        setForm((current) => ({
+          ...current,
+          phone: previous.phone || current.phone,
+          motivation: previous.motivation || current.motivation,
+        }));
+      }
+    };
+    loadPreviousRegistration();
+  }, [eventId]);
 
   function handleFieldChange(
     field: keyof EventRegistrationData,
@@ -51,7 +84,7 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
       ...current,
       [field]: value,
     }));
-    if (error) setError(null);
+    if (error && !formDisabled) setError(null);
   }
 
   function validateRegistrationData(data: EventRegistrationData): string | null {
@@ -68,6 +101,11 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
 
   function handleSubmit(eventSubmit: React.FormEvent) {
     eventSubmit.preventDefault();
+
+    if (formDisabled) {
+      return;
+    }
+
     const validationError = validateRegistrationData(form);
     if (validationError) {
       setError(validationError);
@@ -110,6 +148,7 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
               onChange={(value) => handleFieldChange("name", value)}
               autoComplete="name"
               required
+              disabled={formDisabled}
             />
             <FormField
               label="E-mail institucional"
@@ -119,6 +158,7 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
               onChange={(value) => handleFieldChange("email", value)}
               autoComplete="email"
               required
+              disabled={formDisabled}
             />
             <FormField
               label="Matrícula"
@@ -126,6 +166,7 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
               value={form.registration}
               onChange={(value) => handleFieldChange("registration", value)}
               required
+              disabled={formDisabled}
             />
             <FormField
               label="Curso ou setor"
@@ -133,6 +174,7 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
               value={form.course}
               onChange={(value) => handleFieldChange("course", value)}
               required
+              disabled={formDisabled}
             />
           </div>
 
@@ -144,6 +186,7 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
             onChange={(value) => handleFieldChange("phone", value)}
             autoComplete="tel"
             required
+            disabled={formDisabled}
           />
 
           <label className="block">
@@ -156,7 +199,8 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
               onChange={(event) =>
                 handleFieldChange("motivation", event.target.value)
               }
-              className="mt-2 min-h-[122px] w-full resize-none rounded-[14px] border border-[#e0e4db] bg-[#f7f8f3] px-4 py-4 text-[13px] font-medium leading-6 text-[#262d25] outline-none transition focus:border-[#b6d8b8] focus:bg-white"
+              disabled={formDisabled}
+              className="mt-2 min-h-[122px] w-full resize-none rounded-[14px] border border-[#e0e4db] bg-[#f7f8f3] px-4 py-4 text-[13px] font-medium leading-6 text-[#262d25] outline-none transition focus:border-[#b6d8b8] focus:bg-white disabled:bg-[#efefef] disabled:text-[#999] disabled:cursor-not-allowed"
               required
             />
           </label>
@@ -168,7 +212,8 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
               onChange={(event) =>
                 handleFieldChange("consent", event.target.checked)
               }
-              className="mt-1 h-4 w-4 accent-[#287630]"
+              disabled={formDisabled}
+              className="mt-1 h-4 w-4 accent-[#287630] disabled:cursor-not-allowed"
               required
             />
             Confirmo que minhas informações estão corretas e autorizo o contato
@@ -178,7 +223,8 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
           <div className="border-t border-[#edf0e9] pt-6">
             <button
               type="submit"
-              className="flex h-12 w-full items-center justify-center rounded-full bg-[#287630] px-7 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.22)] transition hover:bg-[#1f6428] sm:w-auto"
+              disabled={formDisabled}
+              className="flex h-12 w-full items-center justify-center rounded-full bg-[#287630] px-7 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.22)] transition hover:bg-[#1f6428] disabled:opacity-60 disabled:cursor-not-allowed sm:w-auto"
             >
               Confirmar Inscrição
             </button>
@@ -206,6 +252,7 @@ function FormField({
   onChange,
   autoComplete,
   required = false,
+  disabled = false,
 }: {
   label: string;
   name: string;
@@ -214,6 +261,7 @@ function FormField({
   onChange: (value: string) => void;
   autoComplete?: string;
   required?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <label className="block">
@@ -225,7 +273,8 @@ function FormField({
         onChange={(event) => onChange(event.target.value)}
         autoComplete={autoComplete}
         required={required}
-        className="mt-2 h-12 w-full rounded-[14px] border border-[#e0e4db] bg-[#f7f8f3] px-4 text-[13px] font-medium text-[#262d25] outline-none transition focus:border-[#b6d8b8] focus:bg-white"
+        disabled={disabled}
+        className="mt-2 h-12 w-full rounded-[14px] border border-[#e0e4db] bg-[#f7f8f3] px-4 text-[13px] font-medium text-[#262d25] outline-none transition focus:border-[#b6d8b8] focus:bg-white disabled:bg-[#efefef] disabled:text-[#999] disabled:cursor-not-allowed"
       />
     </label>
   );

@@ -139,6 +139,20 @@ export async function updateParticipantStatus(
   return response.data;
 }
 
+export async function getMyEventRegistration(
+  eventId: string,
+): Promise<EventParticipant | null> {
+  try {
+    const response = await api.get<EventParticipant>(
+      `/events/${eventId}/participants/me`,
+    );
+    return response.data;
+  } catch (err) {
+    // Endpoint may not exist, return null gracefully
+    return null;
+  }
+}
+
 export async function getEventParticipants(
   eventId: string,
 ): Promise<EventParticipant[]> {
@@ -159,7 +173,12 @@ export async function getEventParticipants(
 }
 
 function isParticipant(value: unknown): value is EventParticipant {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value) &&
+    typeof (value as Record<string, unknown>).user_id === "string"
+  );
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

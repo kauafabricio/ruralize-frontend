@@ -1,19 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import { RegistrationActions } from "@/app/components/appointments/RegistrationActions";
 import { RequireAuth } from "@/app/components/auth/RequireAuth";
 import { FeedHeader } from "@/app/components/feed/FeedHeader";
 import { getEvent, type EventResponse } from "@/app/services/api/events.api";
 
-export default function AppointmentDetailsPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  const eventId = params.slug;
+export default function AppointmentDetailsPage() {
+  const params = useParams();
+  const eventId = typeof params?.slug === "string" ? params.slug : "";
+
   const router = useRouter();
   const [event, setEvent] = useState<EventResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -21,6 +19,12 @@ export default function AppointmentDetailsPage({
 
   useEffect(() => {
     const fetchEvent = async () => {
+      if (!eventId) {
+        setError("Evento inválido");
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         setError(null);

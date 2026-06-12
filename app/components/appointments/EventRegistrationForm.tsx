@@ -72,7 +72,6 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
           className="mt-9 space-y-7"
           onSubmit={(eventSubmit) => {
             eventSubmit.preventDefault();
-            setSubmitError(null);
             setConfirmationOpen(true);
           }}
         >
@@ -164,6 +163,7 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
         <RegistrationConfirmationModal
           eventHref={`/agendamentos/${eventId}`}
           eventId={eventId}
+          registrationData={form}
           onClose={() => setConfirmationOpen(false)}
         />
       ) : null}

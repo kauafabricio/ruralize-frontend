@@ -70,60 +70,44 @@ export async function getEvent(eventId: string): Promise<EventResponse> {
 }
 
 export async function createEvent(
-  userId: string,
   payload: EventCreate,
 ): Promise<Record<string, unknown>> {
-  const response = await api.post<Record<string, unknown>>("/events/", payload, {
-    headers: { "x-user-id": userId },
-  });
+  const response = await api.post<Record<string, unknown>>("/events/", payload);
   return response.data;
 }
 
 export async function updateEvent(
   eventId: string,
-  userId: string,
   payload: EventUpdate,
 ): Promise<Record<string, unknown>> {
   const response = await api.put<Record<string, unknown>>(
     `/events/${eventId}`,
     payload,
-    {
-      headers: { "x-user-id": userId },
-    },
   );
   return response.data;
 }
 
-export async function getMyEvents(userId: string): Promise<EventResponse[]> {
-  const response = await api.get<EventResponse[]>("/events/my/events", {
-    headers: { "x-user-id": userId },
-  });
+export async function getMyEvents(): Promise<EventResponse[]> {
+  const response = await api.get<EventResponse[]>("/events/my/events");
   return Array.isArray(response.data) ? response.data : [];
 }
 
 export async function subscribeEvent(
   eventId: string,
-  userId: string,
+  payload?: Record<string, unknown>,
 ): Promise<Record<string, unknown>> {
   const response = await api.post<Record<string, unknown>>(
     `/events/${eventId}/subscribe`,
-    null,
-    {
-      headers: { "x-user-id": userId },
-    },
+    payload ?? null,
   );
   return response.data;
 }
 
 export async function unsubscribeEvent(
   eventId: string,
-  userId: string,
 ): Promise<Record<string, unknown>> {
   const response = await api.delete<Record<string, unknown>>(
     `/events/${eventId}/unsubscribe`,
-    {
-      headers: { "x-user-id": userId },
-    },
   );
   return response.data;
 }
@@ -132,14 +116,10 @@ export async function updateParticipantStatus(
   eventId: string,
   participantUserId: string,
   status: string,
-  userId: string,
 ): Promise<Record<string, unknown>> {
   const response = await api.patch<Record<string, unknown>>(
     `/events/${eventId}/participants/${participantUserId}/status`,
     { status },
-    {
-      headers: { "x-user-id": userId },
-    },
   );
   return response.data;
 }

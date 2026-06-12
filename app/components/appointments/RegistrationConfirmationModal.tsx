@@ -9,12 +9,14 @@ import { subscribeEvent } from "@/app/services/api/events.api";
 type RegistrationConfirmationModalProps = {
   eventHref: string;
   eventId: string;
+  registrationData: Record<string, unknown>;
   onClose: () => void;
 };
 
 export function RegistrationConfirmationModal({
   eventHref,
   eventId,
+  registrationData,
   onClose,
 }: RegistrationConfirmationModalProps) {
   const router = useRouter();
@@ -32,8 +34,12 @@ export function RegistrationConfirmationModal({
     setError(null);
 
     try {
-      await subscribeEvent(eventId, user.id);
-      router.push(eventHref);
+      await subscribeEvent(eventId, registrationData);
+      // Notify app and redirect to user's agendamentos so the list reloads
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("events:updated", { detail: { eventId } }));
+      }
+      router.push("/agendamentos");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao confirmar inscrição");
     } finally {

@@ -22,7 +22,7 @@ export default function AgendamentosPage() {
       try {
         setLoading(true);
         setError(null);
-        const data = await getMyEvents(user.userId as string);
+        const data = await getMyEvents();
         setRegisteredEvents(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Erro ao carregar agendamentos");
@@ -40,10 +40,10 @@ export default function AgendamentosPage() {
       `Cancelar sua inscrição em "${eventTitle}"?`
     );
 
-    if (!confirmed || !user || !user.userId) return;
+    if (!confirmed || !user) return;
 
     try {
-      await unsubscribeEvent(eventId, user.userId as string);
+      await unsubscribeEvent(eventId);
       setRegisteredEvents(registeredEvents.filter(e => e.id !== eventId));
     } catch (err) {
       alert(err instanceof Error ? err.message : "Erro ao cancelar inscrição");

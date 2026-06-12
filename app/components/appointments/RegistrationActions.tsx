@@ -59,7 +59,10 @@ export function RegistrationActions({
         const list = await getEventParticipants(eventId);
         setParticipants(list.map((participant) => ({
           user_id: participant.user_id ?? "",
-          status: participant.status ?? "subscribed",
+          status:
+            typeof participant.status === "string"
+              ? participant.status
+              : "subscribed",
         })));
 
         if (user?.userId) {
@@ -85,8 +88,14 @@ export function RegistrationActions({
     setError(null);
 
     try {
-      await subscribeEvent(eventId, user.userId as string);
-      setIsRegistered(true);
+      await subscribeEvent(eventId);
+      // reload participants to ensure UI reflects server state
+      const list = await getEventParticipants(eventId);
+      setParticipants(list.map((participant) => ({
+        user_id: participant.user_id ?? "",
+        status: typeof participant.status === "string" ? participant.status : "subscribed",
+      })));
+      if (user?.userId) setIsRegistered(list.some((p) => p.user_id === user.userId));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao se inscrever");
     } finally {
@@ -110,9 +119,14 @@ export function RegistrationActions({
     setError(null);
 
     try {
-      await unsubscribeEvent(eventId, user.userId as string);
-      setIsRegistered(false);
-      setParticipants((current) => current.filter((participant) => participant.user_id !== user.userId));
+      await unsubscribeEvent(eventId);
+      // reload participants to ensure UI reflects server state
+      const list = await getEventParticipants(eventId);
+      setParticipants(list.map((participant) => ({
+        user_id: participant.user_id ?? "",
+        status: typeof participant.status === "string" ? participant.status : "subscribed",
+      })));
+      if (user?.userId) setIsRegistered(list.some((p) => p.user_id === user.userId));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao cancelar inscrição");
     } finally {
@@ -129,7 +143,7 @@ export function RegistrationActions({
     setError(null);
 
     try {
-      await updateParticipantStatus(eventId, participantId, status, user.userId);
+      await updateParticipantStatus(eventId, participantId, status);
       setParticipants((current) =>
         current.map((participant) =>
           participant.user_id === participantId

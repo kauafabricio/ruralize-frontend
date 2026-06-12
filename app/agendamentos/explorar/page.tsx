@@ -67,7 +67,7 @@ export default function ExplorarEventosPage() {
         photo_url: photoUrl,
       };
 
-      await createEvent(user.userId as string, eventData);
+      await createEvent(eventData);
 
       const updatedEvents = await listEvents();
       setEvents(updatedEvents);

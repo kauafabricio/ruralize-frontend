@@ -27,9 +27,7 @@ export function PostComposer({
   const textInputId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [text, setText] = useState("");
-  const [selectedActionId, setSelectedActionId] = useState(
-    getAllActions()[0]?.id || ""
-  );
+  const [selectedActionId, setSelectedActionId] = useState("");
   const [location, setLocation] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -170,7 +168,7 @@ export function PostComposer({
         content:
           text.trim() ||
           `Participe do evento "${selectedEvent?.title}" em ${selectedEvent?.compactDate}.`,
-        sustainable_action_id: selectedActionId || undefined,
+        sustainable_action: selectedActionId || undefined,
         location: location.trim() || undefined,
         event_id: selectedEvent?.id,
         image_url: selectedImage || undefined,
@@ -192,7 +190,7 @@ export function PostComposer({
       });
 
       setText("");
-      setSelectedActionId(getAllActions()[0]?.id || "");
+      setSelectedActionId("");
       setLocation("");
       setSelectedEvent(null);
       clearImage();
@@ -269,6 +267,7 @@ export function PostComposer({
                   disabled={!isAuthenticated && isReady}
                   className="flex-1 h-10 rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none focus:border-[#9ac89c] disabled:opacity-50"
                 >
+                  <option value="">🌍 Sem ação</option>
                   {getAllActions().map((action) => (
                     <option key={action.id} value={action.id}>
                       {action.icon} {action.name}

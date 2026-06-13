@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { getGeneralFeed, getFriendsFeed } from "@/app/services/api/feed.api";
+import { getGeneralFeed, getFollowingFeed } from "@/app/services/api/feed.api";
 import type { PostResponse } from "@/app/services/api/posts.api";
 import { useAuth } from "@/app/components/auth/AuthProvider";
 import {
@@ -15,12 +15,13 @@ import { FeedSkeletonList } from "./FeedSkeleton";
 import { PostCard } from "./PostCard";
 
 const feedTabs = [
-  { id: "friends", label: "Amigos", description: "Feed de amigos" },
+  { id: "following", label: "Seguindo", description: "Postagens dos usuários que você segue" },
   { id: "network", label: "Rede", description: "Feed da rede geral" },
 ] as const;
 
 const DEFAULT_FILTER_IDS = [
   "all",
+  "general",
   "tree-planting",
   "recycling",
   "water-conservation",
@@ -64,7 +65,7 @@ function FeedPostList({
 export function FeedTabs({ searchTerm }: { searchTerm: string }) {
   const { user } = useAuth();
   const userId = user?.id;
-  const [activeTab, setActiveTab] = useState<FeedTabId>("friends");
+  const [activeTab, setActiveTab] = useState<FeedTabId>("following");
   const [activeFilter, setActiveFilter] = useState<FeedFilterId>("all");
   const [posts, setPosts] = useState<PostResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,13 +79,13 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
     try {
       let data: PostResponse[] = [];
 
-      if (activeTab === "friends" && userId) {
+      if (activeTab === "following" && userId) {
         try {
-          data = await getFriendsFeed(userId);
-        } catch (friendsFeedError) {
+          data = await getFollowingFeed(userId);
+        } catch (followingFeedError) {
           console.warn(
-            "Erro ao carregar feed de amigos, usando feed geral:",
-            friendsFeedError,
+            "Erro ao carregar feed de seguindo, usando feed geral:",
+            followingFeedError,
           );
           data = await getGeneralFeed(userId);
         }
@@ -122,11 +123,13 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
   const normalizedSearch = searchTerm.trim().toLowerCase();
 
   const filteredPosts = posts.filter((post) => {
+    const actionId = post.sustainable_action_id || post.sustainable_action;
     const matchesFilter =
       activeFilter === "all" ||
       (activeFilter === "recent" &&
         new Date(post.created_at).getTime() > recentThreshold) ||
-      post.sustainable_action_id === activeFilter;
+      actionId === activeFilter ||
+      (activeFilter === "general" && (!actionId || actionId === "general"));
 
     if (!matchesFilter) {
       return false;
@@ -136,7 +139,8 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
       return true;
     }
 
-    return [post.content, post.sustainable_action].some((value) =>
+    const actionText = post.sustainable_action_id || post.sustainable_action;
+    return [post.content, actionText].some((value) =>
       value?.toLowerCase().includes(normalizedSearch)
     );
   });
@@ -190,6 +194,8 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
             displayLabel = "Todos";
           } else if (filterId === "recent") {
             displayLabel = "Recentes";
+          } else if (filterId === "general") {
+            displayLabel = "🌍 Sem ação";
           } else {
             const actionIcon = getActionIcon(filterId);
             const actionName = getActionName(filterId);

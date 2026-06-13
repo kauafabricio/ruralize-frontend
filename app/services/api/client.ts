@@ -9,7 +9,11 @@ import {
   type AuthSession,
 } from "@/app/lib/auth";
 
-export const API_BASE_URL = "https://rural-backend.vercel.app";
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  (process.env.NODE_ENV === "development"
+    ? "http://127.0.0.1:8000"
+    : "https://rural-backend.vercel.app");
 
 export interface ApiErrorResponse {
   detail?: string;
@@ -75,9 +79,30 @@ api.interceptors.response.use(
       }, 500);
     }
 
-    throw new Error(
-      error.response?.data?.detail ?? error.message ?? "Erro na requisicao",
-    );
+    if (error.response) {
+      const status = error.response.status;
+      const statusText = error.response.statusText;
+      const detail = error.response.data?.detail;
+
+      if (status === 503) {
+        throw new Error(
+          detail ||
+            "Servidor indisponível: verifique se o backend e o MongoDB estão em execução.",
+        );
+      }
+
+      throw new Error(
+        detail || `${status} ${statusText}` || error.message || "Erro na requisição",
+      );
+    }
+
+    if (error.request) {
+      throw new Error(
+        "Falha de rede: não foi possível conectar ao servidor. Verifique se o backend está em execução, se o MongoDB está disponível e se o CORS está configurado corretamente.",
+      );
+    }
+
+    throw new Error(error.message || "Erro na requisição");
   },
 );
 

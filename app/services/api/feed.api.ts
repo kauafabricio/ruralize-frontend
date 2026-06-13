@@ -11,8 +11,8 @@ export async function getGeneralFeed(
   return response.data;
 }
 
-// GET /feed/friends/{user_id}
-export async function getFriendsFeed(userId: string): Promise<PostResponse[]> {
-  const response = await api.get<PostResponse[]>(`/feed/friends/${userId}`);
+// GET /feed/following/{user_id}
+export async function getFollowingFeed(userId: string): Promise<PostResponse[]> {
+  const response = await api.get<PostResponse[]>(`/feed/following/${userId}`);
   return response.data;
 }

@@ -93,9 +93,15 @@ export function getAllActions(): SustainableAction[] {
 }
 
 export function getActionIcon(actionId: string): string {
-  return getActionById(actionId)?.icon || "🌱";
+  if (!actionId || actionId === "general") {
+    return "🌍";
+  }
+  return getActionById(actionId)?.icon || "🌍";
 }
 
 export function getActionName(actionId: string): string {
-  return getActionById(actionId)?.name || "Ação Sustentável";
+  if (!actionId || actionId === "general") {
+    return "Sem ação";
+  }
+  return getActionById(actionId)?.name || actionId;
 }

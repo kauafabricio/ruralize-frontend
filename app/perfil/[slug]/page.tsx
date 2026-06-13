@@ -8,7 +8,13 @@ import { PostCard } from "@/app/components/feed/PostCard";
 import { FollowButton } from "@/app/components/FollowButton";
 import { Toast } from "@/app/components/Toast";
 import { useAuth } from "@/app/components/auth/AuthProvider";
-import { getProfileByUser, type ProfileResponse } from "@/app/services/api/profile.api";
+import {
+  followUser,
+  getFollowStatus,
+  unfollowUser,
+  getProfileByUser,
+  type ProfileResponse,
+} from "@/app/services/api/profile.api";
 import { getPostsByUser, type PostResponse } from "@/app/services/api/posts.api";
 import { translateRole } from "@/app/lib/roleTranslator";
 
@@ -18,6 +24,7 @@ export default function UserProfilePage() {
   const userId = params.slug;
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
   const [posts, setPosts] = useState<PostResponse[]>([]);
+  const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<{
@@ -40,6 +47,17 @@ export default function UserProfilePage() {
 
       setProfile(profileData);
       setPosts(postsData);
+
+      if (currentUser?.id && currentUser.id !== userId) {
+        try {
+          const followStatus = await getFollowStatus(currentUser.id, userId);
+          setIsFollowing(followStatus.is_following);
+        } catch {
+          setIsFollowing(false);
+        }
+      } else {
+        setIsFollowing(false);
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Erro ao carregar perfil";
 
@@ -56,7 +74,7 @@ export default function UserProfilePage() {
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [currentUser?.id, userId]);
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -67,6 +85,38 @@ export default function UserProfilePage() {
       window.clearTimeout(timeout);
     };
   }, [loadUserData]);
+
+  async function handleFollowToggle() {
+    if (!currentUser?.id) {
+      setToast({
+        message: "Faça login para seguir este usuário.",
+        type: "error",
+      });
+      return;
+    }
+
+    try {
+      if (isFollowing) {
+        await unfollowUser(currentUser.id, userId);
+        setIsFollowing(false);
+        setToast({
+          message: "Você deixou de seguir este usuário.",
+          type: "success",
+        });
+      } else {
+        await followUser(currentUser.id, userId);
+        setIsFollowing(true);
+        setToast({
+          message: "Agora você está seguindo este usuário.",
+          type: "success",
+        });
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Não foi possível atualizar o status de seguir";
+      console.error("Erro ao alternar seguir:", err);
+      setToast({ message: errorMessage, type: "error" });
+    }
+  }
 
   function handlePostUpdated() {
     loadUserData();
@@ -151,9 +201,17 @@ export default function UserProfilePage() {
                 </Link>
               </>
             ) : (
-              <span className="rounded-full bg-[#e9f4e4] px-4 py-2 text-[#225f35]">
-                Perfil público
-              </span>
+              <>
+                <span className="rounded-full bg-[#e9f4e4] px-4 py-2 text-[#225f35]">
+                  Perfil público
+                </span>
+                {currentUser ? (
+                  <FollowButton
+                    isFollowing={isFollowing}
+                    onFollowToggle={handleFollowToggle}
+                  />
+                ) : null}
+              </>
             )}
           </div>
         </div>
@@ -184,7 +242,6 @@ export default function UserProfilePage() {
                 </p>
               </div>
 
-              {!isOwnProfile && <FollowButton />}
             </div>
           </div>
         </section>

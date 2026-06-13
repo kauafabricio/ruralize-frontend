@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef, type ChangeEvent } from "react";
 import {
   likePost,
   removeLike,
@@ -27,7 +27,7 @@ interface PostCardProps {
 
 export function PostCard({ post, onPostUpdated }: PostCardProps) {
   const { user } = useAuth();
-  const authorName = post.user_name || "Usuário";
+  const authorName = post.user_name || post.user_id || "Usuário";
   const [isLiked, setIsLiked] = useState(
     post.liked_by?.some(
       (like) =>
@@ -43,19 +43,62 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
   const [editActionId, setEditActionId] = useState(
-    post.sustainable_action_id || ""
+    post.sustainable_action_id || post.sustainable_action || ""
   );
   const [editLocation, setEditLocation] = useState(post.location ?? "");
   const [editImageUrl, setEditImageUrl] = useState(post.image_url ?? "");
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSavingPost, setIsSavingPost] = useState(false);
   const [isDeletingPost, setIsDeletingPost] = useState(false);
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [deleteSuccessOpen, setDeleteSuccessOpen] = useState(false);
+  const [commentDeletionIndex, setCommentDeletionIndex] = useState<number | null>(null);
+  const [isDeletingComment, setIsDeletingComment] = useState(false);
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error";
   } | null>(null);
   const canManagePost = Boolean(user?.id && post.user_id === user.id);
+
+  function readFileAsDataUrl(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          resolve(reader.result);
+        } else {
+          reject(new Error("Falha ao ler arquivo de imagem."));
+        }
+      };
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function handleEditImageFile(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) {
+      setEditImageUrl(post.image_url ?? "");
+      return;
+    }
+
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      setEditImageUrl(dataUrl);
+    } catch {
+      setToast({
+        message: "Não foi possível carregar a imagem.",
+        type: "error",
+      });
+    }
+  }
+
+  function clearEditImage() {
+    setEditImageUrl("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -161,16 +204,27 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
 
   async function handleRemoveComment(commentIndex: number) {
     if (!user?.id) return;
+    setCommentDeletionIndex(commentIndex);
+  }
 
+  async function confirmRemoveComment() {
+    if (commentDeletionIndex === null || !user?.id) {
+      return;
+    }
+
+    setIsDeletingComment(true);
     try {
-      await removeComment(post.id, commentIndex, user.id);
+      await removeComment(post.id, commentDeletionIndex, user.id);
 
       setToast({
         message: "Comentário removido",
         type: "success",
       });
 
-      setComments(comments.filter((_, idx) => idx !== commentIndex));
+      setComments((prevComments) =>
+        prevComments.filter((_, idx) => idx !== commentDeletionIndex),
+      );
+      setCommentDeletionIndex(null);
       onPostUpdated?.();
     } catch (err) {
       setToast({
@@ -178,6 +232,8 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
           err instanceof Error ? err.message : "Erro ao remover comentário",
         type: "error",
       });
+    } finally {
+      setIsDeletingComment(false);
     }
   }
 
@@ -194,7 +250,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
     try {
       await updatePost(post.id, {
         content: editContent.trim(),
-        sustainable_action_id: editActionId || undefined,
+        sustainable_action: editActionId || undefined,
         location: editLocation.trim() || null,
         image_url: editImageUrl.trim() || null,
       });
@@ -269,19 +325,27 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
             className="group flex items-center gap-4 rounded-[18px] pr-2 transition hover:bg-[#f4f6f1]"
             aria-label={`Abrir perfil de ${authorName}`}
           >
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#205f36] text-[12px] font-black uppercase text-white">
-              {readInitials(authorName)}
-            </div>
+            {post.user_photo ? (
+              <img
+                src={post.user_photo}
+                alt={authorName}
+                className="h-11 w-11 rounded-full object-cover"
+              />
+            ) : (
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#205f36] text-[12px] font-black uppercase text-white">
+                {readInitials(authorName)}
+              </div>
+            )}
             <div>
               <p className="text-sm font-black text-[#1f6f2a] transition group-hover:text-[#287630]">
                 {authorName}
               </p>
               <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-[#e7f3e8] px-3 py-1.5">
                 <span className="text-[14px]">
-                  {getActionIcon(post.sustainable_action_id || "")}
+                  {getActionIcon(post.sustainable_action_id || post.sustainable_action || "")}
                 </span>
                 <span className="text-[12px] font-semibold text-[#287630]">
-                  {getActionName(post.sustainable_action_id || "")}
+                  {getActionName(post.sustainable_action_id || post.sustainable_action || "")}
                 </span>
               </div>
             </div>
@@ -332,6 +396,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                   onChange={(event) => setEditActionId(event.target.value)}
                   className="mt-2 h-10 w-full rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none focus:border-[#9ac89c]"
                 >
+                  <option value="">🌍 Sem ação</option>
                   {getAllActions().map((action) => (
                     <option key={action.id} value={action.id}>
                       {action.icon} {action.name}
@@ -353,21 +418,41 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
             <label className="block text-[11px] font-black uppercase tracking-[0.08em] text-[#687266]">
               Imagem
               <input
-                type="url"
-                value={editImageUrl}
-                onChange={(event) => setEditImageUrl(event.target.value)}
-                className="mt-2 h-10 w-full rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none focus:border-[#9ac89c]"
-                placeholder="https://..."
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleEditImageFile}
+                className="mt-2 w-full rounded-full border border-[#e0e5d8] bg-white px-4 py-2 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none file:mr-4 file:border-0 file:bg-[#e7f3e8] file:px-3 file:py-2 file:text-[12px] file:font-semibold file:text-[#287630] focus:border-[#9ac89c]"
               />
             </label>
+            {editImageUrl ? (
+              <div className="mt-3 rounded-[14px] border border-[#e0e5d8] overflow-hidden bg-[#f4f5f0]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={editImageUrl}
+                  alt="Preview da imagem do post"
+                  className="h-auto w-full"
+                />
+                <button
+                  type="button"
+                  onClick={clearEditImage}
+                  className="w-full rounded-b-[14px] bg-[#fff3f3] px-4 py-3 text-[11px] font-black text-[#b92828]"
+                >
+                  Remover imagem
+                </button>
+              </div>
+            ) : null}
             <div className="flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => {
                   setEditContent(post.content);
-                  setEditActionId(post.sustainable_action_id || "");
+                  setEditActionId(post.sustainable_action_id || post.sustainable_action || "");
                   setEditLocation(post.location ?? "");
                   setEditImageUrl(post.image_url ?? "");
+                  if (fileInputRef.current) {
+                    fileInputRef.current.value = "";
+                  }
                   setIsEditing(false);
                 }}
                 className="h-10 rounded-full bg-[#eef0ea] px-5 text-[11px] font-black text-[#4f5b4e]"
@@ -454,7 +539,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                       href={`/perfil/${comment.user_id}`}
                       className="text-[12px] font-black text-[#1f6f2a] transition hover:text-[#287630]"
                     >
-                      {comment.user_name || "Usuário"}
+                      {comment.user_name || comment.user_id || "Usuário"}
                     </Link>
                     <p className="mt-1 text-[12px] text-[#20281f]">
                       {comment.content}
@@ -470,7 +555,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                       onClick={() => handleRemoveComment(index)}
                       className="text-[12px] font-semibold text-red-600 hover:text-red-700"
                     >
-                      ✕
+                      Excluir
                     </button>
                   )}
                 </div>
@@ -503,6 +588,13 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
           </div>
         )}
       </div>
+      {commentDeletionIndex !== null ? (
+        <CommentDeleteConfirmationDialog
+          isDeleting={isDeletingComment}
+          onCancel={() => setCommentDeletionIndex(null)}
+          onConfirm={confirmRemoveComment}
+        />
+      ) : null}
     </article>
   );
 }
@@ -588,6 +680,58 @@ function DeleteSuccessDialog({ onClose }: { onClose: () => void }) {
         >
           Entendi
         </button>
+      </section>
+    </div>
+  );
+}
+
+function CommentDeleteConfirmationDialog({
+  isDeleting,
+  onCancel,
+  onConfirm,
+}: {
+  isDeleting: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1f281f]/35 px-4 py-8 backdrop-blur-[4px]">
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="delete-comment-title"
+        className="w-full max-w-[380px] rounded-[24px] bg-white px-7 pb-7 pt-8 text-center shadow-[0_24px_50px_rgba(33,55,30,0.24)]"
+      >
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#fff3f3] text-[#b92828]">
+          <TrashIcon className="h-6 w-6" />
+        </div>
+        <h2
+          id="delete-comment-title"
+          className="mt-5 text-[21px] font-black tracking-[-0.04em] text-[#1e261e]"
+        >
+          Excluir comentário?
+        </h2>
+        <p className="mx-auto mt-3 max-w-[280px] text-[12px] font-semibold leading-5 text-[#65705f]">
+          Tem certeza que deseja excluir este comentário? Essa ação não pode ser desfeita.
+        </p>
+        <div className="mt-7 grid gap-3 sm:grid-cols-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={isDeleting}
+            className="h-11 rounded-full bg-[#eef0ea] px-5 text-[11px] font-black text-[#4f5b4e] transition hover:bg-[#e3e7dd] disabled:opacity-60"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={isDeleting}
+            className="h-11 rounded-full bg-[#b92828] px-5 text-[11px] font-black text-white shadow-[0_10px_18px_rgba(185,40,40,0.18)] transition hover:bg-[#9f2020] disabled:opacity-60"
+          >
+            {isDeleting ? "Excluindo..." : "Confirmar"}
+          </button>
+        </div>
       </section>
     </div>
   );

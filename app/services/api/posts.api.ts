@@ -59,6 +59,15 @@ export interface PostResponse {
   comments: Comment[];
   created_at: string;
   user_name?: string;
+  user_photo?: string | null;
+}
+
+function normalizePostPayload<T extends PostCreate | PostUpdate>(payload: T) {
+  const action = payload.sustainable_action ?? payload.sustainable_action_id;
+  return {
+    ...payload,
+    ...(action ? { sustainable_action: action } : {}),
+  };
 }
 
 // GET /posts/
@@ -72,9 +81,13 @@ export async function createPost(
   userId: string,
   payload: PostCreate,
 ): Promise<CreatedResponse> {
-  const response = await api.post<CreatedResponse>("/posts/", payload, {
-    params: { user_id: userId },
-  });
+  const response = await api.post<CreatedResponse>(
+    "/posts/",
+    normalizePostPayload(payload),
+    {
+      params: { user_id: userId },
+    },
+  );
   return response.data;
 }
 
@@ -103,7 +116,10 @@ export async function updatePost(
   postId: string,
   payload: PostUpdate,
 ): Promise<MessageResponse> {
-  const response = await api.put<MessageResponse>(`/posts/${postId}`, payload);
+  const response = await api.put<MessageResponse>(
+    `/posts/${postId}`,
+    normalizePostPayload(payload),
+  );
   return response.data;
 }
 

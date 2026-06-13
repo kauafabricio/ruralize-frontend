@@ -117,3 +117,62 @@ export async function getProfile(
   const response = await api.get<UserProfileResponse>(`/profiles/${profileId}`);
   return response.data;
 }
+
+export interface FollowStatusResponse {
+  is_following: boolean;
+}
+
+// POST /profiles/user/{user_id}/follow?target_id={target_id}
+export async function followUser(
+  userId: string,
+  targetId: string,
+): Promise<MessageResponse> {
+  const response = await api.post<MessageResponse>(
+    `/profiles/user/${userId}/follow`,
+    null,
+    { params: { target_id: targetId } },
+  );
+  return response.data;
+}
+
+// DELETE /profiles/user/{user_id}/follow?target_id={target_id}
+export async function unfollowUser(
+  userId: string,
+  targetId: string,
+): Promise<MessageResponse> {
+  const response = await api.delete<MessageResponse>(
+    `/profiles/user/${userId}/follow`,
+    { params: { target_id: targetId } },
+  );
+  return response.data;
+}
+
+// GET /profiles/user/{user_id}/following
+export async function getFollowingUsers(
+  userId: string,
+): Promise<UserProfileResponse[]> {
+  const response = await api.get<UserProfileResponse[]>(
+    `/profiles/user/${userId}/following`,
+  );
+  return response.data;
+}
+
+// GET /profiles/user/{user_id}/followers
+export async function getFollowers(userId: string): Promise<UserProfileResponse[]> {
+  const response = await api.get<UserProfileResponse[]>(
+    `/profiles/user/${userId}/followers`,
+  );
+  return response.data;
+}
+
+// GET /profiles/user/{user_id}/follow-status?target_id={target_id}
+export async function getFollowStatus(
+  userId: string,
+  targetId: string,
+): Promise<FollowStatusResponse> {
+  const response = await api.get<FollowStatusResponse>(
+    `/profiles/user/${userId}/follow-status`,
+    { params: { target_id: targetId } },
+  );
+  return response.data;
+}

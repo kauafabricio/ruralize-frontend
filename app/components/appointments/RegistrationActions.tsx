@@ -142,7 +142,7 @@ export function RegistrationActions({
       )}
 
       {isRegistered ? (
-        <div className="rounded-xl border border-[#c7e7c8] bg-white px-5 py-4">
+        <div className="rounded-xl border border-danger-primary bg-white px-5 py-4">
           <p className="text-xs font-bold uppercase tracking-[0.08em] text-primary-dark">
             Inscrição confirmada
           </p>
@@ -154,7 +154,7 @@ export function RegistrationActions({
 
       <Link
         href={formHref}
-        className="flex h-12 items-center justify-center gap-2 rounded-full border border-[#b6d8b8] bg-white px-5 text-xs font-bold text-primary-dark transition hover:bg-white"
+        className="flex h-12 items-center justify-center gap-2 rounded-full border border-pastel-support bg-white px-5 text-xs font-bold text-primary-dark transition hover:bg-white"
       >
         <LinkIcon className="h-4 w-4" />
         Formulário de Inscrição
@@ -181,13 +181,13 @@ export function RegistrationActions({
       )}
 
       {registrationClosed && !isRegistered ? (
-        <div className="rounded-xl border border-[#f0ead7] bg-white">
+        <div className="rounded-xl border border-secondary-light/50 bg-secondary-light/20 p-4 text-sm text-neutral-darker">
           As inscrições foram bloqueadas pois o evento já começou.
         </div>
       ) : null}
 
       {canManageAttendance ? (
-        <section className="rounded-xl border border-[#d8e7d4] bg-white p-5">
+        <section className="rounded-xl border border-pastel-support bg-white p-5">
           <p className="text-xs font-bold uppercase tracking-[0.08em] text-primary-dark">
             Gerenciar Presença
           </p>

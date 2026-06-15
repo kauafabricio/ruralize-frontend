@@ -171,7 +171,7 @@ export function UserSearch() {
                 <Link
                   key={profile.id}
                   href={`/perfil/${profile.id}`}
-                  className="flex items-center gap-4 rounded-xl border border-[#e5eadf] bg-white p-4 hover:shadow-[0_4px_12px_rgba(33,55,30,0.08)] transition-shadow"
+                  className="flex items-center gap-4 rounded-xl border border-neutral-light bg-white p-4 hover:shadow-soft transition-shadow"
                 >
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-dark text-xs font-bold uppercase text-white">
                     {profile.name.substring(0, 2).toUpperCase()}

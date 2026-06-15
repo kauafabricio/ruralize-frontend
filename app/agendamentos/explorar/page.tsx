@@ -321,7 +321,7 @@ function EventCard({
 
 function EventsFooter() {
   return (
-    <footer className="border-t border-[#eceee8] bg-white">
+    <footer className="border-t border-neutral-light bg-white">
       <div className="mx-auto flex w-full max-w-[1220px] flex-col gap-4 px-4 py-8 text-xs font-semibold text-neutral-muted sm:flex-row sm:items-center sm:justify-between sm:px-7">
         <p>
           <span className="font-bold text-neutral-darker">SustentaRural</span>

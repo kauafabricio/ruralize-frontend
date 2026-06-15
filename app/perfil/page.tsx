@@ -947,7 +947,7 @@ function MiniAvatar({
 
 function Footer() {
   return (
-    <footer className="border-t border-[#eceee8] bg-white py-10 text-center">
+    <footer className="border-t border-neutral-light bg-white py-10 text-center">
       <div className="flex items-center justify-center gap-8 text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-darker">
         <a href="#" className="transition-colors hover:text-primary-dark">
           Sobre

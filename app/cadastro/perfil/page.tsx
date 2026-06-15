@@ -38,7 +38,7 @@ export default function CadastroPerfilPage() {
               href={option.href}
               className="group flex h-36 flex-col items-center justify-center gap-4 bg-white px-6 text-center text-primary-dark transition-colors hover:bg-primary-dark hover:text-white"
             >
-              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-primary-dark shadow-[0_10px_18px_rgba(33,55,30,0.08)] transition-colors group-hover:bg-white">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-primary-dark shadow-soft transition-colors group-hover:bg-white">
                 {option.icon}
               </span>
               <span className="text-sm font-bold uppercase tracking-[0.12em]">
@@ -48,7 +48,7 @@ export default function CadastroPerfilPage() {
           ))}
         </div>
 
-        <div className="mt-9 border-t border-[#ebebe8] pt-8 text-center text-xs font-medium text-neutral-darker">
+        <div className="mt-9 border-t border-neutral-light pt-8 text-center text-xs font-medium text-neutral-darker">
           Ja possui uma conta?{" "}
           <Link href="/login" className="font-bold text-primary-dark">
             Entrar agora

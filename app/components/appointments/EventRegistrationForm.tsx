@@ -117,7 +117,7 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
 
   return (
     <>
-      <section className="mx-auto w-full max-w-[760px] rounded-xl border border-[#e6e8e0] bg-white px-6 py-7 shadow-soft sm:px-9 sm:py-9">
+      <section className="mx-auto w-full max-w-[760px] rounded-xl border border-neutral-light bg-white px-6 py-7 shadow-soft sm:px-9 sm:py-9">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-primary-dark">
             Formulário de Inscrição
@@ -200,7 +200,7 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
                 handleFieldChange("motivation", event.target.value)
               }
               disabled={formDisabled}
-              className="mt-2 min-h-[122px] w-full resize-none rounded-xl border border-[#e0e4db] bg-white disabled:cursor-not-allowed"
+              className="mt-2 min-h-[122px] w-full resize-none rounded-xl border border-neutral-light bg-white disabled:cursor-not-allowed"
               required
             />
           </label>
@@ -274,7 +274,7 @@ function FormField({
         autoComplete={autoComplete}
         required={required}
         disabled={disabled}
-        className="mt-2 h-12 w-full rounded-xl border border-[#e0e4db] bg-white disabled:cursor-not-allowed"
+        className="mt-2 h-12 w-full rounded-xl border border-neutral-light bg-white disabled:cursor-not-allowed"
       />
     </label>
   );

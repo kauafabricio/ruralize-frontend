@@ -206,7 +206,7 @@ export default function CadastroPage() {
           </button>
         </form>
 
-        <div className="mt-9 border-t border-[#ebebe8] pt-8 text-center text-xs font-medium text-neutral-darker">
+        <div className="mt-9 border-t border-neutral-light pt-8 text-center text-xs font-medium text-neutral-darker">
           Já possui uma conta?{" "}
           <Link
             href="/login"

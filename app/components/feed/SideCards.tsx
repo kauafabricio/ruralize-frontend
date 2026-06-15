@@ -136,7 +136,7 @@ export function SuggestionsCard() {
                   <Link
                     key={person.id}
                     href={`/perfil/${person.id}`}
-                    className="group overflow-hidden rounded-2xl border border-[#e6efe4] bg-white p-5 transition hover:border-[#c7dabd] hover:bg-white"
+                    className="group overflow-hidden rounded-2xl border border-neutral-light bg-white p-5 transition hover:border-danger-primary hover:bg-white"
                   >
                     <div className="mb-4 flex items-center gap-3">
                       <ProfileAvatar profile={person} size="large" />
@@ -179,7 +179,7 @@ export function SuggestionsCard() {
 
 export function NewScheduleCard() {
   return (
-    <aside className="flex min-h-[318px] flex-col items-center justify-center rounded-2xl border border-dashed border-[#d8dbd2] bg-white px-8 text-center">
+    <aside className="flex min-h-[318px] flex-col items-center justify-center rounded-2xl border border-dashed border-pastel-support bg-white px-8 text-center">
       <Link
         href="/agendamentos"
         className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-white shadow-soft-sm"

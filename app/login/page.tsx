@@ -122,7 +122,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-8 border-t border-[#ebebe8] pt-8 text-center text-xs font-medium text-neutral-darker">
+        <div className="mt-8 border-t border-neutral-light pt-8 text-center text-xs font-medium text-neutral-darker">
           Ainda não possui acesso?{" "}
           <Link href="/cadastro/perfil" className="font-bold text-primary-dark">
             Criar conta

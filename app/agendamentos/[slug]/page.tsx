@@ -298,7 +298,7 @@ export default function AppointmentDetailsPage() {
               }}
             />
 
-            <section className="mt-8 rounded-[10px] border border-[#e6e8e0] bg-white px-8 py-8 shadow-soft">
+            <section className="mt-8 rounded-[10px] border border-neutral-light bg-white px-8 py-8 shadow-soft">
               <h2 className="text-[18px] font-bold tracking-[-0.03em] text-neutral-darker">
                 Garanta sua vaga
               </h2>
@@ -315,7 +315,7 @@ export default function AppointmentDetailsPage() {
               />
 
               {canManageEvent ? (
-                <div className="mt-6 rounded-xl border border-[#d4e8d4] bg-white p-4">
+                <div className="mt-6 rounded-xl border border-pastel-support bg-white p-4">
                   <p className="text-xs font-bold uppercase tracking-[0.08em] text-primary-dark">
                     Gerenciar evento
                   </p>
@@ -336,7 +336,7 @@ export default function AppointmentDetailsPage() {
                     <button
                       type="button"
                       onClick={() => setEditMode((current) => !current)}
-                      className="inline-flex h-11 items-center justify-center rounded-full border border-[#287630] bg-white px-4 text-xs font-bold text-primary-dark transition hover:bg-white"
+                      className="inline-flex h-11 items-center justify-center rounded-full border border-pastel-support bg-white px-4 text-xs font-bold text-primary-dark transition hover:bg-white"
                     >
                       {editMode ? "Cancelar edição" : "Editar evento"}
                     </button>

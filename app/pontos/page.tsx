@@ -307,7 +307,7 @@ export default function PointsPage() {
               </div>
             <Link
               href="/agendamentos"
-              className="mt-7 inline-flex h-11 items-center justify-center rounded-full bg-white px-7 text-xs font-bold uppercase tracking-[0.08em] text-[#2f7934] transition hover:bg-white"
+              className="mt-7 inline-flex h-11 items-center justify-center rounded-full bg-white px-7 text-xs font-bold uppercase tracking-[0.08em] text-neutral-darker transition hover:bg-white"
             >
               Ver eventos
             </Link>
@@ -448,7 +448,7 @@ export default function PointsPage() {
           </section>
         </div>
 
-        <footer className="border-t border-[#eceee8] bg-white">
+        <footer className="border-t border-neutral-light bg-white">
           <div className="mx-auto flex w-full max-w-[1220px] flex-col gap-4 px-4 py-8 text-xs font-semibold text-neutral-muted sm:flex-row sm:items-center sm:justify-between sm:px-7">
             <p>
               <span className="font-bold text-primary-dark">Ruralize</span> UFRPE

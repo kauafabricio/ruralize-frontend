@@ -24,7 +24,7 @@ export function RegistrationCancelModal({
         <div className="mt-8 flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 rounded-full border border-[#d8ddd5] py-3 text-sm font-bold text-[#566052] transition hover:bg-white"
+            className="flex-1 rounded-full border border-pastel-support py-3 text-sm font-bold text-neutral-darker transition hover:bg-white"
           >
             Voltar
           </button>

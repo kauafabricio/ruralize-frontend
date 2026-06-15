@@ -124,7 +124,7 @@ export default function AgendamentosPage() {
                             ))}
                           </div>
                         ) : (
-                          <div className="mt-6 flex min-h-[150px] flex-col items-center justify-center rounded-xl border border-dashed border-[#d8dbd2] bg-white">
+                          <div className="mt-6 flex min-h-[150px] flex-col items-center justify-center rounded-xl border border-dashed border-pastel-support bg-white">
                             <p className="text-sm font-semibold text-neutral-darker">
                               Nenhum evento agendado no momento
                             </p>
@@ -161,7 +161,7 @@ export default function AgendamentosPage() {
                       )}
                     </>
                   ) : (
-                    <div className="flex min-h-[150px] flex-col items-center justify-center rounded-xl border border-dashed border-[#d8dbd2] bg-white">
+                    <div className="flex min-h-[150px] flex-col items-center justify-center rounded-xl border border-dashed border-pastel-support bg-white">
                       <p className="text-sm font-semibold text-neutral-darker">
                         Nenhum agendamento confirmado
                       </p>
@@ -214,9 +214,9 @@ function AppointmentCard({
 }) {
   const isRealized = status === "Realizado";
   return (
-    <article className={`flex min-h-[264px] flex-col rounded-[26px] px-7 py-7 shadow-[0_20px_45px_rgba(33,55,30,0.08)] ${isRealized ? "border border-[#d8dbd2] bg-white" : "bg-white"}`}>
+    <article className={`flex min-h-[264px] flex-col rounded-[26px] px-7 py-7 shadow-soft ${isRealized ? "border border-pastel-support bg-white" : "bg-white"}`}>
       <div className="flex items-start justify-between gap-4">
-        <span className={`rounded-full px-4 py-2 text-[10px] font-bold uppercase tracking-[0.08em] ${isRealized ? "bg-neutral-lighter text-[#556050]" : "bg-white text-primary-dark"}`}>
+        <span className={`rounded-full px-4 py-2 text-[10px] font-bold uppercase tracking-[0.08em] ${isRealized ? "bg-neutral-lighter text-neutral-darker" : "bg-white text-primary-dark"}`}>
           {status}
         </span>
         <CalendarIcon className="mt-1 h-[17px] w-[17px] text-neutral-darker" />
@@ -243,7 +243,7 @@ function AppointmentCard({
         </Link>
         <Link
           href={href}
-          className={`ml-auto flex h-8 w-8 items-center justify-center rounded-full transition ${isRealized ? "text-[#d4d9d0] hover:bg-white hover:text-primary-dark"}`}
+          className={`ml-auto flex h-8 w-8 items-center justify-center rounded-full transition ${isRealized ? "text-neutral-darker hover:bg-white hover:text-primary-dark"}`}
           aria-label={`Ver detalhes de ${title}`}
         >
           <ArrowIcon className="h-4 w-4" />
@@ -265,7 +265,7 @@ function AppointmentCard({
 
 function NewAppointmentCard() {
   return (
-    <aside className="flex min-h-[264px] w-full flex-col items-center justify-center rounded-[26px] border border-dashed border-[#d8dbd2] bg-white px-8 text-center">
+    <aside className="flex min-h-[264px] w-full flex-col items-center justify-center rounded-[26px] border border-dashed border-pastel-support bg-white px-8 text-center">
       <h2 className="text-[18px] font-bold tracking-[-0.03em] text-neutral-darker">
         Explorar Eventos
       </h2>
@@ -285,7 +285,7 @@ function NewAppointmentCard() {
 
 function AppointmentsFooter() {
   return (
-    <footer className="border-t border-[#eceee8] bg-white">
+    <footer className="border-t border-neutral-light bg-white">
       <div className="mx-auto flex w-full max-w-[1220px] flex-col gap-4 px-4 py-8 text-xs font-semibold text-neutral-muted sm:flex-row sm:items-center sm:justify-between sm:px-7">
         <p className="font-bold text-neutral-darker">SustentaRural</p>
         <nav className="flex flex-wrap gap-7">

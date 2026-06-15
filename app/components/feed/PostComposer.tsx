@@ -300,7 +300,7 @@ export function PostComposer({
           </div>
 
           {selectedImage && (
-            <div className="mt-4 overflow-hidden rounded-xl border border-[#e7e9e1] bg-white">
+            <div className="mt-4 overflow-hidden rounded-xl border border-neutral-light bg-white">
               <div className="relative h-[210px] w-full">
                 {/* User-selected data URLs cannot be optimized by next/image. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -322,7 +322,7 @@ export function PostComposer({
           )}
 
           {selectedEvent ? (
-            <div className="mt-4 rounded-[16px] border border-[#cfe7c7] bg-white px-4 py-3">
+            <div className="mt-4 rounded-[16px] border border-danger-primary bg-white px-4 py-3">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.1em] text-primary-dark">
@@ -439,7 +439,7 @@ function PromoteEventDialog({
                 key={event.slug}
                 type="button"
                 onClick={() => onSelect(event)}
-                className="w-full rounded-[16px] border border-[#e6e8e0] px-4 py-4 text-left transition hover:border-[#9ac89c] hover:bg-white"
+                className="w-full rounded-[16px] border border-neutral-light px-4 py-4 text-left transition hover:border-pastel-support hover:bg-white"
               >
                 <span className="block text-sm font-bold text-neutral-darker">
                   {event.title}

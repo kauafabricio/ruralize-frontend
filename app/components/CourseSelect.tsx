@@ -77,22 +77,22 @@ export function CourseSelect({
 
   return (
     <div className={`relative ${className}`}>
-      <span className="mb-3 block text-[10px] font-black uppercase tracking-[0.14em] text-[#262b23]">
+      <span className="mb-3 block text-xs font-bold uppercase tracking-[0.14em] text-neutral-darker">
         Curso
       </span>
 
       <button
         type="button"
         onClick={() => (isOpen ? setIsOpen(false) : openList())}
-        className="flex h-16 w-full items-center gap-4 bg-[#e2e2df] px-4 text-left text-[#768070]"
+        className="flex h-16 w-full items-center gap-4 bg-white"
       >
         <span className="flex h-5 w-5 items-center justify-center">
           <GraduationIcon />
         </span>
 
         <span
-          className={`min-w-0 flex-1 truncate text-[13px] font-medium ${
-            value ? "text-[#283022]" : "text-[#93998e]"
+          className={`min-w-0 flex-1 truncate text-sm font-medium ${
+            value ? "text-neutral-darker"
           }`}
         >
           {value || "Selecione seu curso"}
@@ -100,14 +100,14 @@ export function CourseSelect({
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 right-0 top-[calc(100%+10px)] z-30 rounded-xl bg-white shadow-[0_24px_50px_rgba(33,55,30,0.18)]">
+        <div className="absolute left-0 right-0 top-[calc(100%+10px)] z-30 rounded-xl bg-white shadow-soft">
           <div className="border-b p-3">
             <input
               ref={searchInputRef}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Pesquisar curso"
-              className="w-full bg-[#e2e2df] px-4 h-12 outline-none"
+              className="w-full bg-white px-4 h-12 outline-none"
             />
           </div>
 
@@ -117,7 +117,7 @@ export function CourseSelect({
                 key={course}
                 type="button"
                 onClick={() => selectCourse(course)}
-                className="block w-full px-5 py-3 text-left text-[12px] hover:bg-[#eef3e8]"
+                className="block w-full px-5 py-3 text-left text-xs hover:bg-white"
               >
                 {course}
               </button>

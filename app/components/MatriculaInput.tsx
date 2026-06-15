@@ -38,11 +38,11 @@ export function MatriculaInput({
 
   return (
     <label className={`block ${className}`}>
-      <span className="mb-3 block text-[10px] font-black uppercase tracking-[0.14em] text-[#262b23]">
+      <span className="mb-3 block text-xs font-bold uppercase tracking-[0.14em] text-neutral-darker">
         Matrícula
       </span>
 
-      <span className="flex h-16 items-center gap-4 bg-[#e2e2df] px-4 text-[#768070]">
+      <span className="flex h-16 items-center gap-4 bg-white">
         <span className="flex h-5 w-5 shrink-0 items-center justify-center">
           <UserIcon />
         </span>
@@ -56,12 +56,12 @@ export function MatriculaInput({
           required
           inputMode="numeric"
           placeholder={placeholder}
-          className="h-full min-w-0 flex-1 bg-transparent text-[13px] font-medium text-[#283022] outline-none placeholder:text-[#93998e]"
+          className="h-full min-w-0 flex-1 bg-transparent text-sm font-medium text-neutral-darker"
         />
       </span>
 
       {showWarning && (
-        <span className="mt-2 block text-[10px] font-bold text-[#b15d2a]">
+        <span className="mt-2 block text-xs font-bold text-neutral-darker">
           Faltam {missingCharacters} caracteres para completar a matrícula.
         </span>
       )}

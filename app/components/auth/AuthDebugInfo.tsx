@@ -11,7 +11,7 @@ export function AuthDebugInfo() {
     return (
       <button
         onClick={() => setShowDebug(true)}
-        className="fixed bottom-4 right-4 bg-gray-900 text-white px-3 py-2 text-xs rounded opacity-50 hover:opacity-100"
+        className="fixed bottom-4 right-4 bg-neutral-900 text-white px-3 py-2 text-xs rounded opacity-50 hover:opacity-100"
       >
         Debug
       </button>

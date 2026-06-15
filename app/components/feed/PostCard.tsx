@@ -286,7 +286,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
   }
 
   return (
-    <article className="overflow-hidden rounded-3xl bg-white shadow-soft-xs">
+    <article className="overflow-hidden rounded-2xl bg-white shadow-soft-xs">
       {toast && (
         <Toast
           message={toast.message}
@@ -314,7 +314,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
         <div className="flex items-start justify-between gap-4">
           <Link
             href={`/perfil/${post.user_id}`}
-            className="group flex items-center gap-4 rounded-xl pr-2 transition hover:bg-neutral-lighter"
+            className="group flex items-center gap-4 rounded-xl pr-2 transition hover:bg-white"
             aria-label={`Abrir perfil de ${authorName}`}
           >
             {authorPhotoUrl ? (
@@ -324,19 +324,19 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                 className="h-11 w-11 rounded-full object-cover"
               />
             ) : (
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary-dark text-[12px] font-black uppercase text-white">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary-dark text-xs font-bold uppercase text-white">
                 {readInitials(authorName)}
               </div>
             )}
             <div>
-              <p className="text-sm font-black text-primary-dark transition group-hover:text-primary-dark">
+              <p className="text-sm font-bold text-primary-dark transition group-hover:text-primary-dark">
                 {authorName}
               </p>
               <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-secondary-light px-3 py-1.5">
-                <span className="text-[14px]">
+                <span className="text-sm">
                   {getActionIcon(post.sustainable_action_id || post.sustainable_action || "")}
                 </span>
-                <span className="text-[12px] font-semibold text-primary-dark">
+                <span className="text-xs font-semibold text-primary-dark">
                   {getActionName(post.sustainable_action_id || post.sustainable_action || "")}
                 </span>
               </div>
@@ -349,7 +349,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                 <button
                   type="button"
                   onClick={() => setIsEditing((current) => !current)}
-                  className="rounded-full px-3 py-1.5 text-[11px] font-black text-primary-dark transition hover:bg-neutral-light"
+                  className="rounded-full px-3 py-1.5 text-xs font-bold text-primary-dark transition hover:bg-neutral-light"
                 >
                   {isEditing ? "Cancelar" : "Editar"}
                 </button>
@@ -357,36 +357,36 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                   type="button"
                   onClick={() => setDeleteConfirmationOpen(true)}
                   disabled={isDeletingPost}
-                  className="rounded-full px-3 py-1.5 text-[11px] font-black text-danger-primary transition hover:bg-danger-light disabled:opacity-50"
+                  className="rounded-full px-3 py-1.5 text-xs font-bold text-danger-primary transition hover:bg-danger-light disabled:opacity-50"
                 >
                   {isDeletingPost ? "Excluindo..." : "Excluir"}
                 </button>
               </div>
             ) : null}
-            <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-neutral-muted">
+            <span className="text-xs font-semibold uppercase tracking-[0.1em] text-neutral-muted">
               {formatDate(post.created_at)}
             </span>
           </div>
         </div>
 
         {isEditing ? (
-          <div className="mt-5 space-y-3 rounded-xl border border-neutral-light bg-neutral-lighter p-4">
-            <label className="block text-[11px] font-black uppercase tracking-[0.08em] text-neutral-muted">
+          <div className="mt-5 space-y-3 rounded-xl border border-neutral-light bg-white p-4">
+            <label className="block text-xs font-bold uppercase tracking-[0.08em] text-neutral-muted">
               Conteudo
               <textarea
                 value={editContent}
                 onChange={(event) => setEditContent(event.target.value)}
                 rows={4}
-                className="mt-2 w-full resize-none rounded-lg border border-pastel-support bg-white px-4 py-3 text-sm font-medium normal-case leading-6 tracking-normal text-neutral-darker outline-none focus:border-pastel-support"
+                className="mt-2 w-full resize-none rounded-xl border border-pastel-support bg-white px-4 py-3 text-sm font-medium normal-case leading-6 tracking-normal text-neutral-darker outline-none focus:border-pastel-support"
               />
             </label>
             <div className="grid gap-3 sm:grid-cols-2">
-              <label className="block text-[11px] font-black uppercase tracking-[0.08em] text-neutral-muted">
+              <label className="block text-xs font-bold uppercase tracking-[0.08em] text-neutral-muted">
                 Acao Sustentavel
                 <select
                   value={editActionId}
                   onChange={(event) => setEditActionId(event.target.value)}
-                  className="mt-2 h-10 w-full rounded-full border border-pastel-support bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none focus:border-pastel-support"
+                  className="mt-2 h-10 w-full rounded-full border border-pastel-support bg-white px-4 text-xs font-semibold normal-case tracking-normal text-neutral-darker outline-none focus:border-pastel-support"
                 >
                   <option value="">🌍 Sem ação</option>
                   {getAllActions().map((action) => (
@@ -396,29 +396,29 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                   ))}
                 </select>
               </label>
-              <label className="block text-[11px] font-black uppercase tracking-[0.08em] text-neutral-muted">
+              <label className="block text-xs font-bold uppercase tracking-[0.08em] text-neutral-muted">
                 Local
                 <input
                   type="text"
                   value={editLocation}
                   onChange={(event) => setEditLocation(event.target.value)}
-                  className="mt-2 h-10 w-full rounded-full border border-pastel-support bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none focus:border-pastel-support"
+                  className="mt-2 h-10 w-full rounded-full border border-pastel-support bg-white px-4 text-xs font-semibold normal-case tracking-normal text-neutral-darker outline-none focus:border-pastel-support"
                   placeholder="Opcional"
                 />
               </label>
             </div>
-            <label className="block text-[11px] font-black uppercase tracking-[0.08em] text-neutral-muted">
+            <label className="block text-xs font-bold uppercase tracking-[0.08em] text-neutral-muted">
               Imagem
               <input
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
                 onChange={handleEditImageFile}
-                className="mt-2 w-full rounded-full border border-pastel-support bg-white px-4 py-2 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none file:mr-4 file:border-0 file:bg-secondary-light file:px-3 file:py-2 file:text-[12px] file:font-semibold file:text-primary-dark focus:border-pastel-support"
+                className="mt-2 w-full rounded-full border border-pastel-support bg-white px-4 py-2 text-xs font-semibold normal-case tracking-normal text-neutral-darker outline-none file:mr-4 file:border-0 file:bg-secondary-light file:px-3 file:py-2 file:text-xs file:font-semibold file:text-primary-dark focus:border-pastel-support"
               />
             </label>
             {editImageUrl ? (
-              <div className="mt-3 rounded-lg border border-pastel-support overflow-hidden bg-neutral-light">
+              <div className="mt-3 rounded-xl border border-pastel-support overflow-hidden bg-neutral-light">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={editImageUrl}
@@ -428,7 +428,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                 <button
                   type="button"
                   onClick={clearEditImage}
-                  className="w-full rounded-b-[14px] bg-danger-light px-4 py-3 text-[11px] font-black text-danger-primary"
+                  className="w-full rounded-b-[14px] bg-danger-light px-4 py-3 text-xs font-bold text-danger-primary"
                 >
                   Remover imagem
                 </button>
@@ -447,7 +447,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                   }
                   setIsEditing(false);
                 }}
-                className="h-10 rounded-full bg-neutral-lighter px-5 text-[11px] font-black text-neutral-muted"
+                className="h-10 rounded-full bg-white px-5 text-xs font-bold text-neutral-muted"
               >
                 Descartar
               </button>
@@ -455,7 +455,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                 type="button"
                 onClick={handleSavePost}
                 disabled={isSavingPost || !editContent.trim()}
-                className="h-10 rounded-full bg-primary-dark px-5 text-[11px] font-black text-white disabled:opacity-50"
+                className="h-10 rounded-full bg-primary-dark px-5 text-xs font-bold text-white disabled:opacity-50"
               >
                 {isSavingPost ? "Salvando..." : "Salvar alteracoes"}
               </button>
@@ -468,7 +468,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
             </p>
 
             {post.location ? (
-              <p className="mt-3 text-[12px] font-semibold text-neutral-muted">
+              <p className="mt-3 text-xs font-semibold text-neutral-muted">
                 {post.location}
               </p>
             ) : null}
@@ -476,7 +476,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
         )}
 
         {!isEditing && post.image_url && (
-          <div className="mt-4 overflow-hidden rounded-lg">
+          <div className="mt-4 overflow-hidden rounded-xl">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={post.image_url}
@@ -488,7 +488,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
       </div>
 
       <div className="border-t border-neutral-light px-6 py-4">
-        <div className="mb-4 flex items-center justify-between text-[12px] text-neutral-muted">
+        <div className="mb-4 flex items-center justify-between text-xs text-neutral-muted">
           <span className="font-semibold">{likes} curtida{likes !== 1 ? "s" : ""}</span>
           <span>{comments.length} comentário{comments.length !== 1 ? "s" : ""}</span>
         </div>
@@ -497,7 +497,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
           <button
             onClick={handleLike}
             disabled={isLoadingLike}
-            className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-[12px] font-semibold transition-all ${
+            className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2 text-xs font-semibold transition-all ${
               isLiked
                 ? "bg-danger-light text-danger-primary"
                 : "hover:bg-neutral-light text-neutral-muted"
@@ -511,7 +511,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
 
           <button
             onClick={() => setShowCommentForm(!showCommentForm)}
-            className="flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-[12px] font-semibold text-neutral-muted transition-all hover:bg-neutral-light"
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl py-2 text-xs font-semibold text-neutral-muted transition-all hover:bg-neutral-light"
           >
             <span className="text-lg opacity-60">💬</span>
             Comentar
@@ -523,7 +523,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
             {comments.map((comment, index) => (
               <div
                 key={index}
-                className="rounded-lg bg-neutral-light px-4 py-3"
+                className="rounded-xl bg-neutral-light px-4 py-3"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-start gap-3">
@@ -543,7 +543,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                         className="h-9 w-9 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-dark text-[10px] font-black uppercase text-white">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-dark text-xs font-bold uppercase text-white">
                         {readInitials(commenterName)}
                       </div>
                     );
@@ -551,15 +551,15 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                   <div className="flex-1">
                     <Link
                       href={`/perfil/${comment.user_id}`}
-                      className="text-[12px] font-black text-primary-dark transition hover:text-primary-dark"
+                      className="text-xs font-bold text-primary-dark transition hover:text-primary-dark"
                     >
                       {comment.user_name || (comment.user_id === user?.id ? user.name || "Você" : "Usuário")}
                     </Link>
-                    <p className="mt-1 text-[12px] text-neutral-darker">
+                    <p className="mt-1 text-xs text-neutral-darker">
                       {comment.content}
                     </p>
                     {comment.created_at && (
-                      <p className="mt-1 text-[11px] text-neutral-muted">
+                      <p className="mt-1 text-xs text-neutral-muted">
                         {formatDate(comment.created_at)}
                       </p>
                     )}
@@ -568,7 +568,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                   {comment.user_id === user?.id && (
                     <button
                       onClick={() => handleRemoveComment(index)}
-                      className="text-[12px] font-semibold text-red-600 hover:text-red-700"
+                      className="text-xs font-semibold text-red-600 hover:text-red-700"
                     >
                       Excluir
                     </button>
@@ -591,12 +591,12 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                 }
               }}
               placeholder="Deixe um comentário..."
-              className="flex-1 rounded-full bg-neutral-light px-4 py-2 text-[12px] outline-none placeholder:text-neutral-muted"
+              className="flex-1 rounded-full bg-neutral-light px-4 py-2 text-xs outline-none placeholder:text-neutral-muted"
             />
             <button
               onClick={handleAddComment}
               disabled={isLoadingComment || !newComment.trim()}
-              className="rounded-full bg-primary-dark px-4 py-2 text-[11px] font-black text-white disabled:opacity-50 transition-opacity"
+              className="rounded-full bg-primary-dark px-4 py-2 text-xs font-bold text-white disabled:opacity-50 transition-opacity"
             >
               {isLoadingComment ? "..." : "Enviar"}
             </button>
@@ -636,11 +636,11 @@ function DeleteConfirmationDialog({
         </div>
         <h2
           id="delete-post-title"
-          className="mt-5 text-[21px] font-black tracking-[-0.04em] text-neutral-darker"
+          className="mt-5 text-[21px] font-bold tracking-[-0.04em] text-neutral-darker"
         >
           Excluir publicacao?
         </h2>
-        <p className="mx-auto mt-3 max-w-[280px] text-[12px] font-semibold leading-5 text-neutral-muted">
+        <p className="mx-auto mt-3 max-w-[280px] text-xs font-semibold leading-5 text-neutral-muted">
           Essa publicacao sera removida do feed. Depois de confirmar, nao sera
           possivel recuperar o conteudo.
         </p>
@@ -649,7 +649,7 @@ function DeleteConfirmationDialog({
             type="button"
             onClick={onCancel}
             disabled={isDeleting}
-            className="h-11 rounded-full bg-neutral-lighter px-5 text-[11px] font-black text-neutral-muted transition hover:bg-neutral-light disabled:opacity-60"
+            className="h-11 rounded-full bg-white px-5 text-xs font-bold text-neutral-muted transition hover:bg-neutral-light disabled:opacity-60"
           >
             Cancelar
           </button>
@@ -657,7 +657,7 @@ function DeleteConfirmationDialog({
             type="button"
             onClick={onConfirm}
             disabled={isDeleting}
-            className="h-11 rounded-full bg-danger-primary px-5 text-[11px] font-black text-white shadow-soft-sm transition hover:bg-danger-darker disabled:opacity-60"
+            className="h-11 rounded-full bg-danger-primary px-5 text-xs font-bold text-white shadow-soft-sm transition hover:bg-danger-darker disabled:opacity-60"
           >
             {isDeleting ? "Excluindo..." : "Confirmar"}
           </button>
@@ -681,17 +681,17 @@ function DeleteSuccessDialog({ onClose }: { onClose: () => void }) {
         </div>
         <h2
           id="delete-success-title"
-          className="mt-5 text-[21px] font-black tracking-[-0.04em] text-neutral-darker"
+          className="mt-5 text-[21px] font-bold tracking-[-0.04em] text-neutral-darker"
         >
           Item excluido
         </h2>
-        <p className="mx-auto mt-3 max-w-[250px] text-[12px] font-semibold leading-5 text-neutral-muted">
+        <p className="mx-auto mt-3 max-w-[250px] text-xs font-semibold leading-5 text-neutral-muted">
           A publicação foi excluida com sucesso.
         </p>
         <button
           type="button"
           onClick={onClose}
-          className="mt-7 h-11 w-full rounded-full bg-primary-dark px-5 text-[11px] font-black text-white shadow-soft-sm transition hover:bg-primary-darker"
+          className="mt-7 h-11 w-full rounded-full bg-primary-dark px-5 text-xs font-bold text-white shadow-soft-sm transition hover:bg-primary-darker"
         >
           Entendi
         </button>
@@ -722,11 +722,11 @@ function CommentDeleteConfirmationDialog({
         </div>
         <h2
           id="delete-comment-title"
-          className="mt-5 text-[21px] font-black tracking-[-0.04em] text-neutral-darker"
+          className="mt-5 text-[21px] font-bold tracking-[-0.04em] text-neutral-darker"
         >
           Excluir comentário?
         </h2>
-        <p className="mx-auto mt-3 max-w-[280px] text-[12px] font-semibold leading-5 text-neutral-muted">
+        <p className="mx-auto mt-3 max-w-[280px] text-xs font-semibold leading-5 text-neutral-muted">
           Tem certeza que deseja excluir este comentário? Essa ação não pode ser desfeita.
         </p>
         <div className="mt-7 grid gap-3 sm:grid-cols-2">
@@ -734,7 +734,7 @@ function CommentDeleteConfirmationDialog({
             type="button"
             onClick={onCancel}
             disabled={isDeleting}
-            className="h-11 rounded-full bg-neutral-lighter px-5 text-[11px] font-black text-neutral-muted transition hover:bg-neutral-light disabled:opacity-60"
+            className="h-11 rounded-full bg-white px-5 text-xs font-bold text-neutral-muted transition hover:bg-neutral-light disabled:opacity-60"
           >
             Cancelar
           </button>
@@ -742,7 +742,7 @@ function CommentDeleteConfirmationDialog({
             type="button"
             onClick={onConfirm}
             disabled={isDeleting}
-            className="h-11 rounded-full bg-danger-primary px-5 text-[11px] font-black text-white shadow-soft-sm transition hover:bg-danger-darker disabled:opacity-60"
+            className="h-11 rounded-full bg-danger-primary px-5 text-xs font-bold text-white shadow-soft-sm transition hover:bg-danger-darker disabled:opacity-60"
           >
             {isDeleting ? "Excluindo..." : "Confirmar"}
           </button>

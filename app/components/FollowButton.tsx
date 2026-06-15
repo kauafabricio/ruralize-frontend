@@ -54,10 +54,10 @@ export function FollowButton({
         type="button"
         onClick={handleClick}
         disabled={disabled || processing}
-        className={`inline-flex h-10 w-fit items-center gap-2 rounded-full px-6 text-[12px] font-black transition-colors disabled:cursor-not-allowed disabled:opacity-70 ${
+        className={`inline-flex h-10 px-6 items-center gap-2 rounded-xl text-xs font-bold transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60 ${
           isFollowing
-            ? "bg-[#e7f1df] text-primary-dark hover:hover:bg-pastel-support"
-            : "bg-primary-dark text-white shadow-[0_10px_18px_rgba(40,118,48,0.12)] hover:bg-primary-darker"
+            ? "bg-secondary-light/30 text-primary-dark border border-pastel-support/40 hover:bg-secondary-light/50"
+            : "bg-primary-dark text-white shadow-soft hover:opacity-95 active:scale-[0.98]"
         }`}
         title={isFollowing ? "Clique para deixar de seguir" : "Clique para seguir"}
       >

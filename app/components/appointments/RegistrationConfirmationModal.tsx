@@ -83,29 +83,29 @@ export function RegistrationConfirmationModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#d7ddd3]/70 px-4 py-8 backdrop-blur-[5px]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="registration-confirmation-title"
         className="w-full max-w-[356px] rounded-2xl bg-white px-8 pb-8 pt-9 text-center shadow-soft-lg"
       >
-        <div className="mx-auto flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#eef8ea] text-primary-dark">
+        <div className="mx-auto flex h-[68px] w-[68px] items-center justify-center rounded-full bg-white text-primary-dark">
           <LeafIcon className="h-8 w-8" />
         </div>
 
         <h2
           id="registration-confirmation-title"
-          className="mt-7 text-[22px] font-black tracking-[-0.04em] text-primary-dark"
+          className="mt-7 text-[22px] font-bold tracking-[-0.04em] text-primary-dark"
         >
           Quase lá!
         </h2>
-        <p className="mx-auto mt-3 max-w-[230px] text-[12px] font-semibold leading-5 text-[#4f594c]">
+        <p className="mx-auto mt-3 max-w-[230px] text-xs font-semibold leading-5 text-neutral-darker">
           Você preencheu o formulário de inscrição corretamente?
         </p>
 
         {error ? (
-          <div className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-[12px] font-semibold text-red-700">
+          <div className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-xs font-semibold text-red-700">
             {error}
           </div>
         ) : null}
@@ -115,14 +115,14 @@ export function RegistrationConfirmationModal({
             type="button"
             onClick={handleConfirm}
             disabled={loading}
-            className="flex h-12 w-full items-center justify-center rounded-full bg-primary-dark px-5 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.2)] transition hover:bg-primary-darker disabled:opacity-50"
+            className="flex h-12 w-full items-center justify-center rounded-full bg-primary-dark px-5 text-xs font-bold text-white shadow-soft transition hover:bg-primary-darker disabled:opacity-50"
           >
             {loading ? "Confirmando..." : "Sim, preenchi corretamente"}
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="h-12 w-full rounded-full bg-[#676a72] px-5 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(33,55,30,0.14)] transition hover:bg-[#555a61]"
+            className="h-12 w-full rounded-full bg-white"
           >
             Não, voltar ao formulário
           </button>

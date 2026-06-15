@@ -7,10 +7,10 @@ export function UserCard({ user }: { user: UserProfileResponse }) {
   return (
     <Link
       href={`/perfil/${user.id}`}
-      className="group overflow-hidden rounded-[22px] border border-[#e6efe4] bg-neutral-lighter p-5 transition hover:border-[#c7dabd] hover:bg-white"
+      className="group overflow-hidden rounded-2xl border border-pastel-support/30 bg-white p-5 transition-all duration-200 hover:border-pastel-support/60 hover:shadow-soft"
     >
       <div className="mb-4 flex items-center gap-3">
-        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-primary-dark text-[12px] font-black text-white flex items-center justify-center">
+        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-primary-dark text-xs font-bold text-white flex items-center justify-center">
           {user.profile_photo_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -23,10 +23,10 @@ export function UserCard({ user }: { user: UserProfileResponse }) {
           )}
         </div>
         <div className="min-w-0">
-          <p className="truncate text-[13px] font-black text-neutral-darker group-hover:text-primary-dark">
+          <p className="truncate text-sm font-bold text-neutral-darker group-hover:text-primary-dark transition-colors">
             {user.name}
           </p>
-          <p className="truncate text-[11px] font-semibold text-neutral-muted">
+          <p className="truncate text-xs font-semibold text-neutral-muted">
             {user.role}
           </p>
         </div>
@@ -34,14 +34,14 @@ export function UserCard({ user }: { user: UserProfileResponse }) {
 
       {user.department && (
         <div className="mb-4">
-          <p className="text-[11px] text-neutral-muted">
-            <span className="font-black">Depto:</span> {user.department}
+          <p className="text-xs text-neutral-muted">
+            <span className="font-bold">Depto:</span> {user.department}
           </p>
         </div>
       )}
 
       {user.description && (
-        <p className="text-[12px] leading-6 text-[#545d50]">
+        <p className="text-xs leading-relaxed text-neutral-muted">
           {user.description}
         </p>
       )}

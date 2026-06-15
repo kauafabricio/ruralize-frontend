@@ -24,14 +24,14 @@ export function AuthInput({
   return (
     <label className={`block ${className}`}>
       {label ? (
-        <span className="mb-3 block text-[10px] font-black uppercase tracking-[0.14em] text-[#262b23]">
+        <span className="mb-2 block text-xs font-semibold uppercase tracking-wider text-primary-dark">
           {label}
         </span>
       ) : null}
 
-      <span className="flex h-16 items-center gap-4 bg-[#e2e2df] px-4 text-[#768070]">
+      <span className="flex h-14 items-center gap-3 border border-pastel-support rounded-xl px-4 bg-white text-neutral-muted transition-all duration-200 hover:border-pastel-support/60 focus-within:ring-2 focus-within:ring-primary-dark focus-within:border-transparent">
         {icon && (
-          <span className="flex h-5 w-5 shrink-0 items-center justify-center">
+          <span className="flex h-5 w-5 shrink-0 items-center justify-center text-neutral-muted">
             {icon}
           </span>
         )}
@@ -41,7 +41,7 @@ export function AuthInput({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          className="h-full min-w-0 flex-1 bg-transparent text-[13px] font-medium text-[#283022] outline-none placeholder:text-[#93998e]"
+          className="h-full min-w-0 flex-1 bg-transparent text-sm font-normal text-neutral-darker outline-none placeholder:text-neutral-muted"
         />
 
         {action ? (

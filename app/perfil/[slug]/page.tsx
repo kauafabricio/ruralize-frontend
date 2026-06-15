@@ -124,12 +124,12 @@ export default function UserProfilePage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-neutral-lighter text-[#222a20]">
+      <main className="min-h-screen bg-white text-neutral-darker">
         <FeedHeader showSearch={false} />
         <div className="mx-auto max-w-[1132px] px-4 pb-20 pt-10 sm:px-6 lg:px-1">
           <div className="animate-pulse space-y-4">
-            <div className="h-[174px] rounded-3xl bg-[#e0e5d8]" />
-            <div className="h-[300px] rounded-3xl bg-[#e0e5d8]" />
+            <div className="h-[174px] rounded-2xl bg-white" />
+            <div className="h-[300px] rounded-2xl bg-white" />
           </div>
         </div>
       </main>
@@ -138,7 +138,7 @@ export default function UserProfilePage() {
 
   if (error || !profile) {
     return (
-      <main className="min-h-screen bg-neutral-lighter text-[#222a20]">
+      <main className="min-h-screen bg-white text-neutral-darker">
         <FeedHeader showSearch={false} />
         {toast && (
           <Toast
@@ -148,13 +148,13 @@ export default function UserProfilePage() {
           />
         )}
         <div className="mx-auto max-w-[1132px] px-4 pb-20 pt-10 sm:px-6 lg:px-1">
-          <div className="rounded-3xl bg-white px-6 py-8 text-center text-sm text-red-600 shadow-soft-xs">
+          <div className="rounded-2xl bg-white px-6 py-8 text-center text-sm text-red-600 shadow-soft-xs">
             {error || "Perfil não encontrado"}
           </div>
           <div className="mt-4">
             <Link
               href="/explore"
-              className="rounded-full border border-pastel-support bg-white px-4 py-2 text-sm font-black text-primary-dark transition hover:bg-neutral-lighter"
+              className="rounded-full border border-pastel-support bg-white px-4 py-2 text-sm font-bold text-primary-dark transition hover:bg-white"
             >
               Voltar à exploração
             </Link>
@@ -168,7 +168,7 @@ export default function UserProfilePage() {
   const profileImage = profile.profile_photo_url || undefined;
 
   return (
-    <main className="min-h-screen bg-neutral-lighter text-[#222a20]">
+    <main className="min-h-screen bg-white text-neutral-darker">
       <FeedHeader showSearch={false} />
 
       {toast && (
@@ -180,17 +180,17 @@ export default function UserProfilePage() {
       )}
 
       <div className="mx-auto max-w-[1132px] px-4 pb-20 pt-10 sm:px-6 lg:px-1">
-        <div className="mb-6 flex items-center justify-between gap-3 text-sm font-black text-primary-dark">
+        <div className="mb-6 flex items-center justify-between gap-3 text-sm font-bold text-primary-dark">
           <Link
             href="/explore"
-            className="rounded-full border border-pastel-support bg-white px-4 py-2 transition hover:bg-neutral-lighter"
+            className="rounded-full border border-pastel-support bg-white px-4 py-2 transition hover:bg-white"
           >
             Voltar à exploração
           </Link>
           <div className="flex items-center gap-3">
             {isOwnProfile && currentUser ? (
               <>
-                <span className="rounded-full bg-[#e9f4e4] px-4 py-2 text-[#225f35]">
+                <span className="rounded-full bg-white">
                   Seu Perfil
                 </span>
                 <Link
@@ -202,7 +202,7 @@ export default function UserProfilePage() {
               </>
             ) : (
               <>
-                <span className="rounded-full bg-[#e9f4e4] px-4 py-2 text-[#225f35]">
+                <span className="rounded-full bg-white">
                   Perfil público
                 </span>
                 {currentUser ? (
@@ -216,9 +216,9 @@ export default function UserProfilePage() {
           </div>
         </div>
 
-        <section className="overflow-hidden rounded-3xl bg-white shadow-soft-xs">
+        <section className="overflow-hidden rounded-2xl bg-white shadow-soft-xs">
           <div
-            className="h-[174px] bg-[#d7e4c6] bg-cover bg-center"
+            className="h-[174px] bg-white bg-cover bg-center"
             role="img"
             aria-label="Capa do perfil"
             style={
@@ -237,13 +237,13 @@ export default function UserProfilePage() {
 
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div className="max-w-[620px]">
-                <h1 className="text-[30px] font-black leading-tight tracking-[-0.03em] text-neutral-darker">
+                <h1 className="text-[30px] font-bold leading-tight tracking-[-0.03em] text-neutral-darker">
                   {profile.name}
                 </h1>
-                <p className="mt-1 text-[13px] font-black text-primary-dark">
+                <p className="mt-1 text-sm font-bold text-primary-dark">
                   {translateRole(profile.role)}
                 </p>
-                <p className="mt-6 max-w-[590px] text-[12px] font-medium leading-6 text-[#545d50]">
+                <p className="mt-6 max-w-[590px] text-xs font-medium leading-6 text-neutral-darker">
                   {profile.description || "Sem descrição adicionada"}
                 </p>
               </div>
@@ -267,14 +267,14 @@ export default function UserProfilePage() {
           <section aria-labelledby="profile-activities-title">
             <h2
               id="profile-activities-title"
-              className="text-[15px] font-black tracking-[-0.02em] text-neutral-darker"
+              className="text-[15px] font-bold tracking-[-0.02em] text-neutral-darker"
             >
               Atividades recentes
             </h2>
 
             {posts.length === 0 ? (
-              <div className="mt-5 rounded-[22px] bg-white px-6 py-8 text-center shadow-soft-xs">
-                <p className="text-[13px] font-medium text-[#545d50]">
+              <div className="mt-5 rounded-2xl bg-white px-6 py-8 text-center shadow-soft-xs">
+                <p className="text-sm font-medium text-neutral-darker">
                   Este usuário ainda não tem postagens.
                 </p>
               </div>
@@ -304,9 +304,9 @@ function ProfileAvatar({
   imageUrl?: string | null;
 }) {
   return (
-    <div className="absolute left-6 top-[-58px] h-[116px] w-[116px] rounded-full bg-white p-[5px] shadow-[0_14px_28px_rgba(33,55,30,0.18)] sm:left-8 lg:left-9">
+    <div className="absolute left-6 top-[-58px] h-[116px] w-[116px] rounded-full bg-white p-[5px] shadow-soft sm:left-8 lg:left-9">
       <div className="relative h-full w-full overflow-hidden rounded-full bg-primary-dark">
-        <span className="absolute inset-0 flex items-center justify-center text-[26px] font-black text-white">
+        <span className="absolute inset-0 flex items-center justify-center text-[26px] font-bold text-white">
           {readInitials(name)}
         </span>
         {imageUrl ? (
@@ -337,60 +337,60 @@ function AcademicInfoCard({
   course?: string | null;
 }) {
   return (
-    <section className="rounded-[22px] bg-white px-6 py-7 shadow-soft-xs">
+    <section className="rounded-2xl bg-white px-6 py-7 shadow-soft-xs">
       <div className="flex items-center gap-2 text-neutral-darker">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#e9f4e4] text-primary-dark">
+        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-primary-dark">
           ✓
         </span>
-        <h2 className="text-[15px] font-black tracking-[-0.02em]">
+        <h2 className="text-[15px] font-bold tracking-[-0.02em]">
           Informações Acadêmicas
         </h2>
       </div>
 
       <dl className="mt-7 space-y-6">
         <div>
-          <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-[#a0a69b]">
+          <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-darker">
             E-mail
           </dt>
-          <dd className="mt-2 break-words text-[12px] font-semibold text-[#333b31]">
+          <dd className="mt-2 break-words text-xs font-semibold text-neutral-darker">
             {email}
           </dd>
         </div>
 
         <div>
-          <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-[#a0a69b]">
+          <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-darker">
             Função
           </dt>
-          <dd className="mt-2 text-[12px] font-semibold text-[#333b31]">
+          <dd className="mt-2 text-xs font-semibold text-neutral-darker">
             {role}
           </dd>
         </div>
 
         {department && (
           <div>
-            <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-[#a0a69b]">
+            <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-darker">
               Departamento
             </dt>
-            <dd className="mt-2 text-[12px] font-semibold text-[#333b31]">
+            <dd className="mt-2 text-xs font-semibold text-neutral-darker">
               {department}
             </dd>
           </div>
         )}
 
         <div>
-          <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-[#a0a69b]">
+          <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-darker">
             Matrícula
           </dt>
-          <dd className="mt-2 text-[12px] font-semibold text-[#333b31]">
+          <dd className="mt-2 text-xs font-semibold text-neutral-darker">
             {registration}
           </dd>
         </div>
 
         <div>
-          <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-[#a0a69b]">
+          <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-darker">
             Localização
           </dt>
-          <dd className="mt-2 flex items-center gap-2 text-[12px] font-semibold text-[#333b31]">
+          <dd className="mt-2 flex items-center gap-2 text-xs font-semibold text-neutral-darker">
             <LocationIcon className="h-[14px] w-[14px] text-primary-dark" />
             {location}
           </dd>

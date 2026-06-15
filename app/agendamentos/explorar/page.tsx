@@ -96,20 +96,20 @@ export default function ExplorarEventosPage() {
 
   return (
     <RequireAuth>
-      <main className="flex min-h-screen flex-col bg-[#fbfbf7] text-neutral-darker">
+      <main className="flex min-h-screen flex-col bg-white text-neutral-darker">
         <FeedHeader showSearch={false} />
 
         <div className="mx-auto w-full max-w-[1220px] flex-1 px-4 pb-16 pt-10 sm:px-7 lg:pt-11">
           {/* Teacher Create Event Section */}
           {isTeacher && !loadingProfile && (
-            <section className="mb-14 rounded-2xl bg-white p-8 shadow-md">
+            <section className="mb-14 rounded-2xl bg-white p-8 shadow-soft">
               <h2 className="text-2xl font-bold text-primary-dark">Criar Novo Evento</h2>
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-2 text-sm text-neutral-600">
                 Crie eventos sustentáveis para engajar sua comunidade
               </p>
 
               {createError && (
-                <div className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+                <div className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
                   {createError}
                 </div>
               )}
@@ -120,40 +120,40 @@ export default function ExplorarEventosPage() {
                   name="title"
                   placeholder="Título do evento"
                   required
-                  className="rounded-lg border border-gray-300 px-4 py-2"
+                  className="rounded-xl border border-neutral-300 px-4 py-2"
                 />
                 <input
                   type="text"
                   name="location_name"
                   placeholder="Local (nome)"
                   required
-                  className="rounded-lg border border-gray-300 px-4 py-2"
+                  className="rounded-xl border border-neutral-300 px-4 py-2"
                 />
                 <input
                   type="text"
                   name="address"
                   placeholder="Endereço"
                   required
-                  className="rounded-lg border border-gray-300 px-4 py-2"
+                  className="rounded-xl border border-neutral-300 px-4 py-2"
                 />
                 <input
                   type="text"
                   name="action_id"
                   placeholder="Action ID"
                   required
-                  className="rounded-lg border border-gray-300 px-4 py-2"
+                  className="rounded-xl border border-neutral-300 px-4 py-2"
                 />
                 <input
                   type="datetime-local"
                   name="start_date"
                   required
-                  className="rounded-lg border border-gray-300 px-4 py-2"
+                  className="rounded-xl border border-neutral-300 px-4 py-2"
                 />
                 <input
                   type="datetime-local"
                   name="end_date"
                   required
-                  className="rounded-lg border border-gray-300 px-4 py-2"
+                  className="rounded-xl border border-neutral-300 px-4 py-2"
                 />
                 <input
                   type="number"
@@ -161,7 +161,7 @@ export default function ExplorarEventosPage() {
                   placeholder="Máx. participantes"
                   required
                   min="1"
-                  className="rounded-lg border border-gray-300 px-4 py-2"
+                  className="rounded-xl border border-neutral-300 px-4 py-2"
                 />
                 <input
                   type="number"
@@ -169,30 +169,30 @@ export default function ExplorarEventosPage() {
                   placeholder="Pontos"
                   required
                   min="1"
-                  className="rounded-lg border border-gray-300 px-4 py-2"
+                  className="rounded-xl border border-neutral-300 px-4 py-2"
                 />
                 <textarea
                   name="description"
                   placeholder="Descrição do evento"
                   required
-                  className="col-span-2 rounded-lg border border-gray-300 px-4 py-2"
+                  className="col-span-2 rounded-xl border border-neutral-300 px-4 py-2"
                   rows={3}
                 />
-                <label className="col-span-2 block rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-[#434845]">
-                  <span className="block text-xs font-black uppercase tracking-[0.14em] text-[#5e6a55]">
+                <label className="col-span-2 block rounded-xl border border-neutral-300 bg-white px-4 py-2 text-sm text-neutral-darker">
+                  <span className="block text-xs font-bold uppercase tracking-[0.14em] text-neutral-darker">
                     Imagem do evento (opcional)
                   </span>
                   <input
                     type="file"
                     name="photo_file"
                     accept="image/*"
-                    className="mt-3 w-full text-sm text-[#2e372f]"
+                    className="mt-3 w-full text-sm text-neutral-darker"
                   />
                 </label>
                 <button
                   type="submit"
                   disabled={creatingEvent}
-                  className="col-span-2 rounded-lg bg-primary-dark px-6 py-2 font-bold text-white transition hover:bg-primary-darker disabled:opacity-50"
+                  className="col-span-2 rounded-xl bg-primary-dark px-6 py-2 font-bold text-white transition hover:bg-primary-darker disabled:opacity-50"
                 >
                   {creatingEvent ? "Criando..." : "Criar Evento"}
                 </button>
@@ -205,31 +205,31 @@ export default function ExplorarEventosPage() {
             <div className="max-w-[810px]">
               <h1
                 id="events-title"
-                className="text-[31px] font-medium leading-tight tracking-[-0.04em] text-[#2f392f] sm:text-[40px]"
+                className="text-[31px] font-medium leading-tight tracking-[-0.04em] text-neutral-darker"
               >
                 Cultive o futuro da nossa{" "}
-                <span className="font-black text-primary-dark">Universidade</span>
+                <span className="font-bold text-primary-dark">Universidade</span>
               </h1>
-              <p className="mt-4 max-w-[560px] text-[13px] font-medium leading-6 text-[#505a4c]">
+              <p className="mt-4 max-w-[560px] text-sm font-medium leading-6 text-neutral-darker">
                 Explore iniciativas e eventos sustentaveis na UFRPE. Sua
                 participacao gera impacto real e pontos de engajamento.
               </p>
             </div>
 
             {loadingProfile ? (
-              <p className="mt-8 text-[12px] font-semibold text-neutral-muted">
+              <p className="mt-8 text-xs font-semibold text-neutral-muted">
                 Verificando permissoes de docente...
               </p>
             ) : null}
 
             {error && (
-              <div className="mt-10 rounded-lg bg-red-50 p-4 text-red-700">
+              <div className="mt-10 rounded-xl bg-red-50 p-4 text-red-700">
                 {error}
               </div>
             )}
 
             {!loading && events.length === 0 && (
-              <div className="mt-10 text-center text-gray-600">
+              <div className="mt-10 text-center text-neutral-600">
                 Nenhum evento disponível no momento.
               </div>
             )}
@@ -280,8 +280,8 @@ function EventCard({
   };
 
   return (
-    <article className="overflow-hidden rounded-xl bg-white shadow-[0_18px_42px_rgba(33,55,30,0.08)]">
-      <div className="relative h-[176px] bg-[#dfe8d8]">
+    <article className="overflow-hidden rounded-xl bg-white shadow-soft">
+      <div className="relative h-[176px] bg-white">
         <div
           className="h-full w-full bg-cover bg-center"
           role="img"
@@ -295,21 +295,21 @@ function EventCard({
       </div>
 
       <div className="px-6 pb-7 pt-5">
-        <p className="flex items-center gap-1.5 text-[10px] font-black text-primary-dark">
+        <p className="flex items-center gap-1.5 text-[10px] font-bold text-primary-dark">
           <CalendarIcon className="h-[12px] w-[12px]" />
           {formatDate(date)}
         </p>
 
-        <h2 className="mt-3 text-[19px] font-black leading-6 tracking-[-0.03em] text-neutral-darker">
+        <h2 className="mt-3 text-[19px] font-bold leading-6 tracking-[-0.03em] text-neutral-darker">
           {title}
         </h2>
-        <p className="mt-3 min-h-[72px] text-[12px] font-medium leading-5 text-[#556050]">
+        <p className="mt-3 min-h-[72px] text-xs font-medium leading-5 text-neutral-darker">
           {description}
         </p>
 
         <Link
           href={`/agendamentos/${id}`}
-          className="mt-6 flex h-11 items-center justify-center rounded-full bg-primary-dark px-6 text-[12px] font-black text-white shadow-soft-sm transition hover:bg-primary-darker"
+          className="mt-6 flex h-11 items-center justify-center rounded-full bg-primary-dark px-6 text-xs font-bold text-white shadow-soft-sm transition hover:bg-primary-darker"
         >
           Quero Participar
         </Link>
@@ -321,10 +321,10 @@ function EventCard({
 
 function EventsFooter() {
   return (
-    <footer className="border-t border-[#eceee8] bg-[#fbfbf7]">
-      <div className="mx-auto flex w-full max-w-[1220px] flex-col gap-4 px-4 py-8 text-[11px] font-semibold text-neutral-muted sm:flex-row sm:items-center sm:justify-between sm:px-7">
+    <footer className="border-t border-[#eceee8] bg-white">
+      <div className="mx-auto flex w-full max-w-[1220px] flex-col gap-4 px-4 py-8 text-xs font-semibold text-neutral-muted sm:flex-row sm:items-center sm:justify-between sm:px-7">
         <p>
-          <span className="font-black text-neutral-darker">SustentaRural</span>
+          <span className="font-bold text-neutral-darker">SustentaRural</span>
           <br />
           <span className="text-[10px]">2026 SustentaRural - UFRPE</span>
         </p>

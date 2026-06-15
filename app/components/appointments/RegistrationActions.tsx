@@ -136,17 +136,17 @@ export function RegistrationActions({
   return (
     <div className="mt-7 space-y-4">
       {error && (
-        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
+        <div className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
           {error}
         </div>
       )}
 
       {isRegistered ? (
-        <div className="rounded-xl border border-[#c7e7c8] bg-[#f4fbf3] px-5 py-4">
-          <p className="text-[11px] font-black uppercase tracking-[0.08em] text-primary-dark">
+        <div className="rounded-xl border border-[#c7e7c8] bg-white px-5 py-4">
+          <p className="text-xs font-bold uppercase tracking-[0.08em] text-primary-dark">
             Inscrição confirmada
           </p>
-          <p className="mt-2 text-[12px] font-semibold leading-5 text-[#566052]">
+          <p className="mt-2 text-xs font-semibold leading-5 text-neutral-darker">
             Este evento já aparece em Meus Agendamentos.
           </p>
         </div>
@@ -154,7 +154,7 @@ export function RegistrationActions({
 
       <Link
         href={formHref}
-        className="flex h-12 items-center justify-center gap-2 rounded-full border border-[#b6d8b8] bg-white px-5 text-[12px] font-black text-primary-dark transition hover:bg-[#f4fbf3]"
+        className="flex h-12 items-center justify-center gap-2 rounded-full border border-[#b6d8b8] bg-white px-5 text-xs font-bold text-primary-dark transition hover:bg-white"
       >
         <LinkIcon className="h-4 w-4" />
         Formulário de Inscrição
@@ -163,7 +163,7 @@ export function RegistrationActions({
       {!isRegistered && (
         <Link
           href={formHref}
-          className="flex h-12 w-full items-center justify-center rounded-full bg-primary-dark px-5 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(33,55,30,0.16)] transition hover:bg-primary-darker"
+          className="flex h-12 w-full items-center justify-center rounded-full bg-primary-dark px-5 text-xs font-bold text-white shadow-soft transition hover:bg-primary-darker"
         >
           Confirmar inscrição
         </Link>
@@ -174,25 +174,25 @@ export function RegistrationActions({
           type="button"
           onClick={handleCancelRegistration}
           disabled={loading}
-          className="h-12 w-full rounded-full border border-[#f1c4c4] bg-white px-5 text-[12px] font-black text-danger-primary transition hover:bg-danger-light disabled:opacity-60"
+          className="h-12 w-full rounded-full border border-pastel-support bg-white px-5 text-xs font-bold text-danger-primary transition hover:bg-danger-light disabled:opacity-60"
         >
           {loading ? "Processando..." : "Cancelar inscrição"}
         </button>
       )}
 
       {registrationClosed && !isRegistered ? (
-        <div className="rounded-xl border border-[#f0ead7] bg-[#f7f5e8] px-5 py-4 text-[12px] font-semibold text-[#6b6341]">
+        <div className="rounded-xl border border-[#f0ead7] bg-white">
           As inscrições foram bloqueadas pois o evento já começou.
         </div>
       ) : null}
 
       {canManageAttendance ? (
-        <section className="rounded-xl border border-[#d8e7d4] bg-[#f4fbf3] p-5">
-          <p className="text-[11px] font-black uppercase tracking-[0.08em] text-primary-dark">
+        <section className="rounded-xl border border-[#d8e7d4] bg-white p-5">
+          <p className="text-xs font-bold uppercase tracking-[0.08em] text-primary-dark">
             Gerenciar Presença
           </p>
           {participants.length === 0 ? (
-            <p className="mt-3 text-[12px] text-[#556050]">
+            <p className="mt-3 text-xs text-neutral-darker">
               Nenhum participante inscrito ainda.
             </p>
           ) : (
@@ -200,13 +200,13 @@ export function RegistrationActions({
               {participants.map((participant) => (
                 <div
                   key={participant.user_id}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[#d7e7d1] bg-white px-4 py-3"
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-pastel-support bg-white px-4 py-3"
                 >
                   <div>
-                    <p className="text-[12px] font-black text-[#1f361f]">
+                    <p className="text-xs font-bold text-neutral-darker">
                       {participant.user_id}
                     </p>
-                    <p className="text-[11px] text-[#5b6456]">
+                    <p className="text-xs text-neutral-darker">
                       Status: {participant.status}
                     </p>
                   </div>
@@ -216,7 +216,7 @@ export function RegistrationActions({
                         type="button"
                         onClick={() => handleMarkParticipant(participant.user_id, "attended")}
                         disabled={loading || participant.status === "attended"}
-                        className="rounded-full bg-primary-dark px-3 py-2 text-[11px] font-black text-white transition hover:bg-primary-darker disabled:opacity-50"
+                        className="rounded-full bg-primary-dark px-3 py-2 text-xs font-bold text-white transition hover:bg-primary-darker disabled:opacity-50"
                       >
                         Marcar Presente
                       </button>
@@ -224,13 +224,13 @@ export function RegistrationActions({
                         type="button"
                         onClick={() => handleMarkParticipant(participant.user_id, "missed")}
                         disabled={loading || participant.status === "missed"}
-                        className="rounded-full border border-[#f1c4c4] bg-white px-3 py-2 text-[11px] font-black text-danger-primary transition hover:bg-danger-light disabled:opacity-50"
+                        className="rounded-full border border-pastel-support bg-white px-3 py-2 text-xs font-bold text-danger-primary transition hover:bg-danger-light disabled:opacity-50"
                       >
                         Marcar Faltou
                       </button>
                     </div>
                   ) : (
-                    <p className="text-[11px] text-[#6b6341]">
+                    <p className="text-xs text-neutral-darker">
                       A presença poderá ser marcada após o término do evento.
                     </p>
                   )}

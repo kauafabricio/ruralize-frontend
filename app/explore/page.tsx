@@ -98,7 +98,7 @@ function ExploreContent() {
   }, [loadUsers, searchTerm, searchUsers]);
 
   return (
-    <main className="min-h-screen bg-neutral-lighter">
+    <main className="min-h-screen bg-white">
       <FeedHeader />
 
       {toast && (
@@ -112,11 +112,11 @@ function ExploreContent() {
       <div className="mx-auto w-full max-w-[1132px] px-4 pb-16 pt-11 sm:px-6 lg:px-1">
         <section>
           <div className="mb-9">
-            <h1 className="text-[30px] font-black leading-tight tracking-[-0.03em] text-neutral-darker">
+            <h1 className="text-[30px] font-bold leading-tight tracking-[-0.03em] text-neutral-darker">
               Explorar Usuários
             </h1>
 
-            <p className="mt-2 text-[13px] font-medium text-[#4f594c]">
+            <p className="mt-2 text-sm font-medium text-neutral-darker">
               Descubra outros membros da comunidade Ruralize e conecte-se com
               pessoas que compartilham seus interesses.
             </p>
@@ -124,7 +124,7 @@ function ExploreContent() {
             <div className="mt-6">
               <div className="relative max-w-md">
                 <svg
-                  className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#7a8575]"
+                  className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-darker"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -142,14 +142,14 @@ function ExploreContent() {
                   placeholder="Pesquisar usuários..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-12 w-full rounded-full border border-pastel-support bg-white pl-12 pr-4 text-sm text-neutral-darker shadow-sm outline-none transition focus:border-primary-dark focus:ring-2 focus:ring-[#287630]/20"
+                  className="h-12 w-full rounded-full border border-pastel-support bg-white pl-12 pr-4 text-sm text-neutral-darker shadow-soft-xs outline-none transition focus:border-primary-dark focus:ring-2 focus:ring-[#287630]/20"
                 />
               </div>
             </div>
           </div>
 
           {error ? (
-            <div className="rounded-3xl bg-white px-6 py-8 text-center text-sm text-red-600 shadow-soft-xs">
+            <div className="rounded-2xl bg-white px-6 py-8 text-center text-sm text-red-600 shadow-soft-xs">
               {error}
             </div>
           ) : (

@@ -260,7 +260,7 @@ function PerfilContent() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col bg-neutral-lighter text-[#222a20]">
+    <main className="flex min-h-screen flex-col bg-white text-neutral-darker">
       <FeedHeader showSearch={false} />
 
       {editMode ? (
@@ -346,7 +346,7 @@ function ProfileOverview({
         <section aria-labelledby="profile-activities-title">
           <h2
             id="profile-activities-title"
-            className="text-[15px] font-black tracking-[-0.02em] text-neutral-darker"
+            className="text-[15px] font-bold tracking-[-0.02em] text-neutral-darker"
           >
             Minhas Atividades
           </h2>
@@ -356,13 +356,13 @@ function ProfileOverview({
               {[...Array(2)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-[200px] animate-pulse rounded-[22px] bg-[#e0e5d8]"
+                  className="h-[200px] animate-pulse rounded-2xl bg-white"
                 />
               ))}
             </div>
           ) : userPosts.length === 0 ? (
-            <div className="mt-5 rounded-[22px] bg-white px-6 py-8 text-center shadow-soft-xs">
-              <p className="text-[13px] font-medium text-[#545d50]">
+            <div className="mt-5 rounded-2xl bg-white px-6 py-8 text-center shadow-soft-xs">
+              <p className="text-sm font-medium text-neutral-darker">
                 Você ainda não tem postagens. Comece compartilhando suas ideias no feed!
               </p>
             </div>
@@ -407,9 +407,9 @@ function ProfileHero({
       };
 
   return (
-    <section className="overflow-hidden rounded-3xl bg-white shadow-soft-xs">
+    <section className="overflow-hidden rounded-2xl bg-white shadow-soft-xs">
       <div
-        className="h-[174px] bg-[#d7e4c6] bg-cover bg-center"
+        className="h-[174px] bg-white bg-cover bg-center"
         role="img"
         aria-label="Campo cultivado ao nascer do sol"
         style={coverBackgroundStyle}
@@ -420,13 +420,13 @@ function ProfileHero({
 
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-[620px]">
-            <h1 className="text-[30px] font-black leading-tight tracking-[-0.03em] text-neutral-darker">
+            <h1 className="text-[30px] font-bold leading-tight tracking-[-0.03em] text-neutral-darker">
               {displayName}
             </h1>
-            <p className="mt-1 text-[13px] font-black text-primary-dark">
+            <p className="mt-1 text-sm font-bold text-primary-dark">
               {subtitle}
             </p>
-            <p className="mt-6 max-w-[590px] text-[12px] font-medium leading-6 text-[#545d50]">
+            <p className="mt-6 max-w-[590px] text-xs font-medium leading-6 text-neutral-darker">
               {bio}
             </p>
           </div>
@@ -434,7 +434,7 @@ function ProfileHero({
           <button
             type="button"
             onClick={onEdit}
-            className="inline-flex h-10 w-fit items-center gap-2 rounded-full bg-[#95ee9d] px-6 text-[12px] font-black text-primary-dark shadow-[0_10px_18px_rgba(40,118,48,0.12)] transition-colors hover:bg-[#82e78d]"
+            className="inline-flex h-10 w-fit items-center gap-2 rounded-full bg-white"
           >
             <PencilIcon className="h-[14px] w-[14px]" />
             Editar Perfil
@@ -475,17 +475,17 @@ function EditProfileScreen({
         <div className="px-0 sm:px-1">
           <h1
             id="edit-profile-title"
-            className="text-[30px] font-black leading-tight tracking-[-0.03em] text-[#222a20]"
+            className="text-[30px] font-bold leading-tight tracking-[-0.03em] text-neutral-darker"
           >
             Editar Perfil
           </h1>
-          <p className="mt-2 text-[13px] font-medium text-[#4f594c]">
+          <p className="mt-2 text-sm font-medium text-neutral-darker">
             Atualize suas informações básicas.
           </p>
         </div>
 
         <form
-          className="mt-9 rounded-3xl bg-white px-6 pb-8 pt-8 shadow-[0_22px_50px_rgba(33,55,30,0.08)] sm:px-9 lg:px-10"
+          className="mt-9 rounded-2xl bg-white px-6 pb-8 pt-8 shadow-soft sm:px-9 lg:px-10"
           onSubmit={(event) => {
             event.preventDefault();
             onSave();
@@ -515,13 +515,13 @@ function EditProfileScreen({
             />
           </div>
 
-          <section className="mt-8 rounded-xl bg-[#f7f8f3] p-6 shadow-soft-xs">
-            <h3 className="mb-4 text-base font-black text-primary-dark">
+          <section className="mt-8 rounded-xl bg-white p-6 shadow-soft-xs">
+            <h3 className="mb-4 text-base font-bold text-primary-dark">
               Fotos de Perfil e Capa
             </h3>
             <div className="grid gap-x-8 gap-y-6 lg:grid-cols-2">
               <div className="lg:col-span-2">
-                <p className="text-[12px] font-black text-[#4f5b6a]">
+                <p className="text-xs font-bold text-neutral-darker">
                   Selecione arquivos de imagem do seu dispositivo para avatar e capa.
                 </p>
               </div>
@@ -530,11 +530,11 @@ function EditProfileScreen({
                 <div className="grid gap-4 rounded-xl border border-pastel-support bg-white p-5">
                   <div className="grid gap-4 lg:grid-cols-2">
                     <div className="rounded-xl border border-pastel-support p-4">
-                      <p className="text-[12px] font-black text-[#4f5b6a]">
+                      <p className="text-xs font-bold text-neutral-darker">
                         Avatar selecionado
                       </p>
                       <div className="mt-4 flex items-center gap-4">
-                        <div className="h-20 w-20 overflow-hidden rounded-full bg-[#e8f0de]">
+                        <div className="h-20 w-20 overflow-hidden rounded-full bg-white">
                           {avatarUrl ? (
                             <img
                               src={resolveBackendImageUrl(avatarUrl) ?? avatarUrl}
@@ -542,12 +542,12 @@ function EditProfileScreen({
                               className="h-full w-full object-cover"
                             />
                           ) : (
-                            <div className="flex h-full w-full items-center justify-center text-[11px] font-semibold text-[#4f5b6a]">
+                            <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-neutral-darker">
                               Nenhuma imagem
                             </div>
                           )}
                         </div>
-                        <label className="inline-flex cursor-pointer items-center rounded-full bg-[#eef8ea] px-4 py-2 text-[12px] font-semibold text-primary-dark transition hover:bg-white">
+                        <label className="inline-flex cursor-pointer items-center rounded-full bg-white px-4 py-2 text-xs font-semibold text-primary-dark transition hover:bg-white">
                           Selecionar arquivo
                           <input
                             type="file"
@@ -560,11 +560,11 @@ function EditProfileScreen({
                     </div>
 
                     <div className="rounded-xl border border-pastel-support p-4">
-                      <p className="text-[12px] font-black text-[#4f5b6a]">
+                      <p className="text-xs font-bold text-neutral-darker">
                         Capa selecionada
                       </p>
                       <div className="mt-4 flex items-center gap-4">
-                        <div className="h-20 min-w-[120px] overflow-hidden rounded-xl bg-[#e8f0de]">
+                        <div className="h-20 min-w-[120px] overflow-hidden rounded-xl bg-white">
                           {coverUrl ? (
                             <img
                               src={resolveBackendImageUrl(coverUrl) ?? coverUrl}
@@ -572,12 +572,12 @@ function EditProfileScreen({
                               className="h-full w-full object-cover"
                             />
                           ) : (
-                            <div className="flex h-full w-full items-center justify-center text-[11px] font-semibold text-[#4f5b6a]">
+                            <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-neutral-darker">
                               Nenhuma imagem
                             </div>
                           )}
                         </div>
-                        <label className="inline-flex cursor-pointer items-center rounded-full bg-[#eef8ea] px-4 py-2 text-[12px] font-semibold text-primary-dark transition hover:bg-white">
+                        <label className="inline-flex cursor-pointer items-center rounded-full bg-white px-4 py-2 text-xs font-semibold text-primary-dark transition hover:bg-white">
                           Selecionar arquivo
                           <input
                             type="file"
@@ -594,10 +594,10 @@ function EditProfileScreen({
 
                   <div className="lg:col-span-2">
                 <div className="rounded-xl border border-pastel-support bg-white p-5">
-                  <p className="text-[12px] font-black text-[#4f5b6a]">
+                  <p className="text-xs font-bold text-neutral-darker">
                     Apenas imagens carregadas são suportadas.
                   </p>
-                  <p className="mt-3 text-[12px] text-[#6b7367]">
+                  <p className="mt-3 text-xs text-neutral-darker">
                     Selecione arquivos de avatar e capa do seu dispositivo. Links
                     externos não são aceitos neste formulário.
                   </p>
@@ -606,9 +606,9 @@ function EditProfileScreen({
             </div>
           </section>
 
-          <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[#eceee8] pt-6 sm:flex-row sm:items-center sm:justify-end">
+          <div className="mt-8 flex flex-col-reverse gap-3 border-t border-pastel-support pt-6 sm:flex-row sm:items-center sm:justify-end">
             {saveError ? (
-              <p className="mr-auto text-[12px] font-semibold text-[#b42318]">
+              <p className="mr-auto text-xs font-semibold text-neutral-darker">
                 {saveError}
               </p>
             ) : null}
@@ -616,14 +616,14 @@ function EditProfileScreen({
               type="button"
               onClick={onCancel}
               disabled={saving}
-              className="h-11 rounded-full px-6 text-[12px] font-black text-primary-dark transition-colors hover:bg-[#f2f5ef]"
+              className="h-11 rounded-full px-6 text-xs font-bold text-primary-dark transition-colors hover:bg-white"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="h-11 rounded-full bg-primary-dark px-7 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.24)] transition-colors hover:bg-primary-darker disabled:cursor-not-allowed disabled:opacity-60"
+              className="h-11 rounded-full bg-primary-dark px-7 text-xs font-bold text-white shadow-soft transition-colors hover:bg-primary-darker disabled:cursor-not-allowed disabled:opacity-60"
             >
               {saving ? "Salvando..." : "Salvar Alterações"}
             </button>
@@ -631,7 +631,7 @@ function EditProfileScreen({
         </form>
       </section>
 
-      <p className="mt-10 text-center text-[11px] font-medium text-[#a0a69b]">
+      <p className="mt-10 text-center text-xs font-medium text-neutral-darker">
         Outros dados como matrícula, curso e departamento são gerenciados pelo SIGA.
       </p>
     </div>
@@ -657,16 +657,16 @@ function ProfileField({
   disabled?: boolean;
   className?: string;
 }) {
-  const fieldClasses = `mt-2 w-full border-0 bg-[#e4e4e0] text-[13px] font-medium text-[#262d25] outline-none transition-colors placeholder:text-[#9da49a] focus:bg-[#eeeeea] disabled:bg-[#f1f1ee] disabled:text-[#a0a69b] ${
+  const fieldClasses = `mt-2 w-full border-0 bg-white ${
     icon ? "pl-10 pr-4" : "px-4"
   } ${multiline ? "min-h-[104px] resize-none py-4 leading-6" : "h-11 py-0"}`;
 
   return (
     <label className={`block ${className}`}>
-      <span className="text-[11px] font-black text-[#3c463b]">{label}</span>
+      <span className="text-xs font-bold text-neutral-darker">{label}</span>
       <span className="relative mt-2 block">
         {icon ? (
-          <span className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-[#697163]">
+          <span className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-neutral-darker">
             {icon}
           </span>
         ) : null}
@@ -696,14 +696,14 @@ function ProfileField({
 
 function SaveSuccessModal({ onClose }: { onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#173b22]/72 px-4 py-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/72 px-4 py-8">
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="save-success-title"
-        className="relative w-full max-w-[420px] overflow-hidden rounded-2xl bg-[#fffef9] px-8 pb-9 pt-10 text-center shadow-[0_24px_70px_rgba(11,35,17,0.28)]"
+        className="relative w-full max-w-[420px] overflow-hidden rounded-2xl bg-white"
       >
-        <div className="mx-auto flex h-[86px] w-[86px] items-center justify-center rounded-full bg-[#c8ffd0] shadow-[0_0_46px_rgba(149,238,157,0.72)]">
+        <div className="mx-auto flex h-[86px] w-[86px] items-center justify-center rounded-full bg-white">
           <span className="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-primary-dark text-white">
             <CheckIcon className="h-[25px] w-[25px]" />
           </span>
@@ -711,27 +711,27 @@ function SaveSuccessModal({ onClose }: { onClose: () => void }) {
 
         <h2
           id="save-success-title"
-          className="mx-auto mt-7 max-w-[290px] text-[24px] font-black leading-[1.12] tracking-[-0.03em] text-primary-dark"
+          className="mx-auto mt-7 max-w-[290px] text-[24px] font-bold leading-[1.12] tracking-[-0.03em] text-primary-dark"
         >
           Alterações salvas com sucesso!
         </h2>
 
-        <p className="mx-auto mt-5 max-w-[300px] text-[13px] font-medium leading-6 text-[#5d6659]">
+        <p className="mx-auto mt-5 max-w-[300px] text-sm font-medium leading-6 text-neutral-darker">
           Suas informações de perfil foram atualizadas em nossa rede. Agora sua
-          jornada no <strong className="font-black text-primary-dark">Ruralize</strong>{" "}
+          jornada no <strong className="font-bold text-primary-dark">Ruralize</strong>{" "}
           está sincronizada com seus novos dados.
         </p>
 
         <button
           type="button"
           onClick={onClose}
-          className="mt-8 h-14 w-full rounded-full bg-primary-dark text-[13px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.24)] transition-colors hover:bg-primary-darker"
+          className="mt-8 h-14 w-full rounded-full bg-primary-dark text-sm font-bold text-white shadow-soft transition-colors hover:bg-primary-darker"
         >
           Entendido
         </button>
 
         <span
-          className="pointer-events-none absolute -bottom-6 -right-5 h-20 w-20 rounded-full border-[10px] border-[#dfeedd]"
+          className="pointer-events-none absolute -bottom-6 -right-5 h-20 w-20 rounded-full border-[10px] border-pastel-support"
           aria-hidden="true"
         />
       </section>
@@ -747,9 +747,9 @@ function ProfileAvatar({
   imageUrl?: string | null;
 }) {
   return (
-    <div className="absolute left-6 top-[-58px] h-[116px] w-[116px] rounded-full bg-white p-[5px] shadow-[0_14px_28px_rgba(33,55,30,0.18)] sm:left-8 lg:left-9">
+    <div className="absolute left-6 top-[-58px] h-[116px] w-[116px] rounded-full bg-white p-[5px] shadow-soft sm:left-8 lg:left-9">
       <div className="relative h-full w-full overflow-hidden rounded-full bg-primary-dark">
-        <span className="absolute inset-0 flex items-center justify-center text-[26px] font-black text-white">
+        <span className="absolute inset-0 flex items-center justify-center text-[26px] font-bold text-white">
           {readInitials(name)}
         </span>
         {imageUrl ? (
@@ -774,9 +774,9 @@ function EditAvatar({
   onImageChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) {
   return (
-    <div className="absolute left-6 top-[118px] h-[96px] w-[96px] rounded-[22px] bg-white p-[4px] shadow-[0_16px_28px_rgba(33,55,30,0.2)] sm:left-8 sm:top-[124px] lg:left-9">
+    <div className="absolute left-6 top-[118px] h-[96px] w-[96px] rounded-2xl bg-white p-[4px] shadow-soft lg:left-9">
       <div className="relative h-full w-full overflow-hidden rounded-xl bg-primary-dark">
-        <span className="absolute inset-0 flex items-center justify-center text-[23px] font-black text-white">
+        <span className="absolute inset-0 flex items-center justify-center text-[23px] font-bold text-white">
           {readInitials(name)}
         </span>
         {imageUrl ? (
@@ -788,7 +788,7 @@ function EditAvatar({
         ) : null}
       </div>
       <label
-        className="absolute -bottom-2 -right-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-[#eef8ea] text-primary-dark shadow-[0_8px_18px_rgba(33,55,30,0.16)] ring-4 ring-white transition-colors hover:bg-white"
+        className="absolute -bottom-2 -right-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-white ring-4 ring-white transition-colors hover:bg-white"
         title="Alterar foto de perfil"
         aria-label="Alterar foto de perfil"
       >
@@ -816,47 +816,47 @@ function AcademicInfoCard({
   location: string;
 }) {
   return (
-    <section className="rounded-[22px] bg-white px-6 py-7 shadow-soft-xs">
+    <section className="rounded-2xl bg-white px-6 py-7 shadow-soft-xs">
       <div className="flex items-center gap-2 text-neutral-darker">
         <LeafIcon className="h-[16px] w-[16px] text-primary-dark" />
-        <h2 className="text-[15px] font-black tracking-[-0.02em]">
+        <h2 className="text-[15px] font-bold tracking-[-0.02em]">
           Informações Acadêmicas
         </h2>
       </div>
 
       <dl className="mt-7 space-y-6">
         <div>
-          <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-[#a0a69b]">
+          <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-darker">
             Email institucional
           </dt>
-          <dd className="mt-2 break-words text-[12px] font-semibold text-[#333b31]">
+          <dd className="mt-2 break-words text-xs font-semibold text-neutral-darker">
             {email}
           </dd>
         </div>
 
         <div>
-          <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-[#a0a69b]">
+          <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-darker">
             Cargo/Função
           </dt>
-          <dd className="mt-2 text-[12px] font-semibold text-[#333b31]">
+          <dd className="mt-2 text-xs font-semibold text-neutral-darker">
             {roleDescription}
           </dd>
         </div>
 
         <div>
-          <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-[#a0a69b]">
+          <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-darker">
             Matrícula
           </dt>
-          <dd className="mt-2 text-[12px] font-semibold text-[#333b31]">
+          <dd className="mt-2 text-xs font-semibold text-neutral-darker">
             {registration}
           </dd>
         </div>
 
         <div>
-          <dt className="text-[10px] font-black uppercase tracking-[0.14em] text-[#a0a69b]">
+          <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-darker">
             Localização
           </dt>
-          <dd className="mt-2 flex items-center gap-2 text-[12px] font-semibold text-[#333b31]">
+          <dd className="mt-2 flex items-center gap-2 text-xs font-semibold text-neutral-darker">
             <LocationIcon className="h-[14px] w-[14px] text-primary-dark" />
             {location}
           </dd>
@@ -868,13 +868,13 @@ function AcademicInfoCard({
 
 function ActivityPost({ displayName }: { displayName: string }) {
   return (
-    <article className="mt-5 overflow-hidden rounded-[22px] bg-white shadow-soft-xs">
+    <article className="mt-5 overflow-hidden rounded-2xl bg-white shadow-soft-xs">
       <div className="px-6 pt-6">
         <div className="flex items-start justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <MiniAvatar color="bg-primary-dark" variant={0} />
             <div className="min-w-0">
-              <h3 className="truncate text-[12px] font-black leading-4 text-[#242b23]">
+              <h3 className="truncate text-xs font-bold leading-4 text-neutral-darker">
                 {displayName}
               </h3>
               <p className="truncate text-[10px] font-semibold leading-3 text-neutral-muted">
@@ -885,21 +885,21 @@ function ActivityPost({ displayName }: { displayName: string }) {
 
           <button
             type="button"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-neutral-darker transition-colors hover:bg-[#f2f3ee]"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-neutral-darker transition-colors hover:bg-white"
             aria-label="Mais opções da publicação"
           >
             <MoreIcon className="h-5 w-5" />
           </button>
         </div>
 
-        <p className="mt-6 text-[13px] font-medium leading-6 text-[#30372f]">
+        <p className="mt-6 text-sm font-medium leading-6 text-neutral-darker">
           Ainda não há publicações recentes no seu perfil. As atualizações do
           feed estarão disponíveis assim que você começar a usar a plataforma.
         </p>
       </div>
 
       <div
-        className="mt-6 h-[260px] bg-[#d7e6c8] bg-cover bg-center sm:h-[318px]"
+        className="mt-6 h-[260px] bg-white"
         role="img"
         aria-label="Mudas verdes em cultivo"
         style={{
@@ -908,11 +908,11 @@ function ActivityPost({ displayName }: { displayName: string }) {
       />
 
       <div className="flex h-[64px] items-center gap-7 px-6 text-neutral-darker">
-        <span className="inline-flex items-center gap-2 text-[12px] font-semibold">
+        <span className="inline-flex items-center gap-2 text-xs font-semibold">
           <HeartIcon className="h-[18px] w-[18px]" />
           24
         </span>
-        <span className="inline-flex items-center gap-2 text-[12px] font-semibold">
+        <span className="inline-flex items-center gap-2 text-xs font-semibold">
           <MessageIcon className="h-[18px] w-[18px]" />8
         </span>
       </div>
@@ -931,24 +931,24 @@ function MiniAvatar({
     <div
       className={`relative h-10 w-10 shrink-0 overflow-hidden rounded-full ${color} ring-2 ring-neutral-lighter`}
     >
-      <span className="absolute left-[11px] top-[7px] h-[10px] w-[15px] rounded-full bg-[#e9b37f]" />
+      <span className="absolute left-[11px] top-[7px] h-[10px] w-[15px] rounded-full bg-white" />
       <span
         className={`absolute top-[13px] h-[9px] rounded-t-full ${
           variant === 0
-            ? "left-[8px] w-[24px] bg-[#352a20]"
-            : "left-[10px] w-[20px] bg-[#183f42]"
+            ? "left-[8px] w-[24px] bg-white"
+            : "left-[10px] w-[20px] bg-white"
         }`}
       />
-      <span className="absolute bottom-0 left-[7px] h-[18px] w-[27px] rounded-t-[16px] bg-[#dfead7]" />
-      <span className="absolute bottom-[2px] left-[13px] h-[10px] w-[14px] rounded-t-full bg-[#275f35]" />
+      <span className="absolute bottom-0 left-[7px] h-[18px] w-[27px] rounded-t-[16px] bg-white" />
+      <span className="absolute bottom-[2px] left-[13px] h-[10px] w-[14px] rounded-t-full bg-white" />
     </div>
   );
 }
 
 function Footer() {
   return (
-    <footer className="border-t border-[#eceee8] bg-[#fbfbf7] py-10 text-center">
-      <div className="flex items-center justify-center gap-8 text-[10px] font-black uppercase tracking-[0.18em] text-[#b4b9af]">
+    <footer className="border-t border-[#eceee8] bg-white py-10 text-center">
+      <div className="flex items-center justify-center gap-8 text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-darker">
         <a href="#" className="transition-colors hover:text-primary-dark">
           Sobre
         </a>
@@ -959,7 +959,7 @@ function Footer() {
           UFRPE
         </a>
       </div>
-      <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#c0c5bb]">
+      <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-darker">
         &copy; 2026 Ruralize UFRPE
       </p>
     </footer>

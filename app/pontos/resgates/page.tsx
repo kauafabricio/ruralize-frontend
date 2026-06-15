@@ -10,18 +10,18 @@ import { getUserRedemptions, type RedemptionHistory } from "@/app/services/api/r
 const statusMap = {
   pending: {
     label: "Pendente",
-    color: "bg-[#fff8e1] text-[#7a5a00]",
-    badgeColor: "bg-[#ffd666]",
+    color: "bg-white",
+    badgeColor: "bg-white",
   },
   collected: {
     label: "Retirado",
-    color: "bg-[#e8f5e9] text-[#2e7d32]",
-    badgeColor: "bg-[#81c784]",
+    color: "bg-white",
+    badgeColor: "bg-white",
   },
   expired: {
     label: "Expirado",
-    color: "bg-[#ffebee] text-[#c62828]",
-    badgeColor: "bg-[#ef5350]",
+    color: "bg-white",
+    badgeColor: "bg-white",
   },
 };
 
@@ -54,7 +54,7 @@ export default function ResgatesPage() {
 
   return (
     <RequireAuth>
-      <main className="min-h-screen bg-neutral-lighter text-neutral-darker">
+      <main className="min-h-screen bg-white text-neutral-darker">
         <FeedHeader showSearch={false} />
 
         <div className="mx-auto w-full max-w-[1220px] px-4 pb-10 pt-8 sm:px-7 lg:pt-11">
@@ -63,16 +63,16 @@ export default function ResgatesPage() {
             <div className="flex items-center gap-4">
               <Link
                 href="/pontos"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[18px] font-black text-primary-dark transition hover:bg-[#f1f3ed]"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[18px] font-bold text-primary-dark transition hover:bg-white"
                 aria-label="Voltar"
               >
                 ←
               </Link>
               <div>
-                <h1 className="text-[31px] font-black tracking-[-0.04em] text-neutral-darker">
+                <h1 className="text-[31px] font-bold tracking-[-0.04em] text-neutral-darker">
                   Meus Resgates
                 </h1>
-                <p className="mt-1 text-[13px] font-semibold text-neutral-muted">
+                <p className="mt-1 text-sm font-semibold text-neutral-muted">
                   Acompanhe todos os seus resgates de recompensas
                 </p>
               </div>
@@ -80,25 +80,25 @@ export default function ResgatesPage() {
           </section>
 
           {/* Conteúdo */}
-          <section className="rounded-3xl bg-white px-6 py-8 shadow-[0_1px_0_rgba(33,55,30,0.05)] sm:px-10">
+          <section className="rounded-2xl bg-white px-6 py-8 shadow-soft sm:px-10">
             {loading ? (
               <div className="flex items-center justify-center py-16">
-                <p className="text-[13px] font-semibold text-neutral-muted">Carregando seus resgates...</p>
+                <p className="text-sm font-semibold text-neutral-muted">Carregando seus resgates...</p>
               </div>
             ) : error ? (
-              <div className="rounded-lg bg-danger-light px-4 py-3 text-[13px] font-semibold text-danger-primary">
+              <div className="rounded-xl bg-danger-light px-4 py-3 text-sm font-semibold text-danger-primary">
                 {error}
               </div>
             ) : history.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16">
                 <div className="mb-4 text-[48px]">🎁</div>
-                <p className="text-[15px] font-black text-neutral-darker">Nenhum resgate ainda</p>
-                <p className="mt-2 text-[13px] font-semibold text-neutral-muted">
+                <p className="text-[15px] font-bold text-neutral-darker">Nenhum resgate ainda</p>
+                <p className="mt-2 text-sm font-semibold text-neutral-muted">
                   Você ainda não resgatou nenhuma recompensa. Volte para resgatar algo!
                 </p>
                 <Link
                   href="/pontos"
-                  className="mt-6 inline-flex h-11 items-center justify-center rounded-full bg-primary-dark px-7 text-[11px] font-black text-white transition hover:bg-[#1f5c24]"
+                  className="mt-6 inline-flex h-11 items-center justify-center rounded-full bg-primary-dark px-7 text-xs font-bold text-white transition hover:bg-white"
                 >
                   Ver Recompensas
                 </Link>
@@ -112,37 +112,37 @@ export default function ResgatesPage() {
                       key={redemption.id}
                       type="button"
                       onClick={() => setSelectedRedemption(redemption)}
-                      className="w-full text-left transition hover:bg-neutral-lighter"
+                      className="w-full text-left transition hover:bg-white"
                     >
                       <div className={`rounded-xl p-5 ${status.color}`}>
                         <div className="flex items-start justify-between gap-4">
                           <div className="min-w-0 flex-1">
-                            <h3 className="truncate text-[15px] font-black text-current">
+                            <h3 className="truncate text-[15px] font-bold text-current">
                               {redemption.reward_name}
                             </h3>
                             <div className="mt-3 space-y-2">
-                              <div className="flex items-center gap-2 text-[12px] font-semibold">
-                                <span className="font-black">Código:</span>
-                                <span className="font-mono font-black tracking-wider">
+                              <div className="flex items-center gap-2 text-xs font-semibold">
+                                <span className="font-bold">Código:</span>
+                                <span className="font-mono font-bold tracking-wider">
                                   {redemption.redemption_code}
                                 </span>
                               </div>
-                              <div className="flex items-center gap-2 text-[12px] font-semibold">
+                              <div className="flex items-center gap-2 text-xs font-semibold">
                                 <span>Resgatado em:</span>
-                                <span className="font-black">
+                                <span className="font-bold">
                                   {new Date(redemption.redemption_date).toLocaleDateString("pt-BR")}
                                 </span>
                               </div>
-                              <div className="flex items-center gap-2 text-[12px] font-semibold">
+                              <div className="flex items-center gap-2 text-xs font-semibold">
                                 <span>Prazo de retirada:</span>
-                                <span className="font-black">
+                                <span className="font-bold">
                                   {new Date(redemption.pickup_deadline).toLocaleDateString("pt-BR")}
                                 </span>
                               </div>
                             </div>
                           </div>
                           <div className="shrink-0">
-                            <span className={`inline-flex items-center rounded-full px-3 py-1.5 text-[10px] font-black ${status.badgeColor}`}>
+                            <span className={`inline-flex items-center rounded-full px-3 py-1.5 text-[10px] font-bold ${status.badgeColor}`}>
                               {status.label}
                             </span>
                           </div>
@@ -156,11 +156,11 @@ export default function ResgatesPage() {
           </section>
 
           {/* Info Box */}
-          <section className="mt-8 rounded-xl bg-[#f0f8f0] px-5 py-4">
-            <h2 className="text-[12px] font-black uppercase tracking-[0.08em] text-primary-dark">
+          <section className="mt-8 rounded-xl bg-white px-5 py-4">
+            <h2 className="text-xs font-bold uppercase tracking-[0.08em] text-primary-dark">
               ℹ️ Informações Importantes
             </h2>
-            <ul className="mt-3 space-y-2 text-[12px] font-semibold leading-5 text-[#536050]">
+            <ul className="mt-3 space-y-2 text-xs font-semibold leading-5 text-neutral-darker">
               <li>• Use o código exibido para retirar sua recompensa no local indicado</li>
               <li>• Resgate seus pontos dentro do prazo informado</li>
               <li>• Leve seu documento de identificação ao local de retirada</li>
@@ -190,7 +190,7 @@ function RedemptionDetailModal({
   const status = statusMap[redemption.status];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#d7ddd3]/70 px-4 py-8 backdrop-blur-[5px]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
       <section
         role="dialog"
         aria-modal="true"
@@ -198,17 +198,17 @@ function RedemptionDetailModal({
       >
         <div className="flex items-start justify-between gap-5">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.12em] text-primary-dark">
+            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-primary-dark">
               Resgate #{redemption.id.substring(0, 8)}
             </p>
-            <h2 className="mt-2 text-[22px] font-black tracking-[-0.04em] text-neutral-darker">
+            <h2 className="mt-2 text-[22px] font-bold tracking-[-0.04em] text-neutral-darker">
               {redemption.reward_name}
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f1f3ed] text-[18px] font-black text-[#596255] transition hover:bg-[#e5e9df]"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white"
             aria-label="Fechar"
           >
             x
@@ -217,17 +217,17 @@ function RedemptionDetailModal({
 
         <div className="mt-6 space-y-4">
           {/* Status */}
-          <div className={`rounded-lg p-4 ${status.color}`}>
-            <p className="text-[11px] font-black uppercase tracking-[0.08em]">Status</p>
-            <p className="mt-2 text-[15px] font-black">{status.label}</p>
+          <div className={`rounded-xl p-4 ${status.color}`}>
+            <p className="text-xs font-bold uppercase tracking-[0.08em]">Status</p>
+            <p className="mt-2 text-[15px] font-bold">{status.label}</p>
           </div>
 
           {/* Código */}
-          <div className="rounded-lg bg-[#f7f9f4] p-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.08em] text-[#536050]">
+          <div className="rounded-xl bg-white p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.08em] text-neutral-darker">
               Código de Resgate
             </p>
-            <p className="mt-2 text-center text-[20px] font-black tracking-wider text-primary-dark">
+            <p className="mt-2 text-center text-[20px] font-bold tracking-wider text-primary-dark">
               {redemption.redemption_code}
             </p>
             <button
@@ -235,7 +235,7 @@ function RedemptionDetailModal({
               onClick={() => {
                 navigator.clipboard.writeText(redemption.redemption_code);
               }}
-              className="mt-3 w-full rounded-full bg-white px-4 py-2 text-[11px] font-black text-primary-dark transition hover:bg-[#f0f8f0]"
+              className="mt-3 w-full rounded-full bg-white px-4 py-2 text-xs font-bold text-primary-dark transition hover:bg-white"
             >
               Copiar código
             </button>
@@ -243,44 +243,44 @@ function RedemptionDetailModal({
 
           {/* Datas */}
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg bg-[#f7f9f4] p-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.08em] text-[#536050]">
+            <div className="rounded-xl bg-white p-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-neutral-darker">
                 Data do Resgate
               </p>
-              <p className="mt-2 text-[13px] font-black text-neutral-darker">
+              <p className="mt-2 text-sm font-bold text-neutral-darker">
                 {new Date(redemption.redemption_date).toLocaleDateString("pt-BR")}
               </p>
             </div>
-            <div className="rounded-lg bg-[#f7f9f4] p-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.08em] text-[#536050]">
+            <div className="rounded-xl bg-white p-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-neutral-darker">
                 Prazo de Retirada
               </p>
-              <p className="mt-2 text-[13px] font-black text-neutral-darker">
+              <p className="mt-2 text-sm font-bold text-neutral-darker">
                 {new Date(redemption.pickup_deadline).toLocaleDateString("pt-BR")}
               </p>
             </div>
           </div>
 
           {/* Instruções */}
-          <div className="rounded-lg bg-[#f0f8f0] p-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.08em] text-primary-dark">
+          <div className="rounded-xl bg-white p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.08em] text-primary-dark">
               Próximos Passos
             </p>
             <ol className="mt-3 space-y-2">
-              <li className="flex gap-2 text-[12px] font-semibold leading-5 text-[#536050]">
-                <span className="font-black">1.</span>
+              <li className="flex gap-2 text-xs font-semibold leading-5 text-neutral-darker">
+                <span className="font-bold">1.</span>
                 <span>Utilize o código mostrado para retirada no local indicado</span>
               </li>
-              <li className="flex gap-2 text-[12px] font-semibold leading-5 text-[#536050]">
-                <span className="font-black">2.</span>
+              <li className="flex gap-2 text-xs font-semibold leading-5 text-neutral-darker">
+                <span className="font-bold">2.</span>
                 <span>Dirija-se ao local de retirada informado</span>
               </li>
-              <li className="flex gap-2 text-[12px] font-semibold leading-5 text-[#536050]">
-                <span className="font-black">3.</span>
+              <li className="flex gap-2 text-xs font-semibold leading-5 text-neutral-darker">
+                <span className="font-bold">3.</span>
                 <span>Apresente este código e seu documento de identificação</span>
               </li>
-              <li className="flex gap-2 text-[12px] font-semibold leading-5 text-[#536050]">
-                <span className="font-black">4.</span>
+              <li className="flex gap-2 text-xs font-semibold leading-5 text-neutral-darker">
+                <span className="font-bold">4.</span>
                 <span>Retire sua recompensa dentro do prazo</span>
               </li>
             </ol>
@@ -290,7 +290,7 @@ function RedemptionDetailModal({
         <button
           type="button"
           onClick={onClose}
-          className="mt-7 h-11 w-full rounded-full bg-primary-dark px-5 text-[11px] font-black text-white shadow-soft-sm"
+          className="mt-7 h-11 w-full rounded-full bg-primary-dark px-5 text-xs font-bold text-white shadow-soft-sm"
         >
           Fechar
         </button>

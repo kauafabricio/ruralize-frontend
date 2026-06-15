@@ -11,12 +11,12 @@ export function RegistrationCancelModal({
 }: RegistrationCancelModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl">
-        <h2 className="text-xl font-black text-neutral-darker">
+      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-soft-xl">
+        <h2 className="text-xl font-bold text-neutral-darker">
           Cancelar inscrição?
         </h2>
 
-        <p className="mt-3 text-sm text-[#566052]">
+        <p className="mt-3 text-sm text-neutral-darker">
           Tem certeza que deseja cancelar sua inscrição neste evento?
           Você poderá se inscrever novamente depois.
         </p>
@@ -24,7 +24,7 @@ export function RegistrationCancelModal({
         <div className="mt-8 flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 rounded-full border border-[#d8ddd5] py-3 text-sm font-bold text-[#566052] transition hover:bg-[#f5f5f5]"
+            className="flex-1 rounded-full border border-[#d8ddd5] py-3 text-sm font-bold text-[#566052] transition hover:bg-white"
           >
             Voltar
           </button>

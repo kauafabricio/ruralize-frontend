@@ -117,15 +117,15 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
 
   return (
     <>
-      <section className="mx-auto w-full max-w-[760px] rounded-xl border border-[#e6e8e0] bg-white px-6 py-7 shadow-[0_18px_42px_rgba(33,55,30,0.08)] sm:px-9 sm:py-9">
+      <section className="mx-auto w-full max-w-[760px] rounded-xl border border-[#e6e8e0] bg-white px-6 py-7 shadow-soft sm:px-9 sm:py-9">
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.14em] text-primary-dark">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-primary-dark">
             Formulário de Inscrição
           </p>
-          <h1 className="mt-3 text-[31px] font-black leading-tight tracking-[-0.04em] text-primary-dark sm:text-[40px]">
+          <h1 className="mt-3 text-[31px] font-bold leading-tight tracking-[-0.04em] text-primary-dark sm:text-[40px]">
             {event.title}
           </h1>
-          <p className="mt-4 max-w-[620px] text-[13px] font-medium leading-6 text-[#556050]">
+          <p className="mt-4 max-w-[620px] text-sm font-medium leading-6 text-neutral-darker">
             Preencha suas informações para confirmar interesse nesta atividade.
             A equipe responsável validará sua participação.
           </p>
@@ -136,7 +136,7 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
           onSubmit={handleSubmit}
         >
           {error && (
-            <div className="rounded-lg bg-red-50 px-4 py-3 text-[12px] font-semibold text-red-700">
+            <div className="rounded-xl bg-red-50 px-4 py-3 text-xs font-semibold text-red-700">
               {error}
             </div>
           )}
@@ -190,7 +190,7 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
           />
 
           <label className="block">
-            <span className="text-[11px] font-black text-[#3c463b]">
+            <span className="text-xs font-bold text-neutral-darker">
               Por que você deseja participar?
             </span>
             <textarea
@@ -200,12 +200,12 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
                 handleFieldChange("motivation", event.target.value)
               }
               disabled={formDisabled}
-              className="mt-2 min-h-[122px] w-full resize-none rounded-lg border border-[#e0e4db] bg-[#f7f8f3] px-4 py-4 text-[13px] font-medium leading-6 text-[#262d25] outline-none transition focus:border-[#b6d8b8] focus:bg-white disabled:bg-[#efefef] disabled:text-[#999] disabled:cursor-not-allowed"
+              className="mt-2 min-h-[122px] w-full resize-none rounded-xl border border-[#e0e4db] bg-white disabled:cursor-not-allowed"
               required
             />
           </label>
 
-          <label className="flex items-start gap-3 rounded-lg bg-[#f7f8f3] px-4 py-4 text-[12px] font-semibold leading-5 text-[#556050]">
+          <label className="flex items-start gap-3 rounded-xl bg-white">
             <input
               type="checkbox"
               checked={form.consent}
@@ -220,11 +220,11 @@ export function EventRegistrationForm({ eventId, event }: EventRegistrationFormP
             da equipe do evento.
           </label>
 
-          <div className="border-t border-[#edf0e9] pt-6">
+          <div className="border-t border-pastel-support pt-6">
             <button
               type="submit"
               disabled={formDisabled}
-              className="flex h-12 w-full items-center justify-center rounded-full bg-primary-dark px-7 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.22)] transition hover:bg-primary-darker disabled:opacity-60 disabled:cursor-not-allowed sm:w-auto"
+              className="flex h-12 w-full items-center justify-center rounded-full bg-primary-dark px-7 text-xs font-bold text-white shadow-soft transition hover:bg-primary-darker disabled:opacity-60 disabled:cursor-not-allowed sm:w-auto"
             >
               Confirmar Inscrição
             </button>
@@ -265,7 +265,7 @@ function FormField({
 }) {
   return (
     <label className="block">
-      <span className="text-[11px] font-black text-[#3c463b]">{label}</span>
+      <span className="text-xs font-bold text-neutral-darker">{label}</span>
       <input
         name={name}
         type={type}
@@ -274,7 +274,7 @@ function FormField({
         autoComplete={autoComplete}
         required={required}
         disabled={disabled}
-        className="mt-2 h-12 w-full rounded-lg border border-[#e0e4db] bg-[#f7f8f3] px-4 text-[13px] font-medium text-[#262d25] outline-none transition focus:border-[#b6d8b8] focus:bg-white disabled:bg-[#efefef] disabled:text-[#999] disabled:cursor-not-allowed"
+        className="mt-2 h-12 w-full rounded-xl border border-[#e0e4db] bg-white disabled:cursor-not-allowed"
       />
     </label>
   );

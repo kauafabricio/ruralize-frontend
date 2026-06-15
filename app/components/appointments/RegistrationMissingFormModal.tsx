@@ -12,24 +12,24 @@ export function RegistrationMissingFormModal({
   onClose,
 }: RegistrationMissingFormModalProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#d7ddd3]/70 px-4 py-8 backdrop-blur-[5px]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="registration-missing-title"
         className="w-full max-w-[356px] rounded-2xl bg-white px-8 pb-8 pt-9 text-center shadow-soft-lg"
       >
-        <div className="mx-auto flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#fff3d8] text-[#9a6a12]">
+        <div className="mx-auto flex h-[68px] w-[68px] items-center justify-center rounded-full bg-white">
           <DocumentIcon className="h-8 w-8" />
         </div>
 
         <h2
           id="registration-missing-title"
-          className="mt-7 text-[22px] font-black tracking-[-0.04em] text-primary-dark"
+          className="mt-7 text-[22px] font-bold tracking-[-0.04em] text-primary-dark"
         >
           Formulário não preenchido
         </h2>
-        <p className="mx-auto mt-3 max-w-[245px] text-[12px] font-semibold leading-5 text-[#4f594c]">
+        <p className="mx-auto mt-3 max-w-[245px] text-xs font-semibold leading-5 text-neutral-darker">
           Não encontramos uma resposta salva para este evento. Preencha o
           formulário antes de avançar.
         </p>
@@ -37,14 +37,14 @@ export function RegistrationMissingFormModal({
         <div className="mt-7 space-y-3">
           <Link
             href={formHref}
-            className="flex h-12 w-full items-center justify-center rounded-full bg-primary-dark px-5 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.2)] transition hover:bg-primary-darker"
+            className="flex h-12 w-full items-center justify-center rounded-full bg-primary-dark px-5 text-xs font-bold text-white shadow-soft transition hover:bg-primary-darker"
           >
             Ir para o formulário
           </Link>
           <button
             type="button"
             onClick={onClose}
-            className="h-12 w-full rounded-full bg-[#676a72] px-5 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(33,55,30,0.14)] transition hover:bg-[#555a61]"
+            className="h-12 w-full rounded-full bg-white"
           >
             Voltar ao evento
           </button>

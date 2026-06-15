@@ -79,34 +79,34 @@ export function ProfileCompletionModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#173b22]/72 px-4 py-8 backdrop-blur-[5px] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-dark/60 px-4 py-8 backdrop-blur-sm overflow-y-auto">
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="completion-modal-title"
-        className="relative w-full max-w-[480px] rounded-2xl bg-[#fffef9] px-8 pb-10 pt-10 text-center shadow-[0_24px_70px_rgba(11,35,17,0.28)] my-8"
+        className="relative w-full max-w-lg rounded-2xl bg-white px-8 pb-10 pt-10 text-center shadow-soft-xl my-8 border border-pastel-support/20"
       >
-        <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#e9f4e4] shadow-[0_0_40px_rgba(149,238,157,0.64)]">
-          <span className="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-primary-dark">
-            <LeafIcon className="h-[22px] w-[22px] text-white" />
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-success-light shadow-soft">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary-dark">
+            <LeafIcon className="h-6 w-6 text-white" />
           </span>
         </div>
 
         <h2
           id="completion-modal-title"
-          className="mx-auto mt-6 max-w-[320px] text-[26px] font-black leading-tight tracking-[-0.02em] text-primary-dark"
+          className="mx-auto mt-6 max-w-xs text-2xl font-bold leading-tight tracking-tight text-primary-dark"
         >
           Complete Seu Perfil
         </h2>
 
-        <p className="mx-auto mt-4 max-w-[360px] text-[13px] font-medium leading-6 text-[#5d6659]">
+        <p className="mx-auto mt-4 max-w-sm text-sm font-normal leading-relaxed text-neutral-muted">
           Para usar a plataforma, preencha os campos obrigatórios abaixo.
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-8 text-left space-y-4">
+        <form onSubmit={handleSubmit} className="mt-8 text-left space-y-5">
           {missingFields.includes("description") && (
             <div>
-              <label className="block text-[12px] font-bold uppercase text-primary-dark mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-primary-dark mb-2">
                 {fieldLabels.description}
               </label>
               <textarea
@@ -115,7 +115,7 @@ export function ProfileCompletionModal({
                   setFormData({ ...formData, description: e.target.value })
                 }
                 placeholder="Conte um pouco sobre você..."
-                className="w-full rounded-[8px] border border-[#d0d4cc] bg-white px-4 py-3 text-[13px] font-medium text-[#30372f] placeholder-[#a8b09f] focus:outline-none focus:border-primary-dark"
+                className="w-full rounded-xl border border-pastel-support bg-white px-4 py-3 text-sm font-normal text-neutral-darker placeholder-neutral-muted focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent transition-all"
                 rows={3}
               />
             </div>
@@ -123,7 +123,7 @@ export function ProfileCompletionModal({
 
           {missingFields.includes("campus_location") && (
             <div>
-              <label className="block text-[12px] font-bold uppercase text-primary-dark mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-primary-dark mb-2">
                 {fieldLabels.campus_location}
               </label>
               <input
@@ -133,14 +133,14 @@ export function ProfileCompletionModal({
                   setFormData({ ...formData, campus_location: e.target.value })
                 }
                 placeholder="Ex: Campus Recife"
-                className="w-full rounded-[8px] border border-[#d0d4cc] bg-white px-4 py-3 text-[13px] font-medium text-[#30372f] placeholder-[#a8b09f] focus:outline-none focus:border-primary-dark"
+                className="w-full rounded-xl border border-pastel-support bg-white px-4 py-3 text-sm font-normal text-neutral-darker placeholder-neutral-muted focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent transition-all"
               />
             </div>
           )}
 
           {missingFields.includes("department") && userRole === "teacher" && (
             <div>
-              <label className="block text-[12px] font-bold uppercase text-primary-dark mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-primary-dark mb-2">
                 {fieldLabels.department}
               </label>
               <input
@@ -150,13 +150,13 @@ export function ProfileCompletionModal({
                   setFormData({ ...formData, department: e.target.value })
                 }
                 placeholder="Ex: Agronomia"
-                className="w-full rounded-[8px] border border-[#d0d4cc] bg-white px-4 py-3 text-[13px] font-medium text-[#30372f] placeholder-[#a8b09f] focus:outline-none focus:border-primary-dark"
+                className="w-full rounded-xl border border-pastel-support bg-white px-4 py-3 text-sm font-normal text-neutral-darker placeholder-neutral-muted focus:outline-none focus:ring-2 focus:ring-primary-dark focus:border-transparent transition-all"
               />
             </div>
           )}
 
           {error && (
-            <div className="rounded-[8px] bg-[#fee] px-4 py-3 text-[12px] font-medium text-[#c33]">
+            <div className="rounded-xl bg-danger-light px-4 py-3 text-xs font-semibold text-danger-primary border border-danger-primary/30">
               {error}
             </div>
           )}
@@ -164,14 +164,14 @@ export function ProfileCompletionModal({
           <button
             type="submit"
             disabled={loading}
-            className="mt-6 h-12 w-full rounded-full bg-primary-dark text-[13px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.26)] transition-colors hover:bg-primary-darker disabled:opacity-50"
+            className="mt-7 h-12 w-full rounded-xl bg-primary-dark text-sm font-bold text-white shadow-soft transition-all duration-200 hover:opacity-95 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {loading ? "Salvando..." : "Continuar"}
           </button>
         </form>
 
         <span
-          className="pointer-events-none absolute -bottom-6 -right-6 h-24 w-24 rounded-full border-[10px] border-[#dfeedd]"
+          className="pointer-events-none absolute -bottom-6 -right-6 h-24 w-24 rounded-full border-[10px] border-pastel-support/20"
           aria-hidden="true"
         />
       </section>

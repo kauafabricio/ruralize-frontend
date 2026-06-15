@@ -61,11 +61,11 @@ export default function LoginPage() {
 
       <AuthCard className="max-w-[450px]">
         <div className="mb-10">
-          <h1 className="text-[28px] font-black leading-tight tracking-[-0.03em] text-primary-dark">
+          <h1 className="text-[28px] font-bold leading-tight tracking-[-0.03em] text-primary-dark">
             Bem-vindo
           </h1>
 
-          <p className="mt-3 max-w-[265px] text-[12px] font-medium leading-5 text-neutral-muted">
+          <p className="mt-3 max-w-[265px] text-xs font-medium leading-5 text-neutral-muted">
             Acesse sua conta para gerenciar suas atividades acadêmicas
             sustentáveis.
           </p>
@@ -80,12 +80,12 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          <div className="mb-3 flex items-center justify-between gap-4 text-[10px] font-black uppercase tracking-[0.14em] text-[#262b23]">
+          <div className="mb-3 flex items-center justify-between gap-4 text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-darker">
             <span>Senha</span>
 
             <Link
               href="/login"
-              className="text-[10px] font-black normal-case tracking-normal text-primary-dark"
+              className="text-[10px] font-bold normal-case tracking-normal text-primary-dark"
             >
               Esqueci senha
             </Link>
@@ -101,7 +101,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword((current) => !current)}
-                className="inline-flex items-center justify-center text-[#697163]"
+                className="inline-flex items-center justify-center text-neutral-darker"
                 aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
               >
                 {showPassword ? (
@@ -116,15 +116,15 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="h-14 w-full rounded-full bg-primary-dark text-[13px] font-bold text-white shadow-[0_10px_18px_rgba(40,118,48,0.26)] transition-colors hover:bg-primary-darker disabled:opacity-50"
+            className="h-14 w-full rounded-full bg-primary-dark text-sm font-bold text-white shadow-soft transition-colors hover:bg-primary-darker disabled:opacity-50"
           >
             {loading ? "Entrando..." : "Entrar"}
           </button>
         </form>
 
-        <div className="mt-8 border-t border-[#ebebe8] pt-8 text-center text-[12px] font-medium text-[#8c9388]">
+        <div className="mt-8 border-t border-[#ebebe8] pt-8 text-center text-xs font-medium text-neutral-darker">
           Ainda não possui acesso?{" "}
-          <Link href="/cadastro/perfil" className="font-black text-primary-dark">
+          <Link href="/cadastro/perfil" className="font-bold text-primary-dark">
             Criar conta
           </Link>
         </div>

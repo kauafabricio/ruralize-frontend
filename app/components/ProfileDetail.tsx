@@ -97,7 +97,7 @@ export function ProfileDetail() {
   if (loading) {
     return (
       <RequireAuth>
-        <div className="min-h-screen bg-neutral-lighter py-8 text-center">
+        <div className="min-h-screen bg-white py-8 text-center">
           Carregando perfil...
         </div>
       </RequireAuth>
@@ -107,7 +107,7 @@ export function ProfileDetail() {
   if (!profile) {
     return (
       <RequireAuth>
-        <div className="min-h-screen bg-neutral-lighter py-8 text-center text-red-600">
+        <div className="min-h-screen bg-white py-8 text-center text-red-600">
           Perfil não encontrado
         </div>
       </RequireAuth>
@@ -118,7 +118,7 @@ export function ProfileDetail() {
 
   return (
     <RequireAuth>
-      <main className="min-h-screen bg-neutral-lighter">
+      <main className="min-h-screen bg-white">
         {toast && (
           <Toast
             message={toast.message}
@@ -128,7 +128,7 @@ export function ProfileDetail() {
         )}
 
         {/* Cover Photo */}
-        <div className="relative h-64 w-full bg-[#e0e0e0]">
+        <div className="relative h-64 w-full bg-white">
           {formData.cover_photo_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -148,7 +148,7 @@ export function ProfileDetail() {
           <div className="flex gap-6">
             {/* Avatar */}
             <div className="flex-shrink-0">
-              <div className="flex h-32 w-32 items-center justify-center rounded-full border-4 border-white bg-primary-dark text-4xl font-black uppercase text-white shadow-[0_4px_12px_rgba(33,55,30,0.2)]">
+              <div className="flex h-32 w-32 items-center justify-center rounded-full border-4 border-white bg-primary-dark text-4xl font-bold uppercase text-white shadow-soft">
                 {formData.profile_photo_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -164,10 +164,10 @@ export function ProfileDetail() {
 
             {/* Profile Info */}
             <div className="flex-1">
-              <h1 className="text-3xl font-black text-primary-dark">
+              <h1 className="text-3xl font-bold text-primary-dark">
                 {profile.name}
               </h1>
-              <p className="text-lg text-[#6c7b6d]">
+              <p className="text-lg text-neutral-darker">
                 {profile.role === "student" ? "Estudante" : "Professor"}
               </p>
 
@@ -192,7 +192,7 @@ export function ProfileDetail() {
           <div className="mt-8 space-y-6">
             {/* Description */}
             <section className="rounded-xl bg-white p-6 shadow-soft-xs">
-              <h2 className="mb-4 text-lg font-black text-primary-dark">Sobre</h2>
+              <h2 className="mb-4 text-lg font-bold text-primary-dark">Sobre</h2>
 
               {isEditing ? (
                 <textarea
@@ -201,7 +201,7 @@ export function ProfileDetail() {
                     setFormData({ ...formData, description: e.target.value })
                   }
                   placeholder="Descreva-se..."
-                  className="w-full rounded-lg border border-[#e5eadf] p-3 text-[13px] outline-none"
+                  className="w-full rounded-xl border border-pastel-support p-3 text-sm outline-none"
                   rows={4}
                 />
               ) : (
@@ -214,13 +214,13 @@ export function ProfileDetail() {
             {/* Photo URLs (for editing) */}
             {isEditing && (
               <section className="rounded-xl bg-white p-6 shadow-soft-xs">
-                <h2 className="mb-4 text-lg font-black text-primary-dark">
+                <h2 className="mb-4 text-lg font-bold text-primary-dark">
                   Imagens
                 </h2>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-[12px] font-bold text-neutral-muted">
+                    <label className="block text-xs font-bold text-neutral-muted">
                       URL da Foto de Perfil
                     </label>
                     <input
@@ -233,12 +233,12 @@ export function ProfileDetail() {
                         })
                       }
                       placeholder="https://..."
-                      className="mt-1 w-full rounded-lg border border-[#e5eadf] p-2 text-[13px] outline-none"
+                      className="mt-1 w-full rounded-xl border border-pastel-support p-2 text-sm outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[12px] font-bold text-neutral-muted">
+                    <label className="block text-xs font-bold text-neutral-muted">
                       URL da Foto de Capa
                     </label>
                     <input
@@ -251,7 +251,7 @@ export function ProfileDetail() {
                         })
                       }
                       placeholder="https://..."
-                      className="mt-1 w-full rounded-lg border border-[#e5eadf] p-2 text-[13px] outline-none"
+                      className="mt-1 w-full rounded-xl border border-pastel-support p-2 text-sm outline-none"
                     />
                   </div>
                 </div>

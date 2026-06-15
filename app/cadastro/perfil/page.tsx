@@ -23,10 +23,10 @@ export default function CadastroPerfilPage() {
     <AuthShell>
       <AuthCard className="max-w-[530px]">
         <div className="mx-auto mb-10 max-w-[320px] text-center">
-          <h1 className="text-[26px] font-black leading-tight tracking-[-0.03em] text-primary-dark">
+          <h1 className="text-[26px] font-bold leading-tight tracking-[-0.03em] text-primary-dark">
             Escolha seu perfil
           </h1>
-          <p className="mt-3 text-[12px] font-semibold leading-5 text-[#777f72]">
+          <p className="mt-3 text-xs font-semibold leading-5 text-neutral-darker">
             Selecione como deseja criar sua conta no Ruralize
           </p>
         </div>
@@ -36,21 +36,21 @@ export default function CadastroPerfilPage() {
             <Link
               key={option.title}
               href={option.href}
-              className="group flex h-36 flex-col items-center justify-center gap-4 bg-[#e2e2df] px-6 text-center text-primary-dark transition-colors hover:bg-primary-dark hover:text-white"
+              className="group flex h-36 flex-col items-center justify-center gap-4 bg-white px-6 text-center text-primary-dark transition-colors hover:bg-primary-dark hover:text-white"
             >
-              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-primary-dark shadow-[0_10px_18px_rgba(33,55,30,0.08)] transition-colors group-hover:bg-[#f7f8f2]">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-primary-dark shadow-[0_10px_18px_rgba(33,55,30,0.08)] transition-colors group-hover:bg-white">
                 {option.icon}
               </span>
-              <span className="text-[13px] font-black uppercase tracking-[0.12em]">
+              <span className="text-sm font-bold uppercase tracking-[0.12em]">
                 {option.title}
               </span>
             </Link>
           ))}
         </div>
 
-        <div className="mt-9 border-t border-[#ebebe8] pt-8 text-center text-[12px] font-medium text-[#8c9388]">
+        <div className="mt-9 border-t border-[#ebebe8] pt-8 text-center text-xs font-medium text-neutral-darker">
           Ja possui uma conta?{" "}
-          <Link href="/login" className="font-black text-primary-dark">
+          <Link href="/login" className="font-bold text-primary-dark">
             Entrar agora
           </Link>
         </div>

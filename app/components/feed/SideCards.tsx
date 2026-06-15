@@ -51,22 +51,22 @@ export function SuggestionsCard() {
 
   return (
     <>
-      <aside className="rounded-3xl bg-white px-6 py-7 shadow-soft-xs">
-        <h2 className="text-[15px] font-black tracking-[-0.02em] text-neutral-darker">
+      <aside className="rounded-2xl bg-white px-6 py-7 shadow-soft-xs">
+        <h2 className="text-[15px] font-bold tracking-[-0.02em] text-neutral-darker">
           Sugestões
         </h2>
 
         <div className="mt-6 space-y-4">
           {loadingProfiles ? (
-            <p className="text-[12px] font-semibold text-neutral-muted">
+            <p className="text-xs font-semibold text-neutral-muted">
               Carregando perfis...
             </p>
           ) : profileError ? (
-            <p className="text-[12px] font-semibold text-[#b42318]">
+            <p className="text-xs font-semibold text-neutral-darker">
               {profileError}
             </p>
           ) : visibleSuggestions.length === 0 ? (
-            <p className="text-[12px] font-semibold text-neutral-muted">
+            <p className="text-xs font-semibold text-neutral-muted">
               Nenhuma sugestão encontrada.
             </p>
           ) : (
@@ -74,14 +74,14 @@ export function SuggestionsCard() {
               <Link
                 key={person.id}
                 href={`/perfil/${person.id}`}
-                className="group flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-neutral-lighter"
+                className="group flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-white"
               >
                 <ProfileAvatar profile={person} />
                 <div className="min-w-0">
-                  <p className="truncate text-[12px] font-black leading-4 text-[#242b23] group-hover:text-primary-dark">
+                  <p className="truncate text-xs font-bold leading-4 text-neutral-darker group-hover:text-primary-dark">
                     {person.name}
                   </p>
-                  <p className="truncate text-[10px] font-semibold leading-3 text-neutral-muted">
+                  <p className="truncate text-xs font-semibold leading-3 text-neutral-muted">
                     {person.course || person.department || person.role}
                   </p>
                 </div>
@@ -94,7 +94,7 @@ export function SuggestionsCard() {
           type="button"
           onClick={() => setModalOpen(true)}
           disabled={profiles.length === 0}
-          className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-[#f1f5ed] px-4 py-3 text-[11px] font-black text-primary-dark transition hover:bg-[#e7f1df] disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-white disabled:cursor-not-allowed disabled:opacity-60"
         >
           Ver todas as sugestões
         </button>
@@ -102,28 +102,28 @@ export function SuggestionsCard() {
 
       {modalOpen ? (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#0b1f0b]/50 px-4 py-8"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-white/50 px-4 py-8"
           onClick={() => setModalOpen(false)}
         >
           <div
             role="dialog"
             aria-modal="true"
             onClick={(event) => event.stopPropagation()}
-            className="w-full max-w-[960px] overflow-hidden rounded-3xl bg-white shadow-[0_24px_70px_rgba(11,35,17,0.28)]"
+            className="w-full max-w-[960px] overflow-hidden rounded-2xl bg-white shadow-soft"
           >
-            <div className="flex flex-col gap-3 border-b border-[#e6efe4] px-6 py-5 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex flex-col gap-3 border-b border-pastel-support px-6 py-5 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <h2 className="text-[18px] font-black tracking-[-0.02em] text-neutral-darker">
+                <h2 className="text-[18px] font-bold tracking-[-0.02em] text-neutral-darker">
                   Todas as sugestões
                 </h2>
-                <p className="mt-1 text-[12px] text-[#525b4f]">
+                <p className="mt-1 text-xs text-neutral-darker">
                   Perfis carregados diretamente do backend Ruralize.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-pastel-support bg-white text-[16px] font-black text-primary-dark transition hover:bg-neutral-lighter"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-pastel-support bg-white text-[16px] font-bold text-primary-dark transition hover:bg-white"
                 aria-label="Fechar"
               >
                 ×
@@ -136,32 +136,32 @@ export function SuggestionsCard() {
                   <Link
                     key={person.id}
                     href={`/perfil/${person.id}`}
-                    className="group overflow-hidden rounded-[22px] border border-[#e6efe4] bg-neutral-lighter p-5 transition hover:border-[#c7dabd] hover:bg-white"
+                    className="group overflow-hidden rounded-2xl border border-[#e6efe4] bg-white p-5 transition hover:border-[#c7dabd] hover:bg-white"
                   >
                     <div className="mb-4 flex items-center gap-3">
                       <ProfileAvatar profile={person} size="large" />
                       <div className="min-w-0">
-                        <p className="truncate text-[13px] font-black text-neutral-darker group-hover:text-primary-dark">
+                        <p className="truncate text-sm font-bold text-neutral-darker group-hover:text-primary-dark">
                           {person.name}
                         </p>
-                        <p className="truncate text-[11px] font-semibold text-neutral-muted">
+                        <p className="truncate text-xs font-semibold text-neutral-muted">
                           {person.course || person.department || person.role}
                         </p>
                       </div>
                     </div>
-                    <p className="mb-4 text-[12px] leading-6 text-[#545d50]">
+                    <p className="mb-4 text-xs leading-6 text-neutral-darker">
                       {person.description || "Perfil Ruralize"}
                     </p>
-                    <div className="space-y-2 text-[11px] text-[#333b31]">
+                    <div className="space-y-2 text-xs text-neutral-darker">
                       {person.course ? (
                         <div>
-                          <span className="font-black">Curso: </span>
+                          <span className="font-bold">Curso: </span>
                           {person.course}
                         </div>
                       ) : null}
                       {person.department ? (
                         <div>
-                          <span className="font-black">Departamento: </span>
+                          <span className="font-bold">Departamento: </span>
                           {person.department}
                         </div>
                       ) : null}
@@ -179,25 +179,25 @@ export function SuggestionsCard() {
 
 export function NewScheduleCard() {
   return (
-    <aside className="flex min-h-[318px] flex-col items-center justify-center rounded-3xl border border-dashed border-[#d8dbd2] bg-neutral-lighter px-8 text-center">
+    <aside className="flex min-h-[318px] flex-col items-center justify-center rounded-2xl border border-dashed border-[#d8dbd2] bg-white px-8 text-center">
       <Link
         href="/agendamentos"
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-[#3b8b42] text-white shadow-soft-sm"
+        className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-white shadow-soft-sm"
         aria-label="Novo agendamento"
       >
         <PlusIcon className="h-6 w-6" />
       </Link>
 
-      <h2 className="mt-8 text-[18px] font-black tracking-[-0.03em] text-neutral-darker">
+      <h2 className="mt-8 text-[18px] font-bold tracking-[-0.03em] text-neutral-darker">
         Novo Agendamento
       </h2>
-      <p className="mt-3 max-w-[235px] text-[11px] font-semibold leading-5 text-[#777f72]">
+      <p className="mt-3 max-w-[235px] text-xs font-semibold leading-5 text-neutral-darker">
         Encontre novas atividades e participe da nossa comunidade.
       </p>
 
       <Link
         href="/agendamentos"
-        className="mt-7 inline-flex h-11 items-center justify-center rounded-full bg-primary-dark px-8 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.22)]"
+        className="mt-7 inline-flex h-11 items-center justify-center rounded-full bg-primary-dark px-8 text-xs font-bold text-white shadow-soft"
       >
         Explorar Eventos
       </Link>
@@ -213,11 +213,11 @@ function ProfileAvatar({
   size?: "small" | "large";
 }) {
   const sizeClass =
-    size === "large" ? "h-12 w-12 text-[18px]" : "h-10 w-10 text-[14px]";
+    size === "large" ? "h-12 w-12 text-[18px]" : "h-10 w-10 text-sm";
 
   return (
     <div
-      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary-dark font-black text-white ring-2 ring-neutral-lighter ${sizeClass}`}
+      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary-dark font-bold text-white ring-2 ring-neutral-lighter ${sizeClass}`}
     >
       {profile.profile_photo_url ? (
         // eslint-disable-next-line @next/next/no-img-element

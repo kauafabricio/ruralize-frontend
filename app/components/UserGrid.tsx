@@ -10,7 +10,7 @@ export function UserGrid({ users, loading }: { users: UserProfileResponse[]; loa
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
-            className="h-[320px] animate-pulse rounded-[22px] border border-[#e6efe4] bg-neutral-light"
+            className="h-[280px] animate-pulse rounded-2xl border border-pastel-support/20 bg-neutral-light"
           />
         ))}
       </div>
@@ -19,8 +19,8 @@ export function UserGrid({ users, loading }: { users: UserProfileResponse[]; loa
 
   if (users.length === 0) {
     return (
-      <div className="rounded-[22px] border border-[#e6efe4] bg-[#fbfbf7] p-8 text-center">
-        <p className="text-[13px] font-semibold text-[#545d50]">
+      <div className="rounded-2xl border border-pastel-support/30 bg-white p-12 text-center">
+        <p className="text-sm font-semibold text-neutral-muted">
           Nenhum usuário encontrado.
         </p>
       </div>
@@ -28,7 +28,7 @@ export function UserGrid({ users, loading }: { users: UserProfileResponse[]; loa
   }
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {users.map((user) => (
         <UserCard key={user.id} user={user} />
       ))}

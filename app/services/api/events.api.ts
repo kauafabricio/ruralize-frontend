@@ -90,7 +90,6 @@ export async function updateEvent(
 export async function getMyEvents(): Promise<EventResponse[]> {
   const response = await api.get<unknown>("/events/my/events");
   const data = response.data;
-
   // Handle direct array response
   if (Array.isArray(data)) {
     return data;

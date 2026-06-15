@@ -64,7 +64,14 @@ export function RegistrationConfirmationModal({
         throw new Error("Inscrição não foi confirmada pelo servidor. Tente novamente.");
       }
 
-      // 3. Notificar e redirecionar
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("agendamentos:registration-updated", {
+            detail: { eventId },
+          }),
+        );
+      }
+
       router.push("/agendamentos");
     } catch (err) {
       setError(

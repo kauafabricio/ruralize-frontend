@@ -9,11 +9,7 @@ import {
   type AuthSession,
 } from "@/app/lib/auth";
 
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
-  (process.env.NODE_ENV === "development"
-    ? "http://127.0.0.1:8000"
-    : "https://rural-backend.vercel.app");
+export const API_BASE_URL = "https://rural-backend.vercel.app";
 
 export interface ApiErrorResponse {
   detail?: string;
@@ -84,15 +80,24 @@ api.interceptors.response.use(
       const statusText = error.response.statusText;
       const detail = error.response.data?.detail;
 
+      const detailMessage =
+        typeof detail === "string"
+          ? detail
+          : detail && typeof detail === "object" && "message" in detail
+          ? String((detail as Record<string, unknown>).message)
+          : typeof detail === "object"
+          ? JSON.stringify(detail)
+          : undefined;
+
       if (status === 503) {
         throw new Error(
-          detail ||
+          detailMessage ||
             "Servidor indisponível: verifique se o backend e o MongoDB estão em execução.",
         );
       }
 
       throw new Error(
-        detail || `${status} ${statusText}` || error.message || "Erro na requisição",
+        detailMessage || `${status} ${statusText}` || error.message || "Erro na requisição",
       );
     }
 

@@ -6,17 +6,27 @@ export interface Reward {
   name: string;
   description: string;
   points_required: number;
-  pickup_location: string;
-  deadline_days: number;
+  category: string;
   image_url?: string;
+  quantity_available?: number | null;
+  quantity_redeemed?: number;
+  created_at: string;
 }
 
 export interface RedemptionResponse {
   success: boolean;
+  message?: string;
+  error_code?: string;
   data: {
+    redemption_id: string;
     redemption_code: string;
     user_email: string;
     pickup_deadline: string;
+    pickup_location: string;
+    reward_name: string;
+    points_deducted: number;
+    status: string;
+    redeemed_at: string;
   };
 }
 

@@ -13,6 +13,7 @@ import {
   type RedemptionResponse,
   type RedemptionHistory,
 } from "@/app/services/api/rewards.api";
+import { getPointsBalance } from "@/app/services/api/points.api";
 
 // Ação de histórico para compatibilidade com UI existente
 const actionHistory = [
@@ -44,8 +45,8 @@ type RewardStep = "confirm" | "received" | "error";
 
 interface RedemptionState {
   code?: string;
-  email?: string;
   deadline?: string;
+  pickupLocation?: string;
 }
 
 interface HistoryAction {
@@ -56,13 +57,10 @@ interface HistoryAction {
   tone: "positive" | "negative";
 }
 
-const INITIAL_POINTS = 750;
-const POINTS_STORAGE_KEY = "ruralize.pointsBalance";
-
 export default function PointsPage() {
   const { user, session } = useAuth();
   const [rewards, setRewards] = useState<Reward[]>([]);
-  const [pointsBalance, setPointsBalance] = useState(readStoredPointsBalance);
+  const [pointsBalance, setPointsBalance] = useState(0);
   const [selectedReward, setSelectedReward] = useState<Reward | null>(null);
   const [rewardStep, setRewardStep] = useState<RewardStep>("confirm");
   const [redeemHistory, setRedeemHistory] = useState<RedemptionHistory[]>([]);
@@ -74,24 +72,42 @@ export default function PointsPage() {
   // Carregar recompensas e histórico de resgate ao montar
   useEffect(() => {
     if (!session) return;
-    
-    const loadData = async () => {
+
+    let active = true;
+    setLoading(true);
+
+    const loadRewardsAndHistory = async () => {
       try {
-        setLoading(true);
         const [rewardsData, historyData] = await Promise.all([
           getAvailableRewards(),
           getUserRedemptions(),
         ]);
+        if (!active) return;
         setRewards(rewardsData);
         setRedeemHistory(historyData);
       } catch (error) {
-        console.error("Erro ao carregar dados:", error);
-      } finally {
-        setLoading(false);
+        console.error("Erro ao carregar recompensas ou histórico:", error);
       }
     };
-    
-    loadData();
+
+    const loadBalance = async () => {
+      try {
+        const balanceData = await getPointsBalance();
+        if (!active) return;
+        setPointsBalance(balanceData.balance);
+      } catch (error) {
+        console.error("Erro ao carregar saldo de pontos:", error);
+      }
+    };
+
+    Promise.allSettled([loadRewardsAndHistory(), loadBalance()]).finally(() => {
+      if (!active) return;
+      setLoading(false);
+    });
+
+    return () => {
+      active = false;
+    };
   }, [session]);
 
   function openRewardModal(reward: Reward) {
@@ -127,18 +143,27 @@ export default function PointsPage() {
     try {
       const response: RedemptionResponse = await redeemReward(selectedReward.id);
 
-      // Atualizar saldo de pontos
-      const nextBalance = pointsBalance - selectedReward.points_required;
-      setPointsBalance(nextBalance);
-      window.localStorage.setItem(POINTS_STORAGE_KEY, String(nextBalance));
+      if (!response.success) {
+        throw new Error(response.message || "Falha ao processar resgate.");
+      }
+
+      // Atualizar saldo de pontos com valor real do backend
+      try {
+        const balanceData = await getPointsBalance();
+        setPointsBalance(balanceData.balance);
+      } catch (error) {
+        console.warn("Não foi possível atualizar o saldo após o resgate:", error);
+        const nextBalance = pointsBalance - selectedReward.points_required;
+        setPointsBalance(nextBalance);
+      }
 
       // Atualizar histórico de resgates
       const newRedemption: RedemptionHistory = {
         id: response.data.redemption_code,
-        reward_name: selectedReward.name,
+        reward_name: response.data.reward_name,
         redemption_code: response.data.redemption_code,
-        status: "pending",
-        redemption_date: new Date().toISOString(),
+        status: response.data.status as "pending" | "collected" | "expired",
+        redemption_date: response.data.redeemed_at,
         pickup_deadline: response.data.pickup_deadline,
       };
       setRedeemHistory((current) => [newRedemption, ...current]);
@@ -146,8 +171,8 @@ export default function PointsPage() {
       // Exibir dados de sucesso
       setRedemptionData({
         code: response.data.redemption_code,
-        email: response.data.user_email,
         deadline: response.data.pickup_deadline,
+        pickupLocation: response.data.pickup_location,
       });
       setRewardStep("received");
     } catch (error) {
@@ -155,15 +180,20 @@ export default function PointsPage() {
       
       let errorMessage = "Não foi possível realizar o resgate.";
       
-      if (error instanceof Error) {
-        if (error.message.includes("402")) {
-          errorMessage = "Você não possui pontos suficientes para esta recompensa.";
-        } else if (error.message.includes("404")) {
-          errorMessage = "Recompensa não encontrada.";
-        } else if (error.message.includes("400")) {
-          errorMessage = "Não foi possível realizar o resgate.";
-        } else if (error.message.includes("500")) {
-          errorMessage = "Erro interno do servidor. Tente novamente mais tarde.";
+      if (typeof error === "object" && error !== null) {
+        const message = (error as { message?: string }).message;
+        if (message) {
+          if (message.includes("Pontos insuficientes")) {
+            errorMessage = "Você não possui pontos suficientes para esta recompensa.";
+          } else if (message.includes("Recompensa não encontrada")) {
+            errorMessage = "Recompensa não encontrada.";
+          } else if (message.includes("Usuário não encontrado")) {
+            errorMessage = "Usuário não autenticado.";
+          } else if (message.includes("Erro interno")) {
+            errorMessage = "Erro interno do servidor. Tente novamente mais tarde.";
+          } else {
+            errorMessage = message;
+          }
         }
       }
       
@@ -460,7 +490,7 @@ function RewardRedemptionModal({
           <>
             <p className="mt-5 text-[13px] font-semibold leading-6 text-[#566052]">
               Você está prestes a resgatar <strong>{reward.name}</strong>.
-              Confirme para iniciar o processo e receber as instruções por e-mail.
+              Confirme para iniciar o processo e receber o código de retirada.
             </p>
             <div className="mt-5 rounded-[18px] bg-[#f7f9f4] px-5 py-4 text-[12px] font-semibold leading-5 text-[#536050]">
               <p>Saldo atual: {pointsBalance} pts</p>
@@ -505,7 +535,7 @@ function RewardRedemptionModal({
         ) : (
           <>
             <p className="mt-5 text-[13px] font-semibold leading-6 text-[#566052]">
-              Resgate realizado com sucesso! As instruções de retirada e o código de resgate foram enviados para o e-mail cadastrado.
+              Resgate realizado com sucesso! Guarde o código abaixo e leve-o ao local de retirada.
             </p>
             
             {redemptionData?.code && (
@@ -517,10 +547,10 @@ function RewardRedemptionModal({
               </div>
             )}
 
-            {redemptionData?.email && (
+            {redemptionData?.pickupLocation && (
               <div className="mt-4 rounded-[14px] bg-[#f0f8f0] px-4 py-3">
                 <p className="text-[11px] font-semibold text-[#536050]">
-                  Enviado para: <span className="font-black text-[#287630]">{redemptionData.email}</span>
+                  Local de retirada: <span className="font-black text-[#287630]">{redemptionData.pickupLocation}</span>
                 </p>
               </div>
             )}
@@ -547,20 +577,6 @@ function RewardRedemptionModal({
   );
 }
 
-function readStoredPointsBalance() {
-  if (typeof window === "undefined") {
-    return INITIAL_POINTS;
-  }
-
-  const storedPoints = window.localStorage.getItem(POINTS_STORAGE_KEY);
-
-  if (!storedPoints) {
-    return INITIAL_POINTS;
-  }
-
-  const parsedPoints = Number(storedPoints);
-  return Number.isFinite(parsedPoints) ? parsedPoints : INITIAL_POINTS;
-}
 
 function ArrowIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (

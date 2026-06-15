@@ -161,7 +161,7 @@ export default function ResgatesPage() {
               ℹ️ Informações Importantes
             </h2>
             <ul className="mt-3 space-y-2 text-[12px] font-semibold leading-5 text-[#536050]">
-              <li>• O código de resgate foi enviado para seu e-mail cadastrado</li>
+              <li>• Use o código exibido para retirar sua recompensa no local indicado</li>
               <li>• Resgate seus pontos dentro do prazo informado</li>
               <li>• Leve seu documento de identificação ao local de retirada</li>
               <li>• Resgates não retirados dentro do prazo expiram automaticamente</li>
@@ -269,7 +269,7 @@ function RedemptionDetailModal({
             <ol className="mt-3 space-y-2">
               <li className="flex gap-2 text-[12px] font-semibold leading-5 text-[#536050]">
                 <span className="font-black">1.</span>
-                <span>Verifique seu e-mail para as instruções completas</span>
+                <span>Utilize o código mostrado para retirada no local indicado</span>
               </li>
               <li className="flex gap-2 text-[12px] font-semibold leading-5 text-[#536050]">
                 <span className="font-black">2.</span>

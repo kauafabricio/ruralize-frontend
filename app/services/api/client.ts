@@ -11,9 +11,7 @@ import {
 
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ??
-  (process.env.NODE_ENV === "development"
-    ? "http://localhost:8000"
-    : "https://rural-backend.vercel.app");
+  "https://rural-backend.vercel.app";
 
 export interface ApiErrorResponse {
   detail?: string;

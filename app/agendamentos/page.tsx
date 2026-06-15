@@ -1,54 +1,39 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { RequireAuth } from "@/app/components/auth/RequireAuth";
 import { FeedHeader } from "@/app/components/feed/FeedHeader";
 import { useAuthenticatedUser } from "@/app/components/auth/useAuthenticatedUser";
-import { getMyEvents, EventResponse, unsubscribeEvent } from "@/app/services/api/events.api";
+import { getMySubscriptions, listSubscriptions, SubscriptionListResponse } from "@/app/services/api/subscription.api";
 
 export default function AgendamentosPage() {
   const user = useAuthenticatedUser();
-  const [registeredEvents, setRegisteredEvents] = useState<EventResponse[]>([]);
+  const [registeredEvents, setRegisteredEvents] = useState<SubscriptionListResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchMyEvents = useCallback(async () => {
-    if (!user?.userId) {
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await getMyEvents();
-      setRegisteredEvents(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao carregar agendamentos");
-      setRegisteredEvents([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.userId]);
-
-  // Fetch user's events from backend when the authenticated user is available
+  // Fetch user's events from backend
   useEffect(() => {
+    if (!user || !user.userId) return;
+
+    const fetchMyEvents = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await getMySubscriptions(user.userId);
+        setRegisteredEvents(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Erro ao carregar agendamentos");
+        // setRegisteredEvents([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchMyEvents();
-  }, [fetchMyEvents]);
-
-  // Refresh appointments when a new registration is created elsewhere in the app
-  useEffect(() => {
-    const handleRegistrationUpdated = () => {
-      fetchMyEvents();
-    };
-
-    window.addEventListener("agendamentos:registration-updated", handleRegistrationUpdated);
-
-    return () => {
-      window.removeEventListener("agendamentos:registration-updated", handleRegistrationUpdated);
-    };
-  }, [fetchMyEvents]);
+  }, [user?.userId]);
 
   const handleCancel = async (eventId: string, eventTitle: string) => {
     const confirmed = window.confirm(
@@ -58,7 +43,7 @@ export default function AgendamentosPage() {
     if (!confirmed || !user) return;
 
     try {
-      await unsubscribeEvent(eventId);
+      //await unsubscribeEvent(eventId);
       setRegisteredEvents(registeredEvents.filter((e) => e.id !== eventId));
     } catch (err) {
       alert(err instanceof Error ? err.message : "Erro ao cancelar inscrição");
@@ -67,8 +52,13 @@ export default function AgendamentosPage() {
 
   // Separate events into upcoming and past
   const now = new Date();
-  const agendadosEvents = registeredEvents.filter((event) => new Date(event.end_date) >= now);
-  const realizadosEvents = registeredEvents.filter((event) => new Date(event.end_date) < now);
+
+  const agendadosEvents = registeredEvents.filter(
+    (event) => new Date(event.start_date) > now
+  );
+  const realizadosEvents = registeredEvents.filter(
+    (event) => new Date(event.start_date) <= now
+  );
 
   return (
     <RequireAuth>
@@ -123,12 +113,11 @@ export default function AgendamentosPage() {
                         <AppointmentCard
                           key={event.id}
                           id={event.id}
-                          title={event.title}
-                          date={formatDate(event.start_date)}
-                          time={formatTimeRange(event.start_date, event.end_date)}
-                          location={event.location_name}
+                          title="haha"
+                          date={formatDate(event.created_at)}
+                          location={"name"}
                           href={`/agendamentos/${event.id}`}
-                          onCancel={() => handleCancel(event.id, event.title)}
+                          onCancel={() => handleCancel(event.id, "tesste")}
                           status="Confirmado"
                           showCancel={true}
                         />
@@ -164,12 +153,11 @@ export default function AgendamentosPage() {
                         <AppointmentCard
                           key={event.id}
                           id={event.id}
-                          title={event.title}
-                          date={formatDate(event.start_date)}
-                          time={formatTimeRange(event.start_date, event.end_date)}
-                          location={event.location_name}
+                          title={"event.title"}
+                          date={formatDate(event.created_at)}
+                          location={"event.location_name"}
                           href={`/agendamentos/${event.id}`}
-                          onCancel={() => handleCancel(event.id, event.title)}
+                          onCancel={() => handleCancel(event.id, "event.title")}
                           status="Realizado"
                           showCancel={false}
                         />
@@ -196,29 +184,9 @@ export default function AgendamentosPage() {
 function formatDate(dateStr: string): string {
   try {
     const d = new Date(dateStr);
-    return d.toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
+    return d.toLocaleDateString("pt-BR");
   } catch {
     return dateStr;
-  }
-}
-
-function formatTimeRange(startDate: string, endDate: string): string {
-  try {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    const formatter = new Intl.DateTimeFormat("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-    return `${formatter.format(start)} – ${formatter.format(end)}`;
-  } catch {
-    return "";
   }
 }
 
@@ -248,7 +216,6 @@ function AppointmentCard({
   id,
   title,
   date,
-  time,
   location,
   href,
   onCancel,
@@ -258,7 +225,6 @@ function AppointmentCard({
   id: string;
   title: string;
   date: string;
-  time: string;
   location: string;
   href: string;
   onCancel: () => void;
@@ -277,9 +243,6 @@ function AppointmentCard({
 
       <p className={`mt-7 text-[10px] font-black uppercase tracking-[0.08em] ${isRealized ? "text-[#a0a69b]" : "text-[#287630]"}`}>
         {date}
-      </p>
-      <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#556050]">
-        {time}
       </p>
       <h2 className="mt-3 max-w-[270px] text-[21px] font-black leading-[1.12] tracking-[-0.03em] text-[#1e261e]">
         {title}

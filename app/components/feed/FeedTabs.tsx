@@ -32,7 +32,6 @@ const DEFAULT_FILTER_IDS = [
   "clean-energy",
   "pollution-reduction",
   "education",
-  "recent",
 ] as const;
 
 type FeedTabId = (typeof feedTabs)[number]["id"];
@@ -70,7 +69,6 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
   const [posts, setPosts] = useState<PostResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [recentThreshold] = useState(() => Date.now() - 3600000);
 
   const loadPosts = useCallback(async () => {
     setLoading(true);
@@ -126,8 +124,6 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
     const actionId = post.sustainable_action_id || post.sustainable_action;
     const matchesFilter =
       activeFilter === "all" ||
-      (activeFilter === "recent" &&
-        new Date(post.created_at).getTime() > recentThreshold) ||
       actionId === activeFilter ||
       (activeFilter === "general" && (!actionId || actionId === "general"));
 
@@ -192,8 +188,6 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
 
           if (filterId === "all") {
             displayLabel = "Todos";
-          } else if (filterId === "recent") {
-            displayLabel = "Recentes";
           } else if (filterId === "general") {
             displayLabel = "🌍 Sem ação";
           } else {

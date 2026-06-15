@@ -54,7 +54,7 @@ export default function ResgatesPage() {
 
   return (
     <RequireAuth>
-      <main className="min-h-screen bg-[#f8f8f3] text-[#1f281f]">
+      <main className="min-h-screen bg-neutral-lighter text-neutral-darker">
         <FeedHeader showSearch={false} />
 
         <div className="mx-auto w-full max-w-[1220px] px-4 pb-10 pt-8 sm:px-7 lg:pt-11">
@@ -63,16 +63,16 @@ export default function ResgatesPage() {
             <div className="flex items-center gap-4">
               <Link
                 href="/pontos"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[18px] font-black text-[#287630] transition hover:bg-[#f1f3ed]"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[18px] font-black text-primary-dark transition hover:bg-[#f1f3ed]"
                 aria-label="Voltar"
               >
                 ←
               </Link>
               <div>
-                <h1 className="text-[31px] font-black tracking-[-0.04em] text-[#1e261e]">
+                <h1 className="text-[31px] font-black tracking-[-0.04em] text-neutral-darker">
                   Meus Resgates
                 </h1>
-                <p className="mt-1 text-[13px] font-semibold text-[#687266]">
+                <p className="mt-1 text-[13px] font-semibold text-neutral-muted">
                   Acompanhe todos os seus resgates de recompensas
                 </p>
               </div>
@@ -80,25 +80,25 @@ export default function ResgatesPage() {
           </section>
 
           {/* Conteúdo */}
-          <section className="rounded-[28px] bg-white px-6 py-8 shadow-[0_1px_0_rgba(33,55,30,0.05)] sm:px-10">
+          <section className="rounded-3xl bg-white px-6 py-8 shadow-[0_1px_0_rgba(33,55,30,0.05)] sm:px-10">
             {loading ? (
               <div className="flex items-center justify-center py-16">
-                <p className="text-[13px] font-semibold text-[#687266]">Carregando seus resgates...</p>
+                <p className="text-[13px] font-semibold text-neutral-muted">Carregando seus resgates...</p>
               </div>
             ) : error ? (
-              <div className="rounded-[14px] bg-[#fff3f3] px-4 py-3 text-[13px] font-semibold text-[#b92828]">
+              <div className="rounded-lg bg-danger-light px-4 py-3 text-[13px] font-semibold text-danger-primary">
                 {error}
               </div>
             ) : history.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16">
                 <div className="mb-4 text-[48px]">🎁</div>
-                <p className="text-[15px] font-black text-[#1e261e]">Nenhum resgate ainda</p>
-                <p className="mt-2 text-[13px] font-semibold text-[#687266]">
+                <p className="text-[15px] font-black text-neutral-darker">Nenhum resgate ainda</p>
+                <p className="mt-2 text-[13px] font-semibold text-neutral-muted">
                   Você ainda não resgatou nenhuma recompensa. Volte para resgatar algo!
                 </p>
                 <Link
                   href="/pontos"
-                  className="mt-6 inline-flex h-11 items-center justify-center rounded-full bg-[#287630] px-7 text-[11px] font-black text-white transition hover:bg-[#1f5c24]"
+                  className="mt-6 inline-flex h-11 items-center justify-center rounded-full bg-primary-dark px-7 text-[11px] font-black text-white transition hover:bg-[#1f5c24]"
                 >
                   Ver Recompensas
                 </Link>
@@ -112,9 +112,9 @@ export default function ResgatesPage() {
                       key={redemption.id}
                       type="button"
                       onClick={() => setSelectedRedemption(redemption)}
-                      className="w-full text-left transition hover:bg-[#f8f8f3]"
+                      className="w-full text-left transition hover:bg-neutral-lighter"
                     >
-                      <div className={`rounded-[18px] p-5 ${status.color}`}>
+                      <div className={`rounded-xl p-5 ${status.color}`}>
                         <div className="flex items-start justify-between gap-4">
                           <div className="min-w-0 flex-1">
                             <h3 className="truncate text-[15px] font-black text-current">
@@ -156,8 +156,8 @@ export default function ResgatesPage() {
           </section>
 
           {/* Info Box */}
-          <section className="mt-8 rounded-[18px] bg-[#f0f8f0] px-5 py-4">
-            <h2 className="text-[12px] font-black uppercase tracking-[0.08em] text-[#287630]">
+          <section className="mt-8 rounded-xl bg-[#f0f8f0] px-5 py-4">
+            <h2 className="text-[12px] font-black uppercase tracking-[0.08em] text-primary-dark">
               ℹ️ Informações Importantes
             </h2>
             <ul className="mt-3 space-y-2 text-[12px] font-semibold leading-5 text-[#536050]">
@@ -194,14 +194,14 @@ function RedemptionDetailModal({
       <section
         role="dialog"
         aria-modal="true"
-        className="w-full max-w-[430px] rounded-[24px] bg-white px-7 pb-7 pt-8 shadow-[0_24px_50px_rgba(33,55,30,0.22)]"
+        className="w-full max-w-[430px] rounded-2xl bg-white px-7 pb-7 pt-8 shadow-soft-lg"
       >
         <div className="flex items-start justify-between gap-5">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#287630]">
+            <p className="text-[10px] font-black uppercase tracking-[0.12em] text-primary-dark">
               Resgate #{redemption.id.substring(0, 8)}
             </p>
-            <h2 className="mt-2 text-[22px] font-black tracking-[-0.04em] text-[#1e261e]">
+            <h2 className="mt-2 text-[22px] font-black tracking-[-0.04em] text-neutral-darker">
               {redemption.reward_name}
             </h2>
           </div>
@@ -217,17 +217,17 @@ function RedemptionDetailModal({
 
         <div className="mt-6 space-y-4">
           {/* Status */}
-          <div className={`rounded-[14px] p-4 ${status.color}`}>
+          <div className={`rounded-lg p-4 ${status.color}`}>
             <p className="text-[11px] font-black uppercase tracking-[0.08em]">Status</p>
             <p className="mt-2 text-[15px] font-black">{status.label}</p>
           </div>
 
           {/* Código */}
-          <div className="rounded-[14px] bg-[#f7f9f4] p-4">
+          <div className="rounded-lg bg-[#f7f9f4] p-4">
             <p className="text-[11px] font-black uppercase tracking-[0.08em] text-[#536050]">
               Código de Resgate
             </p>
-            <p className="mt-2 text-center text-[20px] font-black tracking-wider text-[#287630]">
+            <p className="mt-2 text-center text-[20px] font-black tracking-wider text-primary-dark">
               {redemption.redemption_code}
             </p>
             <button
@@ -235,7 +235,7 @@ function RedemptionDetailModal({
               onClick={() => {
                 navigator.clipboard.writeText(redemption.redemption_code);
               }}
-              className="mt-3 w-full rounded-full bg-white px-4 py-2 text-[11px] font-black text-[#287630] transition hover:bg-[#f0f8f0]"
+              className="mt-3 w-full rounded-full bg-white px-4 py-2 text-[11px] font-black text-primary-dark transition hover:bg-[#f0f8f0]"
             >
               Copiar código
             </button>
@@ -243,27 +243,27 @@ function RedemptionDetailModal({
 
           {/* Datas */}
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-[14px] bg-[#f7f9f4] p-4">
+            <div className="rounded-lg bg-[#f7f9f4] p-4">
               <p className="text-[10px] font-black uppercase tracking-[0.08em] text-[#536050]">
                 Data do Resgate
               </p>
-              <p className="mt-2 text-[13px] font-black text-[#1e261e]">
+              <p className="mt-2 text-[13px] font-black text-neutral-darker">
                 {new Date(redemption.redemption_date).toLocaleDateString("pt-BR")}
               </p>
             </div>
-            <div className="rounded-[14px] bg-[#f7f9f4] p-4">
+            <div className="rounded-lg bg-[#f7f9f4] p-4">
               <p className="text-[10px] font-black uppercase tracking-[0.08em] text-[#536050]">
                 Prazo de Retirada
               </p>
-              <p className="mt-2 text-[13px] font-black text-[#1e261e]">
+              <p className="mt-2 text-[13px] font-black text-neutral-darker">
                 {new Date(redemption.pickup_deadline).toLocaleDateString("pt-BR")}
               </p>
             </div>
           </div>
 
           {/* Instruções */}
-          <div className="rounded-[14px] bg-[#f0f8f0] p-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.08em] text-[#287630]">
+          <div className="rounded-lg bg-[#f0f8f0] p-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.08em] text-primary-dark">
               Próximos Passos
             </p>
             <ol className="mt-3 space-y-2">
@@ -290,7 +290,7 @@ function RedemptionDetailModal({
         <button
           type="button"
           onClick={onClose}
-          className="mt-7 h-11 w-full rounded-full bg-[#287630] px-5 text-[11px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)]"
+          className="mt-7 h-11 w-full rounded-full bg-primary-dark px-5 text-[11px] font-black text-white shadow-soft-sm"
         >
           Fechar
         </button>

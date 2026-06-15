@@ -142,8 +142,8 @@ export function RegistrationActions({
       )}
 
       {isRegistered ? (
-        <div className="rounded-[18px] border border-[#c7e7c8] bg-[#f4fbf3] px-5 py-4">
-          <p className="text-[11px] font-black uppercase tracking-[0.08em] text-[#287630]">
+        <div className="rounded-xl border border-[#c7e7c8] bg-[#f4fbf3] px-5 py-4">
+          <p className="text-[11px] font-black uppercase tracking-[0.08em] text-primary-dark">
             Inscrição confirmada
           </p>
           <p className="mt-2 text-[12px] font-semibold leading-5 text-[#566052]">
@@ -154,7 +154,7 @@ export function RegistrationActions({
 
       <Link
         href={formHref}
-        className="flex h-12 items-center justify-center gap-2 rounded-full border border-[#b6d8b8] bg-white px-5 text-[12px] font-black text-[#287630] transition hover:bg-[#f4fbf3]"
+        className="flex h-12 items-center justify-center gap-2 rounded-full border border-[#b6d8b8] bg-white px-5 text-[12px] font-black text-primary-dark transition hover:bg-[#f4fbf3]"
       >
         <LinkIcon className="h-4 w-4" />
         Formulário de Inscrição
@@ -163,7 +163,7 @@ export function RegistrationActions({
       {!isRegistered && (
         <Link
           href={formHref}
-          className="flex h-12 w-full items-center justify-center rounded-full bg-[#287630] px-5 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(33,55,30,0.16)] transition hover:bg-[#1f6428]"
+          className="flex h-12 w-full items-center justify-center rounded-full bg-primary-dark px-5 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(33,55,30,0.16)] transition hover:bg-primary-darker"
         >
           Confirmar inscrição
         </Link>
@@ -174,21 +174,21 @@ export function RegistrationActions({
           type="button"
           onClick={handleCancelRegistration}
           disabled={loading}
-          className="h-12 w-full rounded-full border border-[#f1c4c4] bg-white px-5 text-[12px] font-black text-[#b92828] transition hover:bg-[#fff3f3] disabled:opacity-60"
+          className="h-12 w-full rounded-full border border-[#f1c4c4] bg-white px-5 text-[12px] font-black text-danger-primary transition hover:bg-danger-light disabled:opacity-60"
         >
           {loading ? "Processando..." : "Cancelar inscrição"}
         </button>
       )}
 
       {registrationClosed && !isRegistered ? (
-        <div className="rounded-[18px] border border-[#f0ead7] bg-[#f7f5e8] px-5 py-4 text-[12px] font-semibold text-[#6b6341]">
+        <div className="rounded-xl border border-[#f0ead7] bg-[#f7f5e8] px-5 py-4 text-[12px] font-semibold text-[#6b6341]">
           As inscrições foram bloqueadas pois o evento já começou.
         </div>
       ) : null}
 
       {canManageAttendance ? (
-        <section className="rounded-[18px] border border-[#d8e7d4] bg-[#f4fbf3] p-5">
-          <p className="text-[11px] font-black uppercase tracking-[0.08em] text-[#287630]">
+        <section className="rounded-xl border border-[#d8e7d4] bg-[#f4fbf3] p-5">
+          <p className="text-[11px] font-black uppercase tracking-[0.08em] text-primary-dark">
             Gerenciar Presença
           </p>
           {participants.length === 0 ? (
@@ -200,7 +200,7 @@ export function RegistrationActions({
               {participants.map((participant) => (
                 <div
                   key={participant.user_id}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-[14px] border border-[#d7e7d1] bg-white px-4 py-3"
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[#d7e7d1] bg-white px-4 py-3"
                 >
                   <div>
                     <p className="text-[12px] font-black text-[#1f361f]">
@@ -216,7 +216,7 @@ export function RegistrationActions({
                         type="button"
                         onClick={() => handleMarkParticipant(participant.user_id, "attended")}
                         disabled={loading || participant.status === "attended"}
-                        className="rounded-full bg-[#287630] px-3 py-2 text-[11px] font-black text-white transition hover:bg-[#1f6428] disabled:opacity-50"
+                        className="rounded-full bg-primary-dark px-3 py-2 text-[11px] font-black text-white transition hover:bg-primary-darker disabled:opacity-50"
                       >
                         Marcar Presente
                       </button>
@@ -224,7 +224,7 @@ export function RegistrationActions({
                         type="button"
                         onClick={() => handleMarkParticipant(participant.user_id, "missed")}
                         disabled={loading || participant.status === "missed"}
-                        className="rounded-full border border-[#f1c4c4] bg-white px-3 py-2 text-[11px] font-black text-[#b92828] transition hover:bg-[#fff3f3] disabled:opacity-50"
+                        className="rounded-full border border-[#f1c4c4] bg-white px-3 py-2 text-[11px] font-black text-danger-primary transition hover:bg-danger-light disabled:opacity-50"
                       >
                         Marcar Faltou
                       </button>

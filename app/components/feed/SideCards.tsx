@@ -51,14 +51,14 @@ export function SuggestionsCard() {
 
   return (
     <>
-      <aside className="rounded-[28px] bg-white px-6 py-7 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
-        <h2 className="text-[15px] font-black tracking-[-0.02em] text-[#1e261e]">
+      <aside className="rounded-3xl bg-white px-6 py-7 shadow-soft-xs">
+        <h2 className="text-[15px] font-black tracking-[-0.02em] text-neutral-darker">
           Sugestões
         </h2>
 
         <div className="mt-6 space-y-4">
           {loadingProfiles ? (
-            <p className="text-[12px] font-semibold text-[#8a9186]">
+            <p className="text-[12px] font-semibold text-neutral-muted">
               Carregando perfis...
             </p>
           ) : profileError ? (
@@ -66,7 +66,7 @@ export function SuggestionsCard() {
               {profileError}
             </p>
           ) : visibleSuggestions.length === 0 ? (
-            <p className="text-[12px] font-semibold text-[#8a9186]">
+            <p className="text-[12px] font-semibold text-neutral-muted">
               Nenhuma sugestão encontrada.
             </p>
           ) : (
@@ -74,14 +74,14 @@ export function SuggestionsCard() {
               <Link
                 key={person.id}
                 href={`/perfil/${person.id}`}
-                className="group flex items-center gap-3 rounded-[18px] px-3 py-3 transition hover:bg-[#f4f6f1]"
+                className="group flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-neutral-lighter"
               >
                 <ProfileAvatar profile={person} />
                 <div className="min-w-0">
-                  <p className="truncate text-[12px] font-black leading-4 text-[#242b23] group-hover:text-[#1f6f2a]">
+                  <p className="truncate text-[12px] font-black leading-4 text-[#242b23] group-hover:text-primary-dark">
                     {person.name}
                   </p>
-                  <p className="truncate text-[10px] font-semibold leading-3 text-[#8a9186]">
+                  <p className="truncate text-[10px] font-semibold leading-3 text-neutral-muted">
                     {person.course || person.department || person.role}
                   </p>
                 </div>
@@ -94,7 +94,7 @@ export function SuggestionsCard() {
           type="button"
           onClick={() => setModalOpen(true)}
           disabled={profiles.length === 0}
-          className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-[#f1f5ed] px-4 py-3 text-[11px] font-black text-[#287630] transition hover:bg-[#e7f1df] disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-[#f1f5ed] px-4 py-3 text-[11px] font-black text-primary-dark transition hover:bg-[#e7f1df] disabled:cursor-not-allowed disabled:opacity-60"
         >
           Ver todas as sugestões
         </button>
@@ -109,11 +109,11 @@ export function SuggestionsCard() {
             role="dialog"
             aria-modal="true"
             onClick={(event) => event.stopPropagation()}
-            className="w-full max-w-[960px] overflow-hidden rounded-[28px] bg-white shadow-[0_24px_70px_rgba(11,35,17,0.28)]"
+            className="w-full max-w-[960px] overflow-hidden rounded-3xl bg-white shadow-[0_24px_70px_rgba(11,35,17,0.28)]"
           >
             <div className="flex flex-col gap-3 border-b border-[#e6efe4] px-6 py-5 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <h2 className="text-[18px] font-black tracking-[-0.02em] text-[#1e261e]">
+                <h2 className="text-[18px] font-black tracking-[-0.02em] text-neutral-darker">
                   Todas as sugestões
                 </h2>
                 <p className="mt-1 text-[12px] text-[#525b4f]">
@@ -123,7 +123,7 @@ export function SuggestionsCard() {
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#d9e0d4] bg-white text-[16px] font-black text-[#287630] transition hover:bg-[#f4f6f1]"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-pastel-support bg-white text-[16px] font-black text-primary-dark transition hover:bg-neutral-lighter"
                 aria-label="Fechar"
               >
                 ×
@@ -136,15 +136,15 @@ export function SuggestionsCard() {
                   <Link
                     key={person.id}
                     href={`/perfil/${person.id}`}
-                    className="group overflow-hidden rounded-[22px] border border-[#e6efe4] bg-[#fbfbf7] p-5 transition hover:border-[#c7dabd] hover:bg-white"
+                    className="group overflow-hidden rounded-[22px] border border-[#e6efe4] bg-neutral-lighter p-5 transition hover:border-[#c7dabd] hover:bg-white"
                   >
                     <div className="mb-4 flex items-center gap-3">
                       <ProfileAvatar profile={person} size="large" />
                       <div className="min-w-0">
-                        <p className="truncate text-[13px] font-black text-[#1e261e] group-hover:text-[#1f6f2a]">
+                        <p className="truncate text-[13px] font-black text-neutral-darker group-hover:text-primary-dark">
                           {person.name}
                         </p>
-                        <p className="truncate text-[11px] font-semibold text-[#8a9186]">
+                        <p className="truncate text-[11px] font-semibold text-neutral-muted">
                           {person.course || person.department || person.role}
                         </p>
                       </div>
@@ -179,16 +179,16 @@ export function SuggestionsCard() {
 
 export function NewScheduleCard() {
   return (
-    <aside className="flex min-h-[318px] flex-col items-center justify-center rounded-[28px] border border-dashed border-[#d8dbd2] bg-[#fbfbf7] px-8 text-center">
+    <aside className="flex min-h-[318px] flex-col items-center justify-center rounded-3xl border border-dashed border-[#d8dbd2] bg-neutral-lighter px-8 text-center">
       <Link
         href="/agendamentos"
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-[#3b8b42] text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)]"
+        className="flex h-12 w-12 items-center justify-center rounded-full bg-[#3b8b42] text-white shadow-soft-sm"
         aria-label="Novo agendamento"
       >
         <PlusIcon className="h-6 w-6" />
       </Link>
 
-      <h2 className="mt-8 text-[18px] font-black tracking-[-0.03em] text-[#1e261e]">
+      <h2 className="mt-8 text-[18px] font-black tracking-[-0.03em] text-neutral-darker">
         Novo Agendamento
       </h2>
       <p className="mt-3 max-w-[235px] text-[11px] font-semibold leading-5 text-[#777f72]">
@@ -197,7 +197,7 @@ export function NewScheduleCard() {
 
       <Link
         href="/agendamentos"
-        className="mt-7 inline-flex h-11 items-center justify-center rounded-full bg-[#287630] px-8 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.22)]"
+        className="mt-7 inline-flex h-11 items-center justify-center rounded-full bg-primary-dark px-8 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.22)]"
       >
         Explorar Eventos
       </Link>
@@ -217,7 +217,7 @@ function ProfileAvatar({
 
   return (
     <div
-      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#205f36] font-black text-white ring-2 ring-[#e8efdf] ${sizeClass}`}
+      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary-dark font-black text-white ring-2 ring-neutral-lighter ${sizeClass}`}
     >
       {profile.profile_photo_url ? (
         // eslint-disable-next-line @next/next/no-img-element

@@ -200,7 +200,7 @@ export default function CadastroPage() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-4 h-14 w-full rounded-full bg-[#287630] text-[13px] font-bold text-white shadow-[0_10px_18px_rgba(40,118,48,0.26)] transition-colors hover:bg-[#1f6428] disabled:opacity-50"
+            className="mt-4 h-14 w-full rounded-full bg-primary-dark text-[13px] font-bold text-white shadow-[0_10px_18px_rgba(40,118,48,0.26)] transition-colors hover:bg-primary-darker disabled:opacity-50"
           >
             {loading ? "Criando..." : "Criar minha conta"}
           </button>
@@ -210,7 +210,7 @@ export default function CadastroPage() {
           Já possui uma conta?{" "}
           <Link
             href="/login"
-            className="font-black text-[#287630]"
+            className="font-black text-primary-dark"
           >
             Entrar agora
           </Link>

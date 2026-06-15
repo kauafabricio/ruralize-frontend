@@ -98,7 +98,7 @@ function ExploreContent() {
   }, [loadUsers, searchTerm, searchUsers]);
 
   return (
-    <main className="min-h-screen bg-[#f4f6f1]">
+    <main className="min-h-screen bg-neutral-lighter">
       <FeedHeader />
 
       {toast && (
@@ -112,7 +112,7 @@ function ExploreContent() {
       <div className="mx-auto w-full max-w-[1132px] px-4 pb-16 pt-11 sm:px-6 lg:px-1">
         <section>
           <div className="mb-9">
-            <h1 className="text-[30px] font-black leading-tight tracking-[-0.03em] text-[#1e261e]">
+            <h1 className="text-[30px] font-black leading-tight tracking-[-0.03em] text-neutral-darker">
               Explorar Usuários
             </h1>
 
@@ -142,14 +142,14 @@ function ExploreContent() {
                   placeholder="Pesquisar usuários..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="h-12 w-full rounded-full border border-[#d9e0d4] bg-white pl-12 pr-4 text-sm text-[#1e261e] shadow-sm outline-none transition focus:border-[#287630] focus:ring-2 focus:ring-[#287630]/20"
+                  className="h-12 w-full rounded-full border border-pastel-support bg-white pl-12 pr-4 text-sm text-neutral-darker shadow-sm outline-none transition focus:border-primary-dark focus:ring-2 focus:ring-[#287630]/20"
                 />
               </div>
             </div>
           </div>
 
           {error ? (
-            <div className="rounded-[28px] bg-white px-6 py-8 text-center text-sm text-red-600 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+            <div className="rounded-3xl bg-white px-6 py-8 text-center text-sm text-red-600 shadow-soft-xs">
               {error}
             </div>
           ) : (

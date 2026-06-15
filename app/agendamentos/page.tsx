@@ -62,7 +62,7 @@ export default function AgendamentosPage() {
 
   return (
     <RequireAuth>
-      <main className="flex min-h-screen flex-col bg-[#fbfbf7] text-[#1e261e]">
+      <main className="flex min-h-screen flex-col bg-[#fbfbf7] text-neutral-darker">
         <FeedHeader showSearch={false} />
 
         <div className="mx-auto w-full max-w-[1220px] flex-1 px-4 pb-14 pt-10 sm:px-7 lg:pt-12">
@@ -70,7 +70,7 @@ export default function AgendamentosPage() {
             <div className="max-w-[650px]">
               <h1
                 id="appointments-title"
-                className="text-[34px] font-black leading-tight tracking-[-0.04em] text-[#1f6f2a] sm:text-[44px]"
+                className="text-[34px] font-black leading-tight tracking-[-0.04em] text-primary-dark sm:text-[44px]"
               >
                 Meus Agendamentos
               </h1>
@@ -100,8 +100,8 @@ export default function AgendamentosPage() {
                     <>
                       {/* Próximos Eventos */}
                       <div>
-                        <h2 className="text-[24px] font-black tracking-[-0.03em] text-[#1e261e] flex items-center gap-3">
-                          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e4f5df] text-[#287630]">
+                        <h2 className="text-[24px] font-black tracking-[-0.03em] text-neutral-darker flex items-center gap-3">
+                          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-success-light text-primary-dark">
                             📅
                           </span>
                           Próximos Eventos
@@ -124,7 +124,7 @@ export default function AgendamentosPage() {
                             ))}
                           </div>
                         ) : (
-                          <div className="mt-6 flex min-h-[150px] flex-col items-center justify-center rounded-[18px] border border-dashed border-[#d8dbd2] bg-[#fbfbf7]">
+                          <div className="mt-6 flex min-h-[150px] flex-col items-center justify-center rounded-xl border border-dashed border-[#d8dbd2] bg-[#fbfbf7]">
                             <p className="text-[14px] font-semibold text-[#777f72]">
                               Nenhum evento agendado no momento
                             </p>
@@ -135,8 +135,8 @@ export default function AgendamentosPage() {
                       {/* Eventos Realizados */}
                       {realizadosEvents.length > 0 && (
                         <div className="mt-14">
-                          <h2 className="text-[24px] font-black tracking-[-0.03em] text-[#1e261e] flex items-center gap-3">
-                            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e8efdf] text-[#556050]">
+                          <h2 className="text-[24px] font-black tracking-[-0.03em] text-neutral-darker flex items-center gap-3">
+                            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-lighter text-[#556050]">
                               ✅
                             </span>
                             Eventos Realizados
@@ -161,7 +161,7 @@ export default function AgendamentosPage() {
                       )}
                     </>
                   ) : (
-                    <div className="flex min-h-[150px] flex-col items-center justify-center rounded-[18px] border border-dashed border-[#d8dbd2] bg-[#fbfbf7]">
+                    <div className="flex min-h-[150px] flex-col items-center justify-center rounded-xl border border-dashed border-[#d8dbd2] bg-[#fbfbf7]">
                       <p className="text-[14px] font-semibold text-[#777f72]">
                         Nenhum agendamento confirmado
                       </p>
@@ -216,20 +216,20 @@ function AppointmentCard({
   return (
     <article className={`flex min-h-[264px] flex-col rounded-[26px] px-7 py-7 shadow-[0_20px_45px_rgba(33,55,30,0.08)] ${isRealized ? "border border-[#d8dbd2] bg-[#f7f7f3]" : "bg-white"}`}>
       <div className="flex items-start justify-between gap-4">
-        <span className={`rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-[0.08em] ${isRealized ? "bg-[#e8efdf] text-[#556050]" : "bg-[#c9f7ca] text-[#287630]"}`}>
+        <span className={`rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-[0.08em] ${isRealized ? "bg-neutral-lighter text-[#556050]" : "bg-[#c9f7ca] text-primary-dark"}`}>
           {status}
         </span>
         <CalendarIcon className="mt-1 h-[17px] w-[17px] text-[#aab2a5]" />
       </div>
 
-      <p className={`mt-7 text-[10px] font-black uppercase tracking-[0.08em] ${isRealized ? "text-[#a0a69b]" : "text-[#287630]"}`}>
+      <p className={`mt-7 text-[10px] font-black uppercase tracking-[0.08em] ${isRealized ? "text-[#a0a69b]" : "text-primary-dark"}`}>
         {date}
       </p>
-      <h2 className="mt-3 max-w-[270px] text-[21px] font-black leading-[1.12] tracking-[-0.03em] text-[#1e261e]">
+      <h2 className="mt-3 max-w-[270px] text-[21px] font-black leading-[1.12] tracking-[-0.03em] text-neutral-darker">
         {title}
       </h2>
 
-      <p className="mt-7 flex items-center gap-2 text-[11px] font-semibold text-[#65705f]">
+      <p className="mt-7 flex items-center gap-2 text-[11px] font-semibold text-neutral-muted">
         <LocationIcon className="h-[13px] w-[13px] shrink-0 text-[#343c32]" />
         <span>{location}</span>
       </p>
@@ -237,13 +237,13 @@ function AppointmentCard({
       <div className={`mt-auto border-t pt-6 ${isRealized ? "border-[#e0e4db]" : "border-[#edf0e9]"}`}>
         <Link
           href={href}
-          className={`text-[11px] font-black transition ${isRealized ? "text-[#a0a69b] hover:text-[#778372]" : "text-[#287630] hover:text-[#1f6428]"}`}
+          className={`text-[11px] font-black transition ${isRealized ? "text-[#a0a69b] hover:text-[#778372]" : "text-primary-dark hover:text-primary-darker"}`}
         >
           Ver Detalhes
         </Link>
         <Link
           href={href}
-          className={`ml-auto flex h-8 w-8 items-center justify-center rounded-full transition ${isRealized ? "text-[#d4d9d0] hover:bg-[#efefef] hover:text-[#a0a69b]" : "text-[#c5cbbf] hover:bg-[#f2f5ef] hover:text-[#287630]"}`}
+          className={`ml-auto flex h-8 w-8 items-center justify-center rounded-full transition ${isRealized ? "text-[#d4d9d0] hover:bg-[#efefef] hover:text-[#a0a69b]" : "text-[#c5cbbf] hover:bg-[#f2f5ef] hover:text-primary-dark"}`}
           aria-label={`Ver detalhes de ${title}`}
         >
           <ArrowIcon className="h-4 w-4" />
@@ -254,7 +254,7 @@ function AppointmentCard({
         <button
           type="button"
           onClick={onCancel}
-          className="mt-4 h-10 rounded-full border border-[#f1c4c4] bg-white px-5 text-[11px] font-black text-[#b92828] transition hover:bg-[#fff3f3]"
+          className="mt-4 h-10 rounded-full border border-[#f1c4c4] bg-white px-5 text-[11px] font-black text-danger-primary transition hover:bg-danger-light"
         >
           Cancelar inscrição
         </button>
@@ -266,7 +266,7 @@ function AppointmentCard({
 function NewAppointmentCard() {
   return (
     <aside className="flex min-h-[264px] w-full flex-col items-center justify-center rounded-[26px] border border-dashed border-[#d8dbd2] bg-[#fbfbf7] px-8 text-center">
-      <h2 className="text-[18px] font-black tracking-[-0.03em] text-[#1e261e]">
+      <h2 className="text-[18px] font-black tracking-[-0.03em] text-neutral-darker">
         Explorar Eventos
       </h2>
       <p className="mt-3 max-w-[245px] text-[11px] font-semibold leading-5 text-[#777f72]">
@@ -275,7 +275,7 @@ function NewAppointmentCard() {
 
       <Link
         href="/agendamentos/explorar"
-        className="mt-7 inline-flex h-11 items-center justify-center rounded-full bg-[#287630] px-8 text-center text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.22)] transition hover:bg-[#1f6428]"
+        className="mt-7 inline-flex h-11 items-center justify-center rounded-full bg-primary-dark px-8 text-center text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.22)] transition hover:bg-primary-darker"
       >
         Explorar Eventos
       </Link>
@@ -286,16 +286,16 @@ function NewAppointmentCard() {
 function AppointmentsFooter() {
   return (
     <footer className="border-t border-[#eceee8] bg-[#fbfbf7]">
-      <div className="mx-auto flex w-full max-w-[1220px] flex-col gap-4 px-4 py-8 text-[11px] font-semibold text-[#8a9186] sm:flex-row sm:items-center sm:justify-between sm:px-7">
-        <p className="font-black text-[#1e261e]">SustentaRural</p>
+      <div className="mx-auto flex w-full max-w-[1220px] flex-col gap-4 px-4 py-8 text-[11px] font-semibold text-neutral-muted sm:flex-row sm:items-center sm:justify-between sm:px-7">
+        <p className="font-black text-neutral-darker">SustentaRural</p>
         <nav className="flex flex-wrap gap-7">
-          <a href="#" className="transition hover:text-[#287630]">
+          <a href="#" className="transition hover:text-primary-dark">
             Sobre
           </a>
-          <a href="#" className="transition hover:text-[#287630]">
+          <a href="#" className="transition hover:text-primary-dark">
             Termos
           </a>
-          <a href="#" className="transition hover:text-[#287630]">
+          <a href="#" className="transition hover:text-primary-dark">
             Privacidade
           </a>
         </nav>

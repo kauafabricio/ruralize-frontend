@@ -124,12 +124,12 @@ export default function UserProfilePage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#f8f8f3] text-[#222a20]">
+      <main className="min-h-screen bg-neutral-lighter text-[#222a20]">
         <FeedHeader showSearch={false} />
         <div className="mx-auto max-w-[1132px] px-4 pb-20 pt-10 sm:px-6 lg:px-1">
           <div className="animate-pulse space-y-4">
-            <div className="h-[174px] rounded-[28px] bg-[#e0e5d8]" />
-            <div className="h-[300px] rounded-[28px] bg-[#e0e5d8]" />
+            <div className="h-[174px] rounded-3xl bg-[#e0e5d8]" />
+            <div className="h-[300px] rounded-3xl bg-[#e0e5d8]" />
           </div>
         </div>
       </main>
@@ -138,7 +138,7 @@ export default function UserProfilePage() {
 
   if (error || !profile) {
     return (
-      <main className="min-h-screen bg-[#f8f8f3] text-[#222a20]">
+      <main className="min-h-screen bg-neutral-lighter text-[#222a20]">
         <FeedHeader showSearch={false} />
         {toast && (
           <Toast
@@ -148,13 +148,13 @@ export default function UserProfilePage() {
           />
         )}
         <div className="mx-auto max-w-[1132px] px-4 pb-20 pt-10 sm:px-6 lg:px-1">
-          <div className="rounded-[28px] bg-white px-6 py-8 text-center text-sm text-red-600 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+          <div className="rounded-3xl bg-white px-6 py-8 text-center text-sm text-red-600 shadow-soft-xs">
             {error || "Perfil não encontrado"}
           </div>
           <div className="mt-4">
             <Link
               href="/explore"
-              className="rounded-full border border-[#d9e0d4] bg-white px-4 py-2 text-sm font-black text-[#1f6f2a] transition hover:bg-[#f4f6f1]"
+              className="rounded-full border border-pastel-support bg-white px-4 py-2 text-sm font-black text-primary-dark transition hover:bg-neutral-lighter"
             >
               Voltar à exploração
             </Link>
@@ -168,7 +168,7 @@ export default function UserProfilePage() {
   const profileImage = profile.profile_photo_url || undefined;
 
   return (
-    <main className="min-h-screen bg-[#f8f8f3] text-[#222a20]">
+    <main className="min-h-screen bg-neutral-lighter text-[#222a20]">
       <FeedHeader showSearch={false} />
 
       {toast && (
@@ -180,10 +180,10 @@ export default function UserProfilePage() {
       )}
 
       <div className="mx-auto max-w-[1132px] px-4 pb-20 pt-10 sm:px-6 lg:px-1">
-        <div className="mb-6 flex items-center justify-between gap-3 text-sm font-black text-[#1f6f2a]">
+        <div className="mb-6 flex items-center justify-between gap-3 text-sm font-black text-primary-dark">
           <Link
             href="/explore"
-            className="rounded-full border border-[#d9e0d4] bg-white px-4 py-2 transition hover:bg-[#f4f6f1]"
+            className="rounded-full border border-pastel-support bg-white px-4 py-2 transition hover:bg-neutral-lighter"
           >
             Voltar à exploração
           </Link>
@@ -195,7 +195,7 @@ export default function UserProfilePage() {
                 </span>
                 <Link
                   href="/perfil"
-                  className="rounded-full bg-[#287630] px-4 py-2 text-white transition hover:bg-[#1f6428]"
+                  className="rounded-full bg-primary-dark px-4 py-2 text-white transition hover:bg-primary-darker"
                 >
                   Editar
                 </Link>
@@ -216,7 +216,7 @@ export default function UserProfilePage() {
           </div>
         </div>
 
-        <section className="overflow-hidden rounded-[28px] bg-white shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+        <section className="overflow-hidden rounded-3xl bg-white shadow-soft-xs">
           <div
             className="h-[174px] bg-[#d7e4c6] bg-cover bg-center"
             role="img"
@@ -237,10 +237,10 @@ export default function UserProfilePage() {
 
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div className="max-w-[620px]">
-                <h1 className="text-[30px] font-black leading-tight tracking-[-0.03em] text-[#1e261e]">
+                <h1 className="text-[30px] font-black leading-tight tracking-[-0.03em] text-neutral-darker">
                   {profile.name}
                 </h1>
-                <p className="mt-1 text-[13px] font-black text-[#287630]">
+                <p className="mt-1 text-[13px] font-black text-primary-dark">
                   {translateRole(profile.role)}
                 </p>
                 <p className="mt-6 max-w-[590px] text-[12px] font-medium leading-6 text-[#545d50]">
@@ -267,13 +267,13 @@ export default function UserProfilePage() {
           <section aria-labelledby="profile-activities-title">
             <h2
               id="profile-activities-title"
-              className="text-[15px] font-black tracking-[-0.02em] text-[#1e261e]"
+              className="text-[15px] font-black tracking-[-0.02em] text-neutral-darker"
             >
               Atividades recentes
             </h2>
 
             {posts.length === 0 ? (
-              <div className="mt-5 rounded-[22px] bg-white px-6 py-8 text-center shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+              <div className="mt-5 rounded-[22px] bg-white px-6 py-8 text-center shadow-soft-xs">
                 <p className="text-[13px] font-medium text-[#545d50]">
                   Este usuário ainda não tem postagens.
                 </p>
@@ -305,7 +305,7 @@ function ProfileAvatar({
 }) {
   return (
     <div className="absolute left-6 top-[-58px] h-[116px] w-[116px] rounded-full bg-white p-[5px] shadow-[0_14px_28px_rgba(33,55,30,0.18)] sm:left-8 lg:left-9">
-      <div className="relative h-full w-full overflow-hidden rounded-full bg-[#287630]">
+      <div className="relative h-full w-full overflow-hidden rounded-full bg-primary-dark">
         <span className="absolute inset-0 flex items-center justify-center text-[26px] font-black text-white">
           {readInitials(name)}
         </span>
@@ -337,9 +337,9 @@ function AcademicInfoCard({
   course?: string | null;
 }) {
   return (
-    <section className="rounded-[22px] bg-white px-6 py-7 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
-      <div className="flex items-center gap-2 text-[#1e261e]">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#e9f4e4] text-[#287630]">
+    <section className="rounded-[22px] bg-white px-6 py-7 shadow-soft-xs">
+      <div className="flex items-center gap-2 text-neutral-darker">
+        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#e9f4e4] text-primary-dark">
           ✓
         </span>
         <h2 className="text-[15px] font-black tracking-[-0.02em]">
@@ -391,7 +391,7 @@ function AcademicInfoCard({
             Localização
           </dt>
           <dd className="mt-2 flex items-center gap-2 text-[12px] font-semibold text-[#333b31]">
-            <LocationIcon className="h-[14px] w-[14px] text-[#287630]" />
+            <LocationIcon className="h-[14px] w-[14px] text-primary-dark" />
             {location}
           </dd>
         </div>

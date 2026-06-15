@@ -7,10 +7,10 @@ export function UserCard({ user }: { user: UserProfileResponse }) {
   return (
     <Link
       href={`/perfil/${user.id}`}
-      className="group overflow-hidden rounded-[22px] border border-[#e6efe4] bg-[#fbfbf7] p-5 transition hover:border-[#c7dabd] hover:bg-white"
+      className="group overflow-hidden rounded-[22px] border border-[#e6efe4] bg-neutral-lighter p-5 transition hover:border-[#c7dabd] hover:bg-white"
     >
       <div className="mb-4 flex items-center gap-3">
-        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-[#205f36] text-[12px] font-black text-white flex items-center justify-center">
+        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-primary-dark text-[12px] font-black text-white flex items-center justify-center">
           {user.profile_photo_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -23,10 +23,10 @@ export function UserCard({ user }: { user: UserProfileResponse }) {
           )}
         </div>
         <div className="min-w-0">
-          <p className="truncate text-[13px] font-black text-[#1e261e] group-hover:text-[#1f6f2a]">
+          <p className="truncate text-[13px] font-black text-neutral-darker group-hover:text-primary-dark">
             {user.name}
           </p>
-          <p className="truncate text-[11px] font-semibold text-[#8a9186]">
+          <p className="truncate text-[11px] font-semibold text-neutral-muted">
             {user.role}
           </p>
         </div>
@@ -34,7 +34,7 @@ export function UserCard({ user }: { user: UserProfileResponse }) {
 
       {user.department && (
         <div className="mb-4">
-          <p className="text-[11px] text-[#687266]">
+          <p className="text-[11px] text-neutral-muted">
             <span className="font-black">Depto:</span> {user.department}
           </p>
         </div>

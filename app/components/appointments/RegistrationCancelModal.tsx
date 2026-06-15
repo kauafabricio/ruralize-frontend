@@ -12,7 +12,7 @@ export function RegistrationCancelModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl">
-        <h2 className="text-xl font-black text-[#1e261e]">
+        <h2 className="text-xl font-black text-neutral-darker">
           Cancelar inscrição?
         </h2>
 

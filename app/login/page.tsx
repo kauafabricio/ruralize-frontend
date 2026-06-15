@@ -61,11 +61,11 @@ export default function LoginPage() {
 
       <AuthCard className="max-w-[450px]">
         <div className="mb-10">
-          <h1 className="text-[28px] font-black leading-tight tracking-[-0.03em] text-[#1f6f2a]">
+          <h1 className="text-[28px] font-black leading-tight tracking-[-0.03em] text-primary-dark">
             Bem-vindo
           </h1>
 
-          <p className="mt-3 max-w-[265px] text-[12px] font-medium leading-5 text-[#8a9186]">
+          <p className="mt-3 max-w-[265px] text-[12px] font-medium leading-5 text-neutral-muted">
             Acesse sua conta para gerenciar suas atividades acadêmicas
             sustentáveis.
           </p>
@@ -85,7 +85,7 @@ export default function LoginPage() {
 
             <Link
               href="/login"
-              className="text-[10px] font-black normal-case tracking-normal text-[#287630]"
+              className="text-[10px] font-black normal-case tracking-normal text-primary-dark"
             >
               Esqueci senha
             </Link>
@@ -116,7 +116,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="h-14 w-full rounded-full bg-[#287630] text-[13px] font-bold text-white shadow-[0_10px_18px_rgba(40,118,48,0.26)] transition-colors hover:bg-[#1f6428] disabled:opacity-50"
+            className="h-14 w-full rounded-full bg-primary-dark text-[13px] font-bold text-white shadow-[0_10px_18px_rgba(40,118,48,0.26)] transition-colors hover:bg-primary-darker disabled:opacity-50"
           >
             {loading ? "Entrando..." : "Entrar"}
           </button>
@@ -124,7 +124,7 @@ export default function LoginPage() {
 
         <div className="mt-8 border-t border-[#ebebe8] pt-8 text-center text-[12px] font-medium text-[#8c9388]">
           Ainda não possui acesso?{" "}
-          <Link href="/cadastro/perfil" className="font-black text-[#287630]">
+          <Link href="/cadastro/perfil" className="font-black text-primary-dark">
             Criar conta
           </Link>
         </div>

@@ -25,7 +25,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
 
   if (status === "loading" || !isAuthenticated) {
     return (
-      <main className="min-h-screen bg-[#f8f8f3]" aria-label="Carregando sessão" />
+      <main className="min-h-screen bg-neutral-lighter" aria-label="Carregando sessão" />
     );
   }
 

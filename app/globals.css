@@ -3,6 +3,22 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* RURALIZE Design Tokens */
+  --color-primary-dark: #2c4a24;
+  --color-primary-darker: #1a3a1b;
+  --color-secondary-light: #f5eee0;
+  --color-pastel-support: #b0cdba;
+  --color-neutral-muted: #a1ba9b;
+  --color-base-clean: #ffffff;
+  --color-neutral-light: #e8ede5;
+  --color-neutral-lighter: #f5f7f3;
+  --color-supporting-muted-text: #7a8577;
+  --color-supporting-border: #d4dcd2;
+  --color-supporting-divider: #e0e5db;
+  --color-danger-primary: #c74141;
+  --color-danger-light: #f8e8e8;
+  --color-danger-hover: #b33434;
 }
 
 @theme inline {

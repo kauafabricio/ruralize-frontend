@@ -100,7 +100,7 @@ export function CourseSelect({
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 right-0 top-[calc(100%+10px)] z-30 rounded-[18px] bg-white shadow-[0_24px_50px_rgba(33,55,30,0.18)]">
+        <div className="absolute left-0 right-0 top-[calc(100%+10px)] z-30 rounded-xl bg-white shadow-[0_24px_50px_rgba(33,55,30,0.18)]">
           <div className="border-b p-3">
             <input
               ref={searchInputRef}

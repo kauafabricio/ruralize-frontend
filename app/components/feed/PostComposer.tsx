@@ -216,7 +216,7 @@ export function PostComposer({
   const canPromoteEvents = isTeacherUser(user);
 
   return (
-    <section className="rounded-[28px] bg-white px-6 py-6 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+    <section className="rounded-3xl bg-white px-6 py-6 shadow-soft-xs">
       {toast && (
         <Toast
           message={toast.message}
@@ -238,7 +238,7 @@ export function PostComposer({
       )}
 
       <div className="flex items-start gap-4">
-        <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-[#205f36] ring-4 ring-[#edf3e7]">
+        <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-primary-dark ring-4 ring-[#edf3e7]">
           <span className="absolute left-[13px] top-[8px] h-[11px] w-[15px] rounded-full bg-[#e7b37f]" />
           <span className="absolute left-[10px] top-[15px] h-[10px] w-[22px] rounded-t-full bg-[#263e2b]" />
           <span className="absolute bottom-0 left-[8px] h-[20px] w-[27px] rounded-t-[16px] bg-[#dfead7]" />
@@ -255,18 +255,18 @@ export function PostComposer({
             placeholder="Compartilhe um avanco sustentavel ou projeto academico..."
             rows={1}
             disabled={!isAuthenticated && isReady}
-            className="min-h-11 w-full resize-none rounded-full bg-[#f4f5f0] px-6 py-[14px] text-[13px] font-medium leading-4 text-[#30372f] outline-none placeholder:text-[#a4aaa0] disabled:opacity-50"
+            className="min-h-11 w-full resize-none rounded-full bg-neutral-light px-6 py-[14px] text-[13px] font-medium leading-4 text-[#30372f] outline-none placeholder:text-neutral-muted disabled:opacity-50"
           />
 
           <div className="mt-4 grid gap-3 sm:grid-cols-[160px_1fr]">
-            <label className="block text-[11px] font-black uppercase tracking-[0.08em] text-[#687266]">
+            <label className="block text-[11px] font-black uppercase tracking-[0.08em] text-neutral-muted">
               Acao Sustentavel
               <div className="mt-2 flex gap-2">
                 <select
                   value={selectedActionId}
                   onChange={(event) => setSelectedActionId(event.target.value)}
                   disabled={!isAuthenticated && isReady}
-                  className="flex-1 h-10 rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none focus:border-[#9ac89c] disabled:opacity-50"
+                  className="flex-1 h-10 rounded-full border border-pastel-support bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none focus:border-pastel-support disabled:opacity-50"
                 >
                   <option value="">🌍 Sem ação</option>
                   {getAllActions().map((action) => (
@@ -279,14 +279,14 @@ export function PostComposer({
                   type="button"
                   onClick={() => setShowNewActionModal(true)}
                   disabled={!isAuthenticated && isReady}
-                  className="h-10 px-4 rounded-full bg-[#e7f3e8] text-[#287630] font-black text-[12px] hover:bg-[#d4ebda] transition disabled:opacity-50"
+                  className="h-10 px-4 rounded-full bg-secondary-light text-primary-dark font-black text-[12px] hover:bg-[#d4ebda] transition disabled:opacity-50"
                   title="Criar nova acao"
                 >
                   ➕
                 </button>
               </div>
             </label>
-            <label className="block text-[11px] font-black uppercase tracking-[0.08em] text-[#687266]">
+            <label className="block text-[11px] font-black uppercase tracking-[0.08em] text-neutral-muted">
               Local
               <input
                 type="text"
@@ -294,13 +294,13 @@ export function PostComposer({
                 onChange={(event) => setLocation(event.target.value)}
                 placeholder="Opcional"
                 disabled={!isAuthenticated && isReady}
-                className="mt-2 h-10 w-full rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none placeholder:text-[#a4aaa0] focus:border-[#9ac89c] disabled:opacity-50"
+                className="mt-2 h-10 w-full rounded-full border border-pastel-support bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-[#30372f] outline-none placeholder:text-neutral-muted focus:border-pastel-support disabled:opacity-50"
               />
             </label>
           </div>
 
           {selectedImage && (
-            <div className="mt-4 overflow-hidden rounded-[18px] border border-[#e7e9e1] bg-[#f8f8f3]">
+            <div className="mt-4 overflow-hidden rounded-xl border border-[#e7e9e1] bg-neutral-lighter">
               <div className="relative h-[210px] w-full">
                 {/* User-selected data URLs cannot be optimized by next/image. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -313,7 +313,7 @@ export function PostComposer({
                   type="button"
                   onClick={clearImage}
                   disabled={!isAuthenticated && isReady}
-                  className="absolute right-3 top-3 rounded-full bg-white px-3 py-2 text-[11px] font-black text-[#287630] shadow-[0_8px_18px_rgba(33,55,30,0.16)] disabled:opacity-50"
+                  className="absolute right-3 top-3 rounded-full bg-white px-3 py-2 text-[11px] font-black text-primary-dark shadow-[0_8px_18px_rgba(33,55,30,0.16)] disabled:opacity-50"
                 >
                   Remover
                 </button>
@@ -325,20 +325,20 @@ export function PostComposer({
             <div className="mt-4 rounded-[16px] border border-[#cfe7c7] bg-[#f4fbf1] px-4 py-3">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[#287630]">
+                  <p className="text-[10px] font-black uppercase tracking-[0.1em] text-primary-dark">
                     Evento selecionado
                   </p>
-                  <p className="mt-1 text-[13px] font-black text-[#1e261e]">
+                  <p className="mt-1 text-[13px] font-black text-neutral-darker">
                     {selectedEvent.title}
                   </p>
-                  <p className="text-[11px] font-semibold text-[#65705f]">
+                  <p className="text-[11px] font-semibold text-neutral-muted">
                     {selectedEvent.compactDate}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSelectedEvent(null)}
-                  className="rounded-full px-3 py-1.5 text-[11px] font-black text-[#687266] transition hover:bg-white"
+                  className="rounded-full px-3 py-1.5 text-[11px] font-black text-neutral-muted transition hover:bg-white"
                 >
                   Remover
                 </button>
@@ -362,10 +362,10 @@ export function PostComposer({
                 className={`inline-flex items-center gap-2 text-[12px] font-semibold ${
                   isAuthenticated || !isReady
                     ? "cursor-pointer text-[#26372a]"
-                    : "cursor-not-allowed text-[#a4aaa0]"
+                    : "cursor-not-allowed text-neutral-muted"
                 }`}
               >
-                <ImageIcon className="h-[17px] w-[17px] text-[#287630]" />
+                <ImageIcon className="h-[17px] w-[17px] text-primary-dark" />
                 Foto
               </label>
               {canPromoteEvents ? (
@@ -373,9 +373,9 @@ export function PostComposer({
                   type="button"
                   onClick={openPromoteDialog}
                   disabled={!isAuthenticated && isReady}
-                  className="inline-flex items-center gap-2 text-[12px] font-semibold text-[#26372a] disabled:text-[#a4aaa0]"
+                  className="inline-flex items-center gap-2 text-[12px] font-semibold text-[#26372a] disabled:text-neutral-muted"
                 >
-                  <CalendarIcon className="h-[17px] w-[17px] text-[#287630]" />
+                  <CalendarIcon className="h-[17px] w-[17px] text-primary-dark" />
                   Promover evento
                 </button>
               ) : null}
@@ -385,7 +385,7 @@ export function PostComposer({
               type="button"
               onClick={handlePublish}
               disabled={isDisabled}
-              className="h-9 min-w-[132px] rounded-full bg-[#287630] px-7 text-[11px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)] transition-opacity disabled:opacity-50"
+              className="h-9 min-w-[132px] rounded-full bg-primary-dark px-7 text-[11px] font-black text-white shadow-soft-sm transition-opacity disabled:opacity-50"
             >
               {loading ? "Publicando..." : "Publicar"}
             </button>
@@ -413,21 +413,21 @@ function PromoteEventDialog({
   onClose: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#1f281f]/35 px-4 py-8 backdrop-blur-[4px]">
-      <section className="mx-auto w-full max-w-[620px] rounded-[18px] bg-white px-6 py-7 shadow-[0_24px_50px_rgba(33,55,30,0.22)]">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-neutral-darker/35 px-4 py-8 backdrop-blur-[4px]">
+      <section className="mx-auto w-full max-w-[620px] rounded-xl bg-white px-6 py-7 shadow-soft-lg">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#287630]">
+            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-primary-dark">
               Promover evento
             </p>
-            <h2 className="mt-2 text-[24px] font-black tracking-[-0.04em] text-[#1f6f2a]">
+            <h2 className="mt-2 text-[24px] font-black tracking-[-0.04em] text-primary-dark">
               Eventos criados por voce
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full px-3 py-2 text-[11px] font-black text-[#687266] transition hover:bg-[#f4f5f0]"
+            className="rounded-full px-3 py-2 text-[11px] font-black text-neutral-muted transition hover:bg-neutral-light"
           >
             Fechar
           </button>
@@ -441,17 +441,17 @@ function PromoteEventDialog({
                 onClick={() => onSelect(event)}
                 className="w-full rounded-[16px] border border-[#e6e8e0] px-4 py-4 text-left transition hover:border-[#9ac89c] hover:bg-[#f7fbf4]"
               >
-                <span className="block text-[13px] font-black text-[#1e261e]">
+                <span className="block text-[13px] font-black text-neutral-darker">
                   {event.title}
                 </span>
-                <span className="mt-1 block text-[11px] font-semibold text-[#65705f]">
+                <span className="mt-1 block text-[11px] font-semibold text-neutral-muted">
                   {event.compactDate} - {event.location}
                 </span>
               </button>
             ))}
           </div>
         ) : (
-          <p className="mt-6 rounded-[16px] border border-dashed border-[#d8dbd2] px-5 py-8 text-center text-[12px] font-semibold text-[#65705f]">
+          <p className="mt-6 rounded-[16px] border border-dashed border-[#d8dbd2] px-5 py-8 text-center text-[12px] font-semibold text-neutral-muted">
             Voce ainda nao criou eventos para promover.
           </p>
         )}
@@ -472,20 +472,20 @@ function NewActionModal({
   onCancel: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1f281f]/35 px-4 py-8 backdrop-blur-[4px]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-darker/35 px-4 py-8 backdrop-blur-[4px]">
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="new-action-title"
-        className="w-full max-w-[380px] rounded-[24px] bg-white px-7 pb-7 pt-8 shadow-[0_24px_50px_rgba(33,55,30,0.24)]"
+        className="w-full max-w-[380px] rounded-2xl bg-white px-7 pb-7 pt-8 shadow-soft-lg"
       >
         <h2
           id="new-action-title"
-          className="text-[21px] font-black tracking-[-0.04em] text-[#1e261e]"
+          className="text-[21px] font-black tracking-[-0.04em] text-neutral-darker"
         >
           Nova Acao
         </h2>
-        <p className="mt-3 text-[12px] font-semibold text-[#65705f]">
+        <p className="mt-3 text-[12px] font-semibold text-neutral-muted">
           Digite o nome da acao sustentavel que voce deseja criar
         </p>
 
@@ -500,14 +500,14 @@ function NewActionModal({
           }}
           placeholder="Ex: Limpeza de praia"
           autoFocus
-          className="mt-5 w-full h-10 rounded-full border border-[#e0e5d8] bg-white px-4 text-[12px] font-semibold text-[#30372f] outline-none focus:border-[#9ac89c]"
+          className="mt-5 w-full h-10 rounded-full border border-pastel-support bg-white px-4 text-[12px] font-semibold text-[#30372f] outline-none focus:border-pastel-support"
         />
 
         <div className="mt-7 grid gap-3 sm:grid-cols-2">
           <button
             type="button"
             onClick={onCancel}
-            className="h-11 rounded-full bg-[#eef0ea] px-5 text-[11px] font-black text-[#4f5b4e] transition hover:bg-[#e3e7dd]"
+            className="h-11 rounded-full bg-neutral-lighter px-5 text-[11px] font-black text-neutral-muted transition hover:bg-neutral-light"
           >
             Cancelar
           </button>
@@ -515,7 +515,7 @@ function NewActionModal({
             type="button"
             onClick={onConfirm}
             disabled={!newActionName.trim()}
-            className="h-11 rounded-full bg-[#287630] px-5 text-[11px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)] transition hover:bg-[#1f6428] disabled:opacity-50"
+            className="h-11 rounded-full bg-primary-dark px-5 text-[11px] font-black text-white shadow-soft-sm transition hover:bg-primary-darker disabled:opacity-50"
           >
             Criar
           </button>

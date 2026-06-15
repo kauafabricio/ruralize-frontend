@@ -90,11 +90,11 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
   }
 
   return (
-    <header className="h-[72px] border-b border-[#eceee8] bg-[#fbfbf7]">
+    <header className="h-[72px] border-b border-neutral-light bg-neutral-lighter">
       <div className="mx-auto flex h-full max-w-[1220px] items-center justify-between px-7">
         <Link
           href="/feed"
-          className="text-[16px] font-black leading-none tracking-[-0.03em] text-[#1f6f2a]"
+          className="text-[16px] font-black leading-none tracking-[-0.03em] text-primary-dark"
           aria-label="Ruralize"
         >
           Ruralize
@@ -102,10 +102,10 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
 
         <nav
           ref={navRef}
-          className="relative ml-[110px] flex h-full items-center gap-10 text-[11px] font-semibold text-[#222a20]"
+          className="relative ml-[110px] flex h-full items-center gap-10 text-[11px] font-semibold text-primary-dark/70"
         >
           <span
-            className="absolute top-[45px] h-[3px] w-8 rounded-full bg-[#287630] transition-[left,opacity] duration-300 ease-out"
+            className="absolute top-[45px] h-[3px] w-8 rounded-full bg-primary-dark transition-[left,opacity] duration-300 ease-out"
             style={{
               left: indicatorStyle.left,
               opacity: indicatorStyle.opacity,
@@ -116,7 +116,7 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
           {navItems.map((item) => {
             const active = item.label === activeSection;
             const itemClassName = `relative flex h-full items-center whitespace-nowrap px-1 pt-1 transition-colors duration-300 ${
-              active ? "font-black text-[#1f6f2a]" : "hover:text-[#1f6f2a]"
+              active ? "font-black text-primary-dark" : "hover:text-primary-dark"
             }`;
 
             return (
@@ -136,10 +136,10 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
           })}
         </nav>
 
-        <div className="flex items-center gap-4 text-[#101510]">
+        <div className="flex items-center gap-4 text-primary-dark">
           {showSearch ? (
-            <div className="flex h-8 w-[116px] items-center gap-1.5 rounded-full border border-[#e4e8df] bg-[#f6f7f1] px-2 text-[#30372f] shadow-[0_1px_0_rgba(33,55,30,0.04)]">
-              <SearchIcon className="h-[14px] w-[14px] shrink-0 text-[#7a877b]" />
+            <div className="flex h-8 w-[116px] items-center gap-1.5 rounded-full border border-pastel-support bg-neutral-lighter px-2 text-primary-dark shadow-soft-xs">
+              <SearchIcon className="h-[14px] w-[14px] shrink-0 text-neutral-muted" />
               <label htmlFor="feed-search" className="sr-only">
                 Buscar no feed
               </label>
@@ -149,14 +149,14 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
                 value={searchTerm}
                 onChange={(event) => onSearchChange(event.target.value)}
                 placeholder="Buscar"
-                className="w-full min-w-0 bg-transparent text-[12px] font-medium leading-5 outline-none placeholder:text-[#9aa59a]"
+                className="w-full min-w-0 bg-transparent text-[12px] font-medium leading-5 outline-none placeholder:text-neutral-muted"
               />
             </div>
           ) : null}
 
           <button
             type="button"
-            className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-[#f0f2ea]"
+            className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-neutral-light"
             aria-label="Notificações"
           >
             <BellIcon className="h-[18px] w-[18px]" />
@@ -166,7 +166,7 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
             <button
               type="button"
               onClick={() => setMenuOpen((current) => !current)}
-              className="relative h-10 w-10 overflow-hidden rounded-full bg-[#225f35] ring-2 ring-[#e8efdf]"
+              className="relative h-10 w-10 overflow-hidden rounded-full bg-primary-dark ring-2 ring-neutral-light"
               aria-label="Abrir menu de perfil"
               aria-expanded={menuOpen}
             >
@@ -179,9 +179,9 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
               ) : (
                 <>
                   <span className="absolute inset-x-[9px] top-[7px] h-[10px] rounded-full bg-[#f0b07b]" />
-                  <span className="absolute left-[11px] top-[14px] h-[8px] w-[18px] rounded-t-full bg-[#273f2a]" />
-                  <span className="absolute bottom-0 left-[7px] h-[19px] w-[26px] rounded-t-[16px] bg-[#e2ead8]" />
-                  <span className="absolute bottom-[2px] left-[13px] h-[11px] w-[14px] rounded-t-full bg-[#29713b]" />
+                  <span className="absolute left-[11px] top-[14px] h-[8px] w-[18px] rounded-t-full bg-primary-dark/20" />
+                  <span className="absolute bottom-0 left-[7px] h-[19px] w-[26px] rounded-t-[16px] bg-secondary-light" />
+                  <span className="absolute bottom-[2px] left-[13px] h-[11px] w-[14px] rounded-t-full bg-primary-dark" />
                 </>
               )}
             </button>
@@ -189,7 +189,7 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
             {menuOpen ? (
               <div
                 ref={menuRef}
-                className="absolute right-0 top-[calc(100%_+_10px)] z-20 w-[180px] rounded-[18px] border border-[#e4ebdf] bg-white py-2 shadow-[0_12px_30px_rgba(33,55,30,0.12)]"
+                className="absolute right-0 top-[calc(100%_+_10px)] z-20 w-[180px] rounded-2xl border border-neutral-light bg-white py-2 shadow-soft"
               >
                 <button
                   type="button"
@@ -197,7 +197,7 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
                     setMenuOpen(false);
                     router.push("/perfil");
                   }}
-                  className="w-full px-4 py-3 text-left text-[13px] font-semibold text-[#1f6f2a] transition-colors hover:bg-[#f4f6f1]"
+                  className="w-full px-4 py-3 text-left text-[13px] font-semibold text-primary-dark transition-colors hover:bg-neutral-lighter"
                 >
                   Meu perfil
                 </button>
@@ -207,7 +207,7 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
                     setMenuOpen(false);
                     handleLogout();
                   }}
-                  className="w-full px-4 py-3 text-left text-[13px] font-semibold text-[#8a9186] transition-colors hover:bg-[#f4f6f1]"
+                  className="w-full px-4 py-3 text-left text-[13px] font-semibold text-neutral-muted transition-colors hover:bg-neutral-lighter"
                 >
                   Sair da conta
                 </button>

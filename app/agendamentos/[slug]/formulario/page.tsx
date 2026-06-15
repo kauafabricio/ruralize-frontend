@@ -37,7 +37,7 @@ export default function AppointmentFormPage() {
   if (loading) {
     return (
       <RequireAuth>
-        <main className="min-h-screen bg-[#fbfbf7] text-[#1e261e]">
+        <main className="min-h-screen bg-[#fbfbf7] text-neutral-darker">
           <FeedHeader showSearch={false} />
           <div className="mx-auto w-full max-w-[1220px] px-4 pb-16 pt-10 sm:px-7">
             <div className="animate-pulse space-y-4">
@@ -53,7 +53,7 @@ export default function AppointmentFormPage() {
   if (error || !event) {
     return (
       <RequireAuth>
-        <main className="min-h-screen bg-[#fbfbf7] text-[#1e261e]">
+        <main className="min-h-screen bg-[#fbfbf7] text-neutral-darker">
           <FeedHeader showSearch={false} />
           <div className="mx-auto w-full max-w-[1220px] px-4 pb-16 pt-10 sm:px-7">
             <div className="rounded-[10px] bg-red-50 p-4 text-red-700">
@@ -61,7 +61,7 @@ export default function AppointmentFormPage() {
             </div>
             <button
               onClick={() => router.back()}
-              className="mt-4 rounded-full bg-[#287630] px-6 py-2 text-white font-black"
+              className="mt-4 rounded-full bg-primary-dark px-6 py-2 text-white font-black"
             >
               Voltar
             </button>
@@ -73,7 +73,7 @@ export default function AppointmentFormPage() {
 
   return (
     <RequireAuth>
-      <main className="min-h-screen bg-[#fbfbf7] text-[#1e261e]">
+      <main className="min-h-screen bg-[#fbfbf7] text-neutral-darker">
         <FeedHeader showSearch={false} />
         <div className="mx-auto w-full max-w-[1220px] px-4 pb-16 pt-10 sm:px-7 lg:pt-12">
           <EventRegistrationForm eventId={eventId} event={event} />

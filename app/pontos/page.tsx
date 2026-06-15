@@ -269,16 +269,16 @@ export default function PointsPage() {
 
   return (
     <RequireAuth>
-      <main className="min-h-screen bg-[#f8f8f3] text-[#1f281f]">
+      <main className="min-h-screen bg-neutral-lighter text-neutral-darker">
         <FeedHeader showSearch={false} />
 
         <div className="mx-auto w-full max-w-[1220px] px-4 pb-10 pt-8 sm:px-7 lg:pt-11">
           <section className="grid gap-7 lg:grid-cols-[1fr_372px]">
-            <div className="relative flex min-h-[210px] flex-col overflow-hidden rounded-[28px] bg-[#fbfbf7] px-6 py-8 shadow-[0_1px_0_rgba(33,55,30,0.05)] sm:flex-row sm:items-center sm:px-10">
+            <div className="relative flex min-h-[210px] flex-col overflow-hidden rounded-3xl bg-[#fbfbf7] px-6 py-8 shadow-[0_1px_0_rgba(33,55,30,0.05)] sm:flex-row sm:items-center sm:px-10">
               <LeafMark className="absolute -bottom-6 right-2 h-32 w-32 text-[#dfe8da]" />
 
               <div className="relative z-10 flex h-28 w-28 shrink-0 flex-col items-center justify-center rounded-full bg-white text-center shadow-[0_12px_30px_rgba(33,55,30,0.08)]">
-                <strong className="text-[31px] font-black tracking-[-0.04em] text-[#287630]">
+                <strong className="text-[31px] font-black tracking-[-0.04em] text-primary-dark">
                   {pointsBalance}
                 </strong>
                 <span className="mt-1 text-[9px] font-black uppercase tracking-[0.12em] text-[#6b7568]">
@@ -287,8 +287,8 @@ export default function PointsPage() {
               </div>
 
               <div className="relative z-10 mt-7 max-w-[430px] sm:ml-9 sm:mt-0">
-                <h1 className="text-[26px] font-black tracking-[-0.04em] text-[#1e261e] sm:text-[31px]">
-                  Seu Impacto <span className="text-[#287630]">Floresce.</span>
+                <h1 className="text-[26px] font-black tracking-[-0.04em] text-neutral-darker sm:text-[31px]">
+                  Seu Impacto <span className="text-primary-dark">Floresce.</span>
                 </h1>
                 <p className="mt-4 text-[13px] font-medium leading-6 text-[#536050]">
                   Você está indo bem, continue contribuindo.
@@ -296,7 +296,7 @@ export default function PointsPage() {
               </div>
             </div>
 
-            <aside className="flex min-h-[210px] flex-col justify-between rounded-[28px] bg-[#347a37] px-7 py-8 text-white shadow-[0_16px_34px_rgba(40,118,48,0.2)]">
+            <aside className="flex min-h-[210px] flex-col justify-between rounded-3xl bg-[#347a37] px-7 py-8 text-white shadow-[0_16px_34px_rgba(40,118,48,0.2)]">
               <div>
                 <h2 className="text-[20px] font-black tracking-[-0.03em]">
                   Ganhe mais pontos hoje
@@ -317,17 +317,17 @@ export default function PointsPage() {
           <section className="mt-14">
             <div className="flex items-end justify-between gap-5">
               <div>
-                <h2 className="text-[23px] font-black tracking-[-0.04em] text-[#1e261e]">
+                <h2 className="text-[23px] font-black tracking-[-0.04em] text-neutral-darker">
                   Recompensas
                 </h2>
-                <p className="mt-2 text-[12px] font-semibold text-[#687266]">
+                <p className="mt-2 text-[12px] font-semibold text-neutral-muted">
                   Troque seus pontos por mimos sustentáveis
                 </p>
               </div>
 
               <Link
                 href="/pontos/resgates"
-                className="inline-flex shrink-0 items-center gap-2 text-[12px] font-black text-[#287630] transition hover:text-[#1d5c25]"
+                className="inline-flex shrink-0 items-center gap-2 text-[12px] font-black text-primary-dark transition hover:text-[#1d5c25]"
               >
                 Meus Resgates
                 <ArrowIcon className="h-4 w-4" />
@@ -336,11 +336,11 @@ export default function PointsPage() {
 
             {loading ? (
               <div className="mt-8 flex items-center justify-center rounded-[22px] bg-white py-12">
-                <p className="text-[13px] font-semibold text-[#687266]">Carregando recompensas...</p>
+                <p className="text-[13px] font-semibold text-neutral-muted">Carregando recompensas...</p>
               </div>
             ) : rewards.length === 0 ? (
               <div className="mt-8 flex items-center justify-center rounded-[22px] bg-white py-12">
-                <p className="text-[13px] font-semibold text-[#687266]">Nenhuma recompensa disponível no momento.</p>
+                <p className="text-[13px] font-semibold text-neutral-muted">Nenhuma recompensa disponível no momento.</p>
               </div>
             ) : (
               <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -358,17 +358,17 @@ export default function PointsPage() {
                           loading="lazy"
                         />
                       ) : (
-                        <div className="flex h-full items-center justify-center text-[12px] font-semibold text-[#687266]">
+                        <div className="flex h-full items-center justify-center text-[12px] font-semibold text-neutral-muted">
                           Imagem indisponível
                         </div>
                       )}
-                      <span className="absolute right-4 top-4 rounded-full bg-[#287630] px-3 py-1.5 text-[10px] font-black text-white shadow-[0_8px_16px_rgba(23,73,27,0.22)]">
+                      <span className="absolute right-4 top-4 rounded-full bg-primary-dark px-3 py-1.5 text-[10px] font-black text-white shadow-[0_8px_16px_rgba(23,73,27,0.22)]">
                         {reward.points_required} pts
                       </span>
                     </div>
 
                     <div className="px-5 pb-6 pt-5">
-                      <h3 className="text-[15px] font-black leading-5 tracking-[-0.02em] text-[#1e261e]">
+                      <h3 className="text-[15px] font-black leading-5 tracking-[-0.02em] text-neutral-darker">
                         {reward.name}
                       </h3>
                       <p className="mt-2 min-h-[38px] text-[11px] font-semibold leading-5 text-[#647061]">
@@ -378,7 +378,7 @@ export default function PointsPage() {
                         type="button"
                         onClick={() => openRewardModal(reward)}
                         disabled={pointsBalance < reward.points_required}
-                        className="mt-5 h-10 w-full rounded-full bg-[#9ff0a1] text-[11px] font-black text-[#287630] transition hover:bg-[#8ee892] disabled:cursor-not-allowed disabled:bg-[#e2e6dc] disabled:text-[#8a9186]"
+                        className="mt-5 h-10 w-full rounded-full bg-[#9ff0a1] text-[11px] font-black text-primary-dark transition hover:bg-[#8ee892] disabled:cursor-not-allowed disabled:bg-[#e2e6dc] disabled:text-neutral-muted"
                       >
                         {pointsBalance >= reward.points_required
                           ? "Resgatar"
@@ -392,14 +392,14 @@ export default function PointsPage() {
           </section>
 
           <section className="mt-16">
-            <h2 className="text-[23px] font-black tracking-[-0.04em] text-[#1e261e]">
+            <h2 className="text-[23px] font-black tracking-[-0.04em] text-neutral-darker">
               Histórico de Ações
             </h2>
 
             <div className="mt-6 overflow-hidden rounded-[22px] bg-white shadow-[0_1px_0_rgba(33,55,30,0.05)]">
               {displayedHistory.length === 0 ? (
                 <div className="flex items-center justify-center px-5 py-12">
-                  <p className="text-[13px] font-semibold text-[#687266]">Nenhuma ação registrada ainda.</p>
+                  <p className="text-[13px] font-semibold text-neutral-muted">Nenhuma ação registrada ainda.</p>
                 </div>
               ) : (
                 displayedHistory.map((action, index) => {
@@ -416,7 +416,7 @@ export default function PointsPage() {
                         <span
                           className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${
                             positive
-                              ? "bg-[#dff6df] text-[#287630]"
+                              ? "bg-[#dff6df] text-primary-dark"
                               : "bg-[#ffe2e2] text-[#c91f1f]"
                           }`}
                         >
@@ -424,7 +424,7 @@ export default function PointsPage() {
                         </span>
 
                         <div className="min-w-0">
-                          <h3 className="truncate text-[13px] font-black text-[#1e261e]">
+                          <h3 className="truncate text-[13px] font-black text-neutral-darker">
                             {action.title}
                           </h3>
                           <p className="mt-1 truncate text-[11px] font-semibold text-[#7b8578]">
@@ -435,7 +435,7 @@ export default function PointsPage() {
 
                       <strong
                         className={`shrink-0 text-[13px] font-black ${
-                          positive ? "text-[#287630]" : "text-[#c91f1f]"
+                          positive ? "text-primary-dark" : "text-[#c91f1f]"
                         }`}
                       >
                         {action.points}
@@ -449,19 +449,19 @@ export default function PointsPage() {
         </div>
 
         <footer className="border-t border-[#eceee8] bg-[#fbfbf7]">
-          <div className="mx-auto flex w-full max-w-[1220px] flex-col gap-4 px-4 py-8 text-[11px] font-semibold text-[#8a9186] sm:flex-row sm:items-center sm:justify-between sm:px-7">
+          <div className="mx-auto flex w-full max-w-[1220px] flex-col gap-4 px-4 py-8 text-[11px] font-semibold text-neutral-muted sm:flex-row sm:items-center sm:justify-between sm:px-7">
             <p>
-              <span className="font-black text-[#287630]">Ruralize</span> UFRPE
+              <span className="font-black text-primary-dark">Ruralize</span> UFRPE
               Living
             </p>
             <nav className="flex flex-wrap gap-7">
-              <a href="#" className="transition hover:text-[#287630]">
+              <a href="#" className="transition hover:text-primary-dark">
                 Termos de Uso
               </a>
-              <a href="#" className="transition hover:text-[#287630]">
+              <a href="#" className="transition hover:text-primary-dark">
                 Privacidade
               </a>
-              <a href="#" className="transition hover:text-[#287630]">
+              <a href="#" className="transition hover:text-primary-dark">
                 Contato
               </a>
             </nav>
@@ -511,16 +511,16 @@ function RewardRedemptionModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="reward-redemption-title"
-        className="w-full max-w-[430px] rounded-[24px] bg-white px-7 pb-7 pt-8 shadow-[0_24px_50px_rgba(33,55,30,0.22)]"
+        className="w-full max-w-[430px] rounded-2xl bg-white px-7 pb-7 pt-8 shadow-soft-lg"
       >
         <div className="flex items-start justify-between gap-5">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#287630]">
+            <p className="text-[10px] font-black uppercase tracking-[0.12em] text-primary-dark">
               {reward.points_required} pts
             </p>
             <h2
               id="reward-redemption-title"
-              className="mt-2 text-[22px] font-black tracking-[-0.04em] text-[#1e261e]"
+              className="mt-2 text-[22px] font-black tracking-[-0.04em] text-neutral-darker"
             >
               {step === "confirm"
                 ? "Confirmar resgate"
@@ -545,7 +545,7 @@ function RewardRedemptionModal({
               Você está prestes a resgatar <strong>{reward.name}</strong>.
               Confirme para iniciar o processo e receber o código de retirada.
             </p>
-            <div className="mt-5 rounded-[18px] bg-[#f7f9f4] px-5 py-4 text-[12px] font-semibold leading-5 text-[#536050]">
+            <div className="mt-5 rounded-xl bg-[#f7f9f4] px-5 py-4 text-[12px] font-semibold leading-5 text-[#536050]">
               <p>Saldo atual: {pointsBalance} pts</p>
               <p>Custo do resgate: {reward.points_required} pts</p>
               <p>Saldo após o resgate: {pointsBalance - reward.points_required} pts</p>
@@ -554,7 +554,7 @@ function RewardRedemptionModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="h-11 rounded-full bg-[#eef0ea] px-5 text-[11px] font-black text-[#4f5b4e]"
+                className="h-11 rounded-full bg-neutral-lighter px-5 text-[11px] font-black text-neutral-muted"
               >
                 Voltar
               </button>
@@ -562,7 +562,7 @@ function RewardRedemptionModal({
                 type="button"
                 onClick={onConfirm}
                 disabled={isRedeeming}
-                className="h-11 rounded-full bg-[#287630] px-5 text-[11px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)] disabled:opacity-60"
+                className="h-11 rounded-full bg-primary-dark px-5 text-[11px] font-black text-white shadow-soft-sm disabled:opacity-60"
               >
                 {isRedeeming ? "Registrando..." : "Confirmar resgate"}
               </button>
@@ -571,7 +571,7 @@ function RewardRedemptionModal({
         ) : step === "error" ? (
           <>
             {error && (
-              <p className="mt-5 rounded-[14px] bg-[#fff3f3] px-4 py-3 text-[12px] font-bold leading-5 text-[#b92828]">
+              <p className="mt-5 rounded-lg bg-danger-light px-4 py-3 text-[12px] font-bold leading-5 text-danger-primary">
                 {error}
               </p>
             )}
@@ -579,7 +579,7 @@ function RewardRedemptionModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="h-11 rounded-full bg-[#287630] px-5 text-[11px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)]"
+                className="h-11 rounded-full bg-primary-dark px-5 text-[11px] font-black text-white shadow-soft-sm"
               >
                 Voltar
               </button>
@@ -594,22 +594,22 @@ function RewardRedemptionModal({
             {redemptionData?.code && (
               <div className="mt-6 rounded-[16px] bg-[#f7f9f4] px-5 py-4">
                 <p className="text-[11px] font-semibold text-[#536050]">Código de Resgate:</p>
-                <p className="mt-2 text-center text-[20px] font-black tracking-wider text-[#287630]">
+                <p className="mt-2 text-center text-[20px] font-black tracking-wider text-primary-dark">
                   {redemptionData.code}
                 </p>
               </div>
             )}
 
             {redemptionData?.pickupLocation && (
-              <div className="mt-4 rounded-[14px] bg-[#f0f8f0] px-4 py-3">
+              <div className="mt-4 rounded-lg bg-[#f0f8f0] px-4 py-3">
                 <p className="text-[11px] font-semibold text-[#536050]">
-                  Local de retirada: <span className="font-black text-[#287630]">{redemptionData.pickupLocation}</span>
+                  Local de retirada: <span className="font-black text-primary-dark">{redemptionData.pickupLocation}</span>
                 </p>
               </div>
             )}
 
             {redemptionData?.deadline && (
-              <div className="mt-4 rounded-[14px] bg-[#fff8e1] px-4 py-3">
+              <div className="mt-4 rounded-lg bg-[#fff8e1] px-4 py-3">
                 <p className="text-[11px] font-semibold text-[#7a5a00]">
                   Prazo para retirada: <span className="font-black">{new Date(redemptionData.deadline).toLocaleDateString("pt-BR")}</span>
                 </p>
@@ -619,7 +619,7 @@ function RewardRedemptionModal({
             <button
               type="button"
               onClick={onClose}
-              className="mt-7 h-11 w-full rounded-full bg-[#287630] px-5 text-[11px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)]"
+              className="mt-7 h-11 w-full rounded-full bg-primary-dark px-5 text-[11px] font-black text-white shadow-soft-sm"
             >
               Fechar
             </button>

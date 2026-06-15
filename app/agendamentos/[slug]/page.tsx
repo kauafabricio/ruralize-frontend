@@ -173,7 +173,7 @@ export default function AppointmentDetailsPage() {
   if (loading) {
     return (
       <RequireAuth>
-        <main className="min-h-screen bg-[#fbfbf7] text-[#1e261e]">
+        <main className="min-h-screen bg-[#fbfbf7] text-neutral-darker">
           <FeedHeader showSearch={false} />
           <div className="mx-auto w-full max-w-[1220px] px-4 pb-16 pt-10 sm:px-7">
             <div className="animate-pulse space-y-4">
@@ -190,7 +190,7 @@ export default function AppointmentDetailsPage() {
   if (error || !event) {
     return (
       <RequireAuth>
-        <main className="min-h-screen bg-[#fbfbf7] text-[#1e261e]">
+        <main className="min-h-screen bg-[#fbfbf7] text-neutral-darker">
           <FeedHeader showSearch={false} />
           <div className="mx-auto w-full max-w-[1220px] px-4 pb-16 pt-10 sm:px-7">
             <div className="rounded-[10px] bg-red-50 p-4 text-red-700">
@@ -198,7 +198,7 @@ export default function AppointmentDetailsPage() {
             </div>
             <button
               onClick={() => router.back()}
-              className="mt-4 rounded-full bg-[#287630] px-6 py-2 text-white font-black"
+              className="mt-4 rounded-full bg-primary-dark px-6 py-2 text-white font-black"
             >
               Voltar
             </button>
@@ -236,21 +236,21 @@ export default function AppointmentDetailsPage() {
 
   return (
     <RequireAuth>
-      <main className="min-h-screen bg-[#fbfbf7] text-[#1e261e]">
+      <main className="min-h-screen bg-[#fbfbf7] text-neutral-darker">
         <FeedHeader showSearch={false} />
 
         <div className="mx-auto grid w-full max-w-[1220px] gap-10 px-4 pb-16 pt-10 sm:px-7 lg:grid-cols-[minmax(0,650px)_460px] lg:gap-14 lg:pt-12">
           <section aria-labelledby="event-title">
             <h1
               id="event-title"
-              className="max-w-[560px] text-[39px] font-black leading-[1.04] tracking-[-0.05em] text-[#1f6f2a] sm:text-[53px]"
+              className="max-w-[560px] text-[39px] font-black leading-[1.04] tracking-[-0.05em] text-primary-dark sm:text-[53px]"
             >
               {event.title}
             </h1>
 
             <div className="mt-6 flex flex-wrap gap-3">
               {event.action_name && (
-                <span className="rounded-full bg-[#c9f7ca] px-4 py-2 text-[10px] font-black uppercase tracking-[0.08em] text-[#287630]">
+                <span className="rounded-full bg-[#c9f7ca] px-4 py-2 text-[10px] font-black uppercase tracking-[0.08em] text-primary-dark">
                   {event.action_name}
                 </span>
               )}
@@ -299,7 +299,7 @@ export default function AppointmentDetailsPage() {
             />
 
             <section className="mt-8 rounded-[10px] border border-[#e6e8e0] bg-white px-8 py-8 shadow-[0_10px_28px_rgba(33,55,30,0.05)]">
-              <h2 className="text-[18px] font-black tracking-[-0.03em] text-[#1e261e]">
+              <h2 className="text-[18px] font-black tracking-[-0.03em] text-neutral-darker">
                 Garanta sua vaga
               </h2>
               <p className="mt-4 text-[12px] font-medium leading-5 text-[#566052]">
@@ -315,8 +315,8 @@ export default function AppointmentDetailsPage() {
               />
 
               {canManageEvent ? (
-                <div className="mt-6 rounded-[18px] border border-[#d4e8d4] bg-[#f4fbf3] p-4">
-                  <p className="text-[11px] font-black uppercase tracking-[0.08em] text-[#287630]">
+                <div className="mt-6 rounded-xl border border-[#d4e8d4] bg-[#f4fbf3] p-4">
+                  <p className="text-[11px] font-black uppercase tracking-[0.08em] text-primary-dark">
                     Gerenciar evento
                   </p>
 
@@ -336,7 +336,7 @@ export default function AppointmentDetailsPage() {
                     <button
                       type="button"
                       onClick={() => setEditMode((current) => !current)}
-                      className="inline-flex h-11 items-center justify-center rounded-full border border-[#287630] bg-white px-4 text-[12px] font-black text-[#287630] transition hover:bg-[#f4fbf3]"
+                      className="inline-flex h-11 items-center justify-center rounded-full border border-[#287630] bg-white px-4 text-[12px] font-black text-primary-dark transition hover:bg-[#f4fbf3]"
                     >
                       {editMode ? "Cancelar edição" : "Editar evento"}
                     </button>
@@ -359,7 +359,7 @@ export default function AppointmentDetailsPage() {
                         <input
                           value={editForm.title}
                           onChange={(e) => handleInputChange("title", e.target.value)}
-                          className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-[#1f281f]"
+                          className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-neutral-darker"
                         />
                       </div>
                       <div>
@@ -369,7 +369,7 @@ export default function AppointmentDetailsPage() {
                         <textarea
                           value={editForm.description}
                           onChange={(e) => handleInputChange("description", e.target.value)}
-                          className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-[#1f281f]"
+                          className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-neutral-darker"
                           rows={3}
                         />
                       </div>
@@ -380,7 +380,7 @@ export default function AppointmentDetailsPage() {
                             type="datetime-local"
                             value={editForm.start_date}
                             onChange={(e) => handleInputChange("start_date", e.target.value)}
-                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-[#1f281f]"
+                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-neutral-darker"
                           />
                         </label>
                         <label className="block text-[12px] font-semibold text-[#44503f]">
@@ -389,7 +389,7 @@ export default function AppointmentDetailsPage() {
                             type="datetime-local"
                             value={editForm.end_date}
                             onChange={(e) => handleInputChange("end_date", e.target.value)}
-                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-[#1f281f]"
+                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-neutral-darker"
                           />
                         </label>
                       </div>
@@ -399,7 +399,7 @@ export default function AppointmentDetailsPage() {
                           <input
                             value={editForm.location_name}
                             onChange={(e) => handleInputChange("location_name", e.target.value)}
-                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-[#1f281f]"
+                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-neutral-darker"
                           />
                         </label>
                         <label className="block text-[12px] font-semibold text-[#44503f]">
@@ -407,7 +407,7 @@ export default function AppointmentDetailsPage() {
                           <input
                             value={editForm.address}
                             onChange={(e) => handleInputChange("address", e.target.value)}
-                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-[#1f281f]"
+                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-neutral-darker"
                           />
                         </label>
                       </div>
@@ -419,7 +419,7 @@ export default function AppointmentDetailsPage() {
                             min="1"
                             value={editForm.max_participants}
                             onChange={(e) => handleInputChange("max_participants", e.target.value)}
-                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-[#1f281f]"
+                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-neutral-darker"
                           />
                         </label>
                         <label className="block text-[12px] font-semibold text-[#44503f]">
@@ -429,14 +429,14 @@ export default function AppointmentDetailsPage() {
                             min="1"
                             value={editForm.points}
                             onChange={(e) => handleInputChange("points", e.target.value)}
-                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-[#1f281f]"
+                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-neutral-darker"
                           />
                         </label>
                       </div>
                       <button
                         type="submit"
                         disabled={isSaving}
-                        className="mt-2 inline-flex w-full h-12 items-center justify-center rounded-full bg-[#287630] px-4 text-[12px] font-black text-white transition hover:bg-[#1f6428] disabled:opacity-60"
+                        className="mt-2 inline-flex w-full h-12 items-center justify-center rounded-full bg-primary-dark px-4 text-[12px] font-black text-white transition hover:bg-primary-darker disabled:opacity-60"
                       >
                         {isSaving ? "Salvando..." : "Salvar alterações"}
                       </button>
@@ -472,26 +472,26 @@ function DetailItem({
 }) {
   return (
     <div className="grid grid-cols-[36px_minmax(0,1fr)] gap-5">
-      <dt className="flex h-9 w-9 items-center justify-center rounded-full bg-[#e4f5df] text-[#287630]">
+      <dt className="flex h-9 w-9 items-center justify-center rounded-full bg-success-light text-primary-dark">
         {icon}
       </dt>
       <dd>
-        <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#287630]">
+        <p className="text-[10px] font-black uppercase tracking-[0.12em] text-primary-dark">
           {label}
         </p>
         <div className="mt-2 flex items-center gap-3">
           {avatar ? (
-            <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-[#225f35] ring-2 ring-[#e8efdf]">
+            <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-primary-dark ring-2 ring-neutral-lighter">
               <span className="absolute inset-x-[9px] top-[7px] h-[10px] rounded-full bg-[#f0b07b]" />
               <span className="absolute left-[11px] top-[14px] h-[8px] w-[18px] rounded-t-full bg-[#273f2a]" />
               <span className="absolute bottom-0 left-[7px] h-[19px] w-[26px] rounded-t-[16px] bg-[#e2ead8]" />
             </span>
           ) : null}
           <div className="min-w-0">
-            <p className="text-[13px] font-black leading-5 text-[#1f281f]">
+            <p className="text-[13px] font-black leading-5 text-neutral-darker">
               {title}
             </p>
-            <p className="text-[11px] font-semibold leading-5 text-[#687266]">
+            <p className="text-[11px] font-semibold leading-5 text-neutral-muted">
               {description}
             </p>
           </div>

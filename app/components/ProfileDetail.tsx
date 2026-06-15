@@ -97,7 +97,7 @@ export function ProfileDetail() {
   if (loading) {
     return (
       <RequireAuth>
-        <div className="min-h-screen bg-[#f8f8f3] py-8 text-center">
+        <div className="min-h-screen bg-neutral-lighter py-8 text-center">
           Carregando perfil...
         </div>
       </RequireAuth>
@@ -107,7 +107,7 @@ export function ProfileDetail() {
   if (!profile) {
     return (
       <RequireAuth>
-        <div className="min-h-screen bg-[#f8f8f3] py-8 text-center text-red-600">
+        <div className="min-h-screen bg-neutral-lighter py-8 text-center text-red-600">
           Perfil não encontrado
         </div>
       </RequireAuth>
@@ -118,7 +118,7 @@ export function ProfileDetail() {
 
   return (
     <RequireAuth>
-      <main className="min-h-screen bg-[#f8f8f3]">
+      <main className="min-h-screen bg-neutral-lighter">
         {toast && (
           <Toast
             message={toast.message}
@@ -148,7 +148,7 @@ export function ProfileDetail() {
           <div className="flex gap-6">
             {/* Avatar */}
             <div className="flex-shrink-0">
-              <div className="flex h-32 w-32 items-center justify-center rounded-full border-4 border-white bg-[#205f36] text-4xl font-black uppercase text-white shadow-[0_4px_12px_rgba(33,55,30,0.2)]">
+              <div className="flex h-32 w-32 items-center justify-center rounded-full border-4 border-white bg-primary-dark text-4xl font-black uppercase text-white shadow-[0_4px_12px_rgba(33,55,30,0.2)]">
                 {formData.profile_photo_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -164,7 +164,7 @@ export function ProfileDetail() {
 
             {/* Profile Info */}
             <div className="flex-1">
-              <h1 className="text-3xl font-black text-[#1f6f2a]">
+              <h1 className="text-3xl font-black text-primary-dark">
                 {profile.name}
               </h1>
               <p className="text-lg text-[#6c7b6d]">
@@ -172,7 +172,7 @@ export function ProfileDetail() {
               </p>
 
               {profile.department && (
-                <p className="mt-2 text-[#4f5b4e]">
+                <p className="mt-2 text-neutral-muted">
                   Departamento: <strong>{profile.department}</strong>
                 </p>
               )}
@@ -180,7 +180,7 @@ export function ProfileDetail() {
               {isOwnProfile && (
                 <button
                   onClick={() => setIsEditing(!isEditing)}
-                  className="mt-4 rounded-full bg-[#287630] px-6 py-2 text-white font-bold transition-colors hover:bg-[#1f6428]"
+                  className="mt-4 rounded-full bg-primary-dark px-6 py-2 text-white font-bold transition-colors hover:bg-primary-darker"
                 >
                   {isEditing ? "Cancelar" : "Editar Perfil"}
                 </button>
@@ -191,8 +191,8 @@ export function ProfileDetail() {
           {/* Profile Content */}
           <div className="mt-8 space-y-6">
             {/* Description */}
-            <section className="rounded-[18px] bg-white p-6 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
-              <h2 className="mb-4 text-lg font-black text-[#1f6f2a]">Sobre</h2>
+            <section className="rounded-xl bg-white p-6 shadow-soft-xs">
+              <h2 className="mb-4 text-lg font-black text-primary-dark">Sobre</h2>
 
               {isEditing ? (
                 <textarea
@@ -205,7 +205,7 @@ export function ProfileDetail() {
                   rows={4}
                 />
               ) : (
-                <p className="text-[#20281f]">
+                <p className="text-neutral-darker">
                   {formData.description || "Sem descrição"}
                 </p>
               )}
@@ -213,14 +213,14 @@ export function ProfileDetail() {
 
             {/* Photo URLs (for editing) */}
             {isEditing && (
-              <section className="rounded-[18px] bg-white p-6 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
-                <h2 className="mb-4 text-lg font-black text-[#1f6f2a]">
+              <section className="rounded-xl bg-white p-6 shadow-soft-xs">
+                <h2 className="mb-4 text-lg font-black text-primary-dark">
                   Imagens
                 </h2>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-[12px] font-bold text-[#4f5b4e]">
+                    <label className="block text-[12px] font-bold text-neutral-muted">
                       URL da Foto de Perfil
                     </label>
                     <input
@@ -238,7 +238,7 @@ export function ProfileDetail() {
                   </div>
 
                   <div>
-                    <label className="block text-[12px] font-bold text-[#4f5b4e]">
+                    <label className="block text-[12px] font-bold text-neutral-muted">
                       URL da Foto de Capa
                     </label>
                     <input
@@ -259,7 +259,7 @@ export function ProfileDetail() {
                 <button
                   onClick={handleSaveProfile}
                   disabled={isSaving}
-                  className="mt-6 w-full rounded-full bg-[#287630] py-3 text-white font-bold transition-opacity disabled:opacity-50 hover:bg-[#1f6428]"
+                  className="mt-6 w-full rounded-full bg-primary-dark py-3 text-white font-bold transition-opacity disabled:opacity-50 hover:bg-primary-darker"
                 >
                   {isSaving ? "Salvando..." : "Salvar Perfil"}
                 </button>

@@ -12,7 +12,7 @@ export default function FeedPage() {
 
   return (
     <RequireAuth>
-      <main className="min-h-screen bg-[#f8f8f3] text-[#222a20]">
+      <main className="min-h-screen bg-neutral-lighter text-[#222a20]">
         <FeedHeader searchTerm={searchTerm} onSearchChange={setSearchTerm} />
 
         <div className="mx-auto grid w-full max-w-[1132px] grid-cols-[740px_360px] gap-9 px-1 pb-16 pt-11">

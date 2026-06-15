@@ -17,7 +17,7 @@ export function RegistrationMissingFormModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="registration-missing-title"
-        className="w-full max-w-[356px] rounded-[24px] bg-white px-8 pb-8 pt-9 text-center shadow-[0_24px_50px_rgba(33,55,30,0.22)]"
+        className="w-full max-w-[356px] rounded-2xl bg-white px-8 pb-8 pt-9 text-center shadow-soft-lg"
       >
         <div className="mx-auto flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#fff3d8] text-[#9a6a12]">
           <DocumentIcon className="h-8 w-8" />
@@ -25,7 +25,7 @@ export function RegistrationMissingFormModal({
 
         <h2
           id="registration-missing-title"
-          className="mt-7 text-[22px] font-black tracking-[-0.04em] text-[#287630]"
+          className="mt-7 text-[22px] font-black tracking-[-0.04em] text-primary-dark"
         >
           Formulário não preenchido
         </h2>
@@ -37,7 +37,7 @@ export function RegistrationMissingFormModal({
         <div className="mt-7 space-y-3">
           <Link
             href={formHref}
-            className="flex h-12 w-full items-center justify-center rounded-full bg-[#287630] px-5 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.2)] transition hover:bg-[#1f6428]"
+            className="flex h-12 w-full items-center justify-center rounded-full bg-primary-dark px-5 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.2)] transition hover:bg-primary-darker"
           >
             Ir para o formulário
           </Link>

@@ -11,7 +11,7 @@ export function FeedSkeletonList() {
 
 function FeedPostSkeleton({ large = false }: { large?: boolean }) {
   return (
-    <article className="overflow-hidden bg-white shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+    <article className="overflow-hidden bg-white shadow-soft-xs">
       <div className="px-6 pt-6">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
@@ -21,7 +21,7 @@ function FeedPostSkeleton({ large = false }: { large?: boolean }) {
               <span className="block h-2.5 w-44 animate-pulse rounded-full bg-[#edf0e8]" />
             </span>
           </div>
-          <MoreIcon className="h-5 w-5 text-[#20281f]" />
+          <MoreIcon className="h-5 w-5 text-neutral-darker" />
         </div>
 
         <div className="mt-6 space-y-3">
@@ -37,7 +37,7 @@ function FeedPostSkeleton({ large = false }: { large?: boolean }) {
         }`}
       />
 
-      <div className="flex h-[70px] items-center gap-7 px-6 text-[#20281f]">
+      <div className="flex h-[70px] items-center gap-7 px-6 text-neutral-darker">
         <span className="inline-flex items-center gap-2 text-[12px] font-semibold">
           <HeartIcon className="h-[18px] w-[18px]" />
           <span className="h-2.5 w-5 animate-pulse rounded-full bg-[#e5e9df]" />

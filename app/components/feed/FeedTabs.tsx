@@ -47,7 +47,7 @@ function FeedPostList({
 }) {
   if (posts.length === 0) {
     return (
-      <div className="rounded-[28px] bg-white px-6 py-8 text-center text-sm text-[#4f5b4e] shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+      <div className="rounded-3xl bg-white px-6 py-8 text-center text-sm text-neutral-muted shadow-soft-xs">
         Nenhum resultado encontrado para sua busca.
       </div>
     );
@@ -153,7 +153,7 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
         aria-label="Tipo de feed"
       >
         <span
-          className="absolute bottom-[-12px] left-[13px] h-[3px] w-[64px] rounded-full bg-[#287630] transition-transform duration-300 ease-out"
+          className="absolute bottom-[-12px] left-[13px] h-[3px] w-[64px] rounded-full bg-primary-dark transition-transform duration-300 ease-out"
           style={{ transform: `translateX(${activeIndex * 134}px)` }}
           aria-hidden="true"
         />
@@ -172,8 +172,8 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
               onClick={() => setActiveTab(tab.id)}
               className={`relative w-[90px] rounded-full py-3 transition-all duration-300 ease-out ${
                 active
-                  ? "bg-white font-black text-[#287630] shadow-[0_1px_0_rgba(33,55,30,0.04)]"
-                  : "text-[#30372f] hover:text-[#287630]"
+                  ? "bg-white font-black text-primary-dark shadow-soft-xs"
+                  : "text-[#30372f] hover:text-primary-dark"
               }`}
             >
               {tab.label}
@@ -183,7 +183,7 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
       </div>
 
       <div
-        className="mb-7 flex flex-wrap items-center gap-2 rounded-[20px] border border-[#ecf0e8] bg-[#fbfcf7] px-3 py-2 shadow-[0_1px_0_rgba(33,55,30,0.04)]"
+        className="mb-7 flex flex-wrap items-center gap-2 rounded-[20px] border border-[#ecf0e8] bg-neutral-lighter px-3 py-2 shadow-soft-xs"
         aria-label="Filtros do feed"
       >
         {DEFAULT_FILTER_IDS.map((filterId) => {
@@ -209,8 +209,8 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
               onClick={() => setActiveFilter(filterId as FeedFilterId)}
               className={`h-8 rounded-full px-3 text-[12px] font-bold transition-all duration-200 ${
                 active
-                  ? "bg-[#287630] text-white shadow-[0_6px_14px_rgba(40,118,48,0.16)]"
-                  : "bg-white text-[#566154] ring-1 ring-[#e5eadf] hover:text-[#287630]"
+                  ? "bg-primary-dark text-white shadow-[0_6px_14px_rgba(40,118,48,0.16)]"
+                  : "bg-white text-[#566154] ring-1 ring-[#e5eadf] hover:text-primary-dark"
               }`}
               aria-pressed={active}
             >
@@ -231,7 +231,7 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
         >
           <span className="sr-only">{tab.description}</span>
           {searchTerm ? (
-            <p className="text-sm font-medium text-[#4f5b4e]">
+            <p className="text-sm font-medium text-neutral-muted">
               Buscando por “{searchTerm}”
             </p>
           ) : null}
@@ -240,7 +240,7 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
           {loading ? (
             <FeedSkeletonList />
           ) : error ? (
-            <div className="rounded-[28px] bg-white px-6 py-8 text-center text-sm text-red-600 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+            <div className="rounded-3xl bg-white px-6 py-8 text-center text-sm text-red-600 shadow-soft-xs">
               {error}
             </div>
           ) : (

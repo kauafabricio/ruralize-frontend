@@ -10,7 +10,7 @@ export function UserGrid({ users, loading }: { users: UserProfileResponse[]; loa
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
-            className="h-[320px] animate-pulse rounded-[22px] border border-[#e6efe4] bg-[#f4f5f0]"
+            className="h-[320px] animate-pulse rounded-[22px] border border-[#e6efe4] bg-neutral-light"
           />
         ))}
       </div>

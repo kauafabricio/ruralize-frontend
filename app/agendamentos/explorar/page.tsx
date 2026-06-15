@@ -96,14 +96,14 @@ export default function ExplorarEventosPage() {
 
   return (
     <RequireAuth>
-      <main className="flex min-h-screen flex-col bg-[#fbfbf7] text-[#1e261e]">
+      <main className="flex min-h-screen flex-col bg-[#fbfbf7] text-neutral-darker">
         <FeedHeader showSearch={false} />
 
         <div className="mx-auto w-full max-w-[1220px] flex-1 px-4 pb-16 pt-10 sm:px-7 lg:pt-11">
           {/* Teacher Create Event Section */}
           {isTeacher && !loadingProfile && (
             <section className="mb-14 rounded-2xl bg-white p-8 shadow-md">
-              <h2 className="text-2xl font-bold text-[#1f6f2a]">Criar Novo Evento</h2>
+              <h2 className="text-2xl font-bold text-primary-dark">Criar Novo Evento</h2>
               <p className="mt-2 text-sm text-gray-600">
                 Crie eventos sustentáveis para engajar sua comunidade
               </p>
@@ -192,7 +192,7 @@ export default function ExplorarEventosPage() {
                 <button
                   type="submit"
                   disabled={creatingEvent}
-                  className="col-span-2 rounded-lg bg-[#287630] px-6 py-2 font-bold text-white transition hover:bg-[#1f6428] disabled:opacity-50"
+                  className="col-span-2 rounded-lg bg-primary-dark px-6 py-2 font-bold text-white transition hover:bg-primary-darker disabled:opacity-50"
                 >
                   {creatingEvent ? "Criando..." : "Criar Evento"}
                 </button>
@@ -208,7 +208,7 @@ export default function ExplorarEventosPage() {
                 className="text-[31px] font-medium leading-tight tracking-[-0.04em] text-[#2f392f] sm:text-[40px]"
               >
                 Cultive o futuro da nossa{" "}
-                <span className="font-black text-[#1f6f2a]">Universidade</span>
+                <span className="font-black text-primary-dark">Universidade</span>
               </h1>
               <p className="mt-4 max-w-[560px] text-[13px] font-medium leading-6 text-[#505a4c]">
                 Explore iniciativas e eventos sustentaveis na UFRPE. Sua
@@ -217,7 +217,7 @@ export default function ExplorarEventosPage() {
             </div>
 
             {loadingProfile ? (
-              <p className="mt-8 text-[12px] font-semibold text-[#687266]">
+              <p className="mt-8 text-[12px] font-semibold text-neutral-muted">
                 Verificando permissoes de docente...
               </p>
             ) : null}
@@ -280,7 +280,7 @@ function EventCard({
   };
 
   return (
-    <article className="overflow-hidden rounded-[18px] bg-white shadow-[0_18px_42px_rgba(33,55,30,0.08)]">
+    <article className="overflow-hidden rounded-xl bg-white shadow-[0_18px_42px_rgba(33,55,30,0.08)]">
       <div className="relative h-[176px] bg-[#dfe8d8]">
         <div
           className="h-full w-full bg-cover bg-center"
@@ -295,12 +295,12 @@ function EventCard({
       </div>
 
       <div className="px-6 pb-7 pt-5">
-        <p className="flex items-center gap-1.5 text-[10px] font-black text-[#287630]">
+        <p className="flex items-center gap-1.5 text-[10px] font-black text-primary-dark">
           <CalendarIcon className="h-[12px] w-[12px]" />
           {formatDate(date)}
         </p>
 
-        <h2 className="mt-3 text-[19px] font-black leading-6 tracking-[-0.03em] text-[#1e261e]">
+        <h2 className="mt-3 text-[19px] font-black leading-6 tracking-[-0.03em] text-neutral-darker">
           {title}
         </h2>
         <p className="mt-3 min-h-[72px] text-[12px] font-medium leading-5 text-[#556050]">
@@ -309,7 +309,7 @@ function EventCard({
 
         <Link
           href={`/agendamentos/${id}`}
-          className="mt-6 flex h-11 items-center justify-center rounded-full bg-[#287630] px-6 text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.18)] transition hover:bg-[#1f6428]"
+          className="mt-6 flex h-11 items-center justify-center rounded-full bg-primary-dark px-6 text-[12px] font-black text-white shadow-soft-sm transition hover:bg-primary-darker"
         >
           Quero Participar
         </Link>
@@ -322,20 +322,20 @@ function EventCard({
 function EventsFooter() {
   return (
     <footer className="border-t border-[#eceee8] bg-[#fbfbf7]">
-      <div className="mx-auto flex w-full max-w-[1220px] flex-col gap-4 px-4 py-8 text-[11px] font-semibold text-[#8a9186] sm:flex-row sm:items-center sm:justify-between sm:px-7">
+      <div className="mx-auto flex w-full max-w-[1220px] flex-col gap-4 px-4 py-8 text-[11px] font-semibold text-neutral-muted sm:flex-row sm:items-center sm:justify-between sm:px-7">
         <p>
-          <span className="font-black text-[#1e261e]">SustentaRural</span>
+          <span className="font-black text-neutral-darker">SustentaRural</span>
           <br />
           <span className="text-[10px]">2026 SustentaRural - UFRPE</span>
         </p>
         <nav className="flex flex-wrap gap-7">
-          <a href="#" className="transition hover:text-[#287630]">
+          <a href="#" className="transition hover:text-primary-dark">
             Sobre
           </a>
-          <a href="#" className="transition hover:text-[#287630]">
+          <a href="#" className="transition hover:text-primary-dark">
             Termos
           </a>
-          <a href="#" className="transition hover:text-[#287630]">
+          <a href="#" className="transition hover:text-primary-dark">
             Privacidade
           </a>
         </nav>

@@ -68,7 +68,7 @@ export function UserSearch() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-2xl rounded-[28px] bg-white p-6 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+    <div className="mx-auto w-full max-w-2xl rounded-3xl bg-white p-6 shadow-soft-xs">
       {toast && (
         <Toast
           message={toast.message}
@@ -77,7 +77,7 @@ export function UserSearch() {
         />
       )}
 
-      <h1 className="mb-6 text-2xl font-black text-[#1f6f2a]">
+      <h1 className="mb-6 text-2xl font-black text-primary-dark">
         Buscar Usuários
       </h1>
 
@@ -96,8 +96,8 @@ export function UserSearch() {
               }}
               className={`rounded-full px-4 py-2 text-[12px] font-bold transition-all ${
                 searchType === type
-                  ? "bg-[#287630] text-white shadow-[0_6px_14px_rgba(40,118,48,0.16)]"
-                  : "bg-[#f4f5f0] text-[#566154] ring-1 ring-[#e5eadf] hover:bg-white"
+                  ? "bg-primary-dark text-white shadow-[0_6px_14px_rgba(40,118,48,0.16)]"
+                  : "bg-neutral-light text-[#566154] ring-1 ring-[#e5eadf] hover:bg-white"
               }`}
             >
               {type === "name"
@@ -118,7 +118,7 @@ export function UserSearch() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Digite o nome do usuário..."
-                className="w-full rounded-full border border-[#e5eadf] bg-[#f4f5f0] px-6 py-3 text-[13px] outline-none placeholder:text-[#a4aaa0]"
+                className="w-full rounded-full border border-[#e5eadf] bg-neutral-light px-6 py-3 text-[13px] outline-none placeholder:text-neutral-muted"
               />
             )}
 
@@ -126,7 +126,7 @@ export function UserSearch() {
               <select
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-full border border-[#e5eadf] bg-[#f4f5f0] px-6 py-3 text-[13px] outline-none"
+                className="w-full rounded-full border border-[#e5eadf] bg-neutral-light px-6 py-3 text-[13px] outline-none"
               >
                 <option value="">Selecione o papel...</option>
                 {roles.map((role) => (
@@ -143,7 +143,7 @@ export function UserSearch() {
         <button
           type="submit"
           disabled={loading || (searchType !== "all" && !searchQuery.trim())}
-          className="w-full rounded-full bg-[#287630] py-3 text-[13px] font-bold text-white shadow-[0_10px_18px_rgba(40,118,48,0.26)] transition-opacity disabled:opacity-50 hover:bg-[#1f6428]"
+          className="w-full rounded-full bg-primary-dark py-3 text-[13px] font-bold text-white shadow-[0_10px_18px_rgba(40,118,48,0.26)] transition-opacity disabled:opacity-50 hover:bg-primary-darker"
         >
           {loading ? "Buscando..." : "Buscar"}
         </button>
@@ -153,16 +153,16 @@ export function UserSearch() {
       {hasSearched && (
         <div className="mt-8">
           {loading ? (
-            <div className="py-8 text-center text-[#4f5b4e]">
+            <div className="py-8 text-center text-neutral-muted">
               Carregando resultados...
             </div>
           ) : results.length === 0 ? (
-            <div className="py-8 text-center text-[#4f5b4e]">
+            <div className="py-8 text-center text-neutral-muted">
               Nenhum resultado encontrado
             </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-[12px] font-semibold text-[#8a9186]">
+              <p className="text-[12px] font-semibold text-neutral-muted">
                 {results.length} resultado{results.length !== 1 ? "s" : ""}
                 encontrado{results.length !== 1 ? "s" : ""}
               </p>
@@ -171,14 +171,14 @@ export function UserSearch() {
                 <Link
                   key={profile.id}
                   href={`/perfil/${profile.id}`}
-                  className="flex items-center gap-4 rounded-[18px] border border-[#e5eadf] bg-[#f8f8f3] p-4 hover:shadow-[0_4px_12px_rgba(33,55,30,0.08)] transition-shadow"
+                  className="flex items-center gap-4 rounded-xl border border-[#e5eadf] bg-neutral-lighter p-4 hover:shadow-[0_4px_12px_rgba(33,55,30,0.08)] transition-shadow"
                 >
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#205f36] text-[12px] font-black uppercase text-white">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-dark text-[12px] font-black uppercase text-white">
                     {profile.name.substring(0, 2).toUpperCase()}
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-black text-[#1f6f2a]">
+                    <p className="text-sm font-black text-primary-dark">
                       {profile.name}
                     </p>
                     <p className="text-[12px] text-[#6c7b6d]">
@@ -186,13 +186,13 @@ export function UserSearch() {
                     </p>
 
                     {profile.description && (
-                      <p className="mt-1 text-[12px] text-[#4f5b4e] truncate">
+                      <p className="mt-1 text-[12px] text-neutral-muted truncate">
                         {profile.description}
                       </p>
                     )}
                   </div>
 
-                  <span className="rounded-full bg-[#287630] px-4 py-2 text-[11px] font-black text-white transition-colors hover:bg-[#1f6428]">
+                  <span className="rounded-full bg-primary-dark px-4 py-2 text-[11px] font-black text-white transition-colors hover:bg-primary-darker">
                     Ver Perfil
                   </span>
                 </Link>

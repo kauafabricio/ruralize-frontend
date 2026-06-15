@@ -84,17 +84,17 @@ export function ProfileCompletionModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="completion-modal-title"
-        className="relative w-full max-w-[480px] rounded-[24px] bg-[#fffef9] px-8 pb-10 pt-10 text-center shadow-[0_24px_70px_rgba(11,35,17,0.28)] my-8"
+        className="relative w-full max-w-[480px] rounded-2xl bg-[#fffef9] px-8 pb-10 pt-10 text-center shadow-[0_24px_70px_rgba(11,35,17,0.28)] my-8"
       >
         <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#e9f4e4] shadow-[0_0_40px_rgba(149,238,157,0.64)]">
-          <span className="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-[#287630]">
+          <span className="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-primary-dark">
             <LeafIcon className="h-[22px] w-[22px] text-white" />
           </span>
         </div>
 
         <h2
           id="completion-modal-title"
-          className="mx-auto mt-6 max-w-[320px] text-[26px] font-black leading-tight tracking-[-0.02em] text-[#1f6f2a]"
+          className="mx-auto mt-6 max-w-[320px] text-[26px] font-black leading-tight tracking-[-0.02em] text-primary-dark"
         >
           Complete Seu Perfil
         </h2>
@@ -106,7 +106,7 @@ export function ProfileCompletionModal({
         <form onSubmit={handleSubmit} className="mt-8 text-left space-y-4">
           {missingFields.includes("description") && (
             <div>
-              <label className="block text-[12px] font-bold uppercase text-[#287630] mb-2">
+              <label className="block text-[12px] font-bold uppercase text-primary-dark mb-2">
                 {fieldLabels.description}
               </label>
               <textarea
@@ -115,7 +115,7 @@ export function ProfileCompletionModal({
                   setFormData({ ...formData, description: e.target.value })
                 }
                 placeholder="Conte um pouco sobre você..."
-                className="w-full rounded-[8px] border border-[#d0d4cc] bg-white px-4 py-3 text-[13px] font-medium text-[#30372f] placeholder-[#a8b09f] focus:outline-none focus:border-[#287630]"
+                className="w-full rounded-[8px] border border-[#d0d4cc] bg-white px-4 py-3 text-[13px] font-medium text-[#30372f] placeholder-[#a8b09f] focus:outline-none focus:border-primary-dark"
                 rows={3}
               />
             </div>
@@ -123,7 +123,7 @@ export function ProfileCompletionModal({
 
           {missingFields.includes("campus_location") && (
             <div>
-              <label className="block text-[12px] font-bold uppercase text-[#287630] mb-2">
+              <label className="block text-[12px] font-bold uppercase text-primary-dark mb-2">
                 {fieldLabels.campus_location}
               </label>
               <input
@@ -133,14 +133,14 @@ export function ProfileCompletionModal({
                   setFormData({ ...formData, campus_location: e.target.value })
                 }
                 placeholder="Ex: Campus Recife"
-                className="w-full rounded-[8px] border border-[#d0d4cc] bg-white px-4 py-3 text-[13px] font-medium text-[#30372f] placeholder-[#a8b09f] focus:outline-none focus:border-[#287630]"
+                className="w-full rounded-[8px] border border-[#d0d4cc] bg-white px-4 py-3 text-[13px] font-medium text-[#30372f] placeholder-[#a8b09f] focus:outline-none focus:border-primary-dark"
               />
             </div>
           )}
 
           {missingFields.includes("department") && userRole === "teacher" && (
             <div>
-              <label className="block text-[12px] font-bold uppercase text-[#287630] mb-2">
+              <label className="block text-[12px] font-bold uppercase text-primary-dark mb-2">
                 {fieldLabels.department}
               </label>
               <input
@@ -150,7 +150,7 @@ export function ProfileCompletionModal({
                   setFormData({ ...formData, department: e.target.value })
                 }
                 placeholder="Ex: Agronomia"
-                className="w-full rounded-[8px] border border-[#d0d4cc] bg-white px-4 py-3 text-[13px] font-medium text-[#30372f] placeholder-[#a8b09f] focus:outline-none focus:border-[#287630]"
+                className="w-full rounded-[8px] border border-[#d0d4cc] bg-white px-4 py-3 text-[13px] font-medium text-[#30372f] placeholder-[#a8b09f] focus:outline-none focus:border-primary-dark"
               />
             </div>
           )}
@@ -164,7 +164,7 @@ export function ProfileCompletionModal({
           <button
             type="submit"
             disabled={loading}
-            className="mt-6 h-12 w-full rounded-full bg-[#287630] text-[13px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.26)] transition-colors hover:bg-[#1f6428] disabled:opacity-50"
+            className="mt-6 h-12 w-full rounded-full bg-primary-dark text-[13px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.26)] transition-colors hover:bg-primary-darker disabled:opacity-50"
           >
             {loading ? "Salvando..." : "Continuar"}
           </button>

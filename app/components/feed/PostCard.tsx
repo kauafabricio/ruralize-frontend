@@ -19,6 +19,7 @@ import {
   getActionName,
   getAllActions,
 } from "@/app/lib/sustainableActions";
+import { readFileAsDataUrl } from "@/app/lib/fileReader";
 
 interface PostCardProps {
   post: PostResponse;
@@ -27,7 +28,12 @@ interface PostCardProps {
 
 export function PostCard({ post, onPostUpdated }: PostCardProps) {
   const { user } = useAuth();
-  const authorName = post.user_name || post.user_id || "Usuário";
+  const authorName =
+    post.user_name ||
+    (post.user_id === user?.id ? user.name || "Você" : "Usuário");
+  const authorPhotoUrl =
+    post.user_photo ||
+    (post.user_id === user?.id ? user.avatarUrl || null : null);
   const [isLiked, setIsLiked] = useState(
     post.liked_by?.some(
       (like) =>
@@ -59,21 +65,6 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
     type: "success" | "error";
   } | null>(null);
   const canManagePost = Boolean(user?.id && post.user_id === user.id);
-
-  function readFileAsDataUrl(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === "string") {
-          resolve(reader.result);
-        } else {
-          reject(new Error("Falha ao ler arquivo de imagem."));
-        }
-      };
-      reader.onerror = () => reject(reader.error);
-      reader.readAsDataURL(file);
-    });
-  }
 
   async function handleEditImageFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -185,6 +176,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
           content: newComment,
           created_at: new Date().toISOString(),
           user_name: user.name || "Você",
+          user_photo: user.avatarUrl || null,
         },
       ]);
 
@@ -256,7 +248,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
       });
 
       setToast({
-        message: "Publicacao atualizada",
+        message: "Publicação atualizada",
         type: "success",
       });
       setIsEditing(false);
@@ -285,7 +277,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
     } catch (err) {
       setToast({
         message:
-          err instanceof Error ? err.message : "Erro ao excluir publicacao",
+          err instanceof Error ? err.message : "Erro ao excluir publicação",
         type: "error",
       });
     } finally {
@@ -325,9 +317,9 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
             className="group flex items-center gap-4 rounded-[18px] pr-2 transition hover:bg-[#f4f6f1]"
             aria-label={`Abrir perfil de ${authorName}`}
           >
-            {post.user_photo ? (
+            {authorPhotoUrl ? (
               <img
-                src={post.user_photo}
+                src={authorPhotoUrl}
                 alt={authorName}
                 className="h-11 w-11 rounded-full object-cover"
               />
@@ -534,12 +526,34 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                 className="rounded-lg bg-[#f4f5f0] px-4 py-3"
               >
                 <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-start gap-3">
+                  {(() => {
+                    const commenterName =
+                      comment.user_name ||
+                      (comment.user_id === user?.id
+                        ? user.name || "Você"
+                        : "Usuário");
+                    const commenterPhoto =
+                      comment.user_photo ||
+                      (comment.user_id === user?.id ? user.avatarUrl || null : null);
+                    return commenterPhoto ? (
+                      <img
+                        src={commenterPhoto}
+                        alt={commenterName}
+                        className="h-9 w-9 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#205f36] text-[10px] font-black uppercase text-white">
+                        {readInitials(commenterName)}
+                      </div>
+                    );
+                  })()}
                   <div className="flex-1">
                     <Link
                       href={`/perfil/${comment.user_id}`}
                       className="text-[12px] font-black text-[#1f6f2a] transition hover:text-[#287630]"
                     >
-                      {comment.user_name || comment.user_id || "Usuário"}
+                      {comment.user_name || (comment.user_id === user?.id ? user.name || "Você" : "Usuário")}
                     </Link>
                     <p className="mt-1 text-[12px] text-[#20281f]">
                       {comment.content}
@@ -550,6 +564,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                       </p>
                     )}
                   </div>
+                </div>
                   {comment.user_id === user?.id && (
                     <button
                       onClick={() => handleRemoveComment(index)}
@@ -671,7 +686,7 @@ function DeleteSuccessDialog({ onClose }: { onClose: () => void }) {
           Item excluido
         </h2>
         <p className="mx-auto mt-3 max-w-[250px] text-[12px] font-semibold leading-5 text-[#65705f]">
-          A publicacao foi excluida com sucesso.
+          A publicação foi excluida com sucesso.
         </p>
         <button
           type="button"

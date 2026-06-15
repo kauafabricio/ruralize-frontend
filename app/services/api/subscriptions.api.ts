@@ -1,35 +1,32 @@
 import { api } from "./client";
 
-
-export interface SubscriptionListResponse {
+export interface EventMinResponse {
   id: string;
-  created_at: string;
+  title: string;
   description: string;
-    start_date: string;
-}
-
-export interface SubscriptionResponse extends SubscriptionListResponse {
-  created_at: string;
   start_date: string;
-
+  location_name: string;
 }
 
+export interface SubscriptionResponse {
+  id: string;
+  status: string;
+  created_at: string;
+  event: EventMinResponse;
+}
 
 export async function listSubscriptions(): Promise<SubscriptionResponse[]> {
-  const response = await api.get<SubscriptionListResponse[]>("/event_subscriptions/");
+  const response = await api.get<SubscriptionResponse[]>("/events/subscriptions");
   return response.data;
 }
 
-// GET /event_subscriptions/?user_id={user_id}
-export async function getMySubscriptions(userId: string): Promise<SubscriptionListResponse[]> {
+export async function getMySubscriptions(): Promise<SubscriptionResponse[]> {
   try {
-    const response = await api.get<SubscriptionResponse[]>("/event_subscriptions/", {
-      params: { user_id: userId },
-    });
-    console.log(`✅ Subssss carregadss para ${userId}:`, response.data.length);
+    const response = await api.get<SubscriptionResponse[]>("/events/subscriptions");
+    console.log(`✅ Inscrições carregadas:`, response.data.length);
     return response.data;
   } catch (error) {
-    console.error(`❌ Erro ao carregar subssss para ${userId}:`, error);
+    console.error(`❌ Erro ao carregar inscrições:`, error);
     throw error;
   }
 }

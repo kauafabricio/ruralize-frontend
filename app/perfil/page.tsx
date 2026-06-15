@@ -1,13 +1,16 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 
 import { RequireAuth } from "@/app/components/auth/RequireAuth";
 import { useAuth } from "@/app/components/auth/AuthProvider";
 import { FeedHeader } from "@/app/components/feed/FeedHeader";
 import { PostCard } from "@/app/components/feed/PostCard";
+import { SuggestionsCard as BackendSuggestionsCard } from "@/app/components/feed/SideCards";
 import { getPostsByUser, type PostResponse } from "@/app/services/api/posts.api";
 import { getProfileByUser, updateProfile as updateProfileAPI } from "@/app/services/api/profile.api";
+import { resolveBackendImageUrl } from "@/app/lib/imageUrl";
+import { readFileAsDataUrl } from "@/app/lib/fileReader";
 import {
   HeartIcon,
   MessageIcon,
@@ -24,26 +27,8 @@ type EditableProfile = {
 
 type ProfileFieldName = keyof EditableProfile;
 
-const coverImage =
-  "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1800&q=85";
-const avatarImage =
-  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=320&q=85";
-const PROFILE_AVATAR_STORAGE_KEY = "ruralize.profile.avatarUrl";
 const activityImage =
   "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=1400&q=85";
-
-const suggestions = [
-  {
-    name: "Mariana Lima",
-    role: "Engenharia Florestal",
-    color: "bg-[#2f7d42]",
-  },
-  {
-    name: "Roberto Silva",
-    role: "Pesquisador UFRPE",
-    color: "bg-[#286a7a]",
-  },
-];
 
 export default function PerfilPage() {
   return (
@@ -83,10 +68,10 @@ function PerfilContent() {
     useState<EditableProfile>(initialProfile);
   const [draftProfile, setDraftProfile] =
     useState<EditableProfile>(initialProfile);
-  const [savedCoverImage, setSavedCoverImage] = useState(coverImage);
-  const [draftCoverImage, setDraftCoverImage] = useState(coverImage);
-  const [savedAvatarImage, setSavedAvatarImage] = useState(avatarImage);
-  const [draftAvatarImage, setDraftAvatarImage] = useState(avatarImage);
+  const [savedCoverImage, setSavedCoverImage] = useState<string | null>(null);
+  const [draftCoverImage, setDraftCoverImage] = useState<string | null>(null);
+  const [savedAvatarImage, setSavedAvatarImage] = useState<string | null>(null);
+  const [draftAvatarImage, setDraftAvatarImage] = useState<string | null>(null);
   const [saveFeedbackOpen, setSaveFeedbackOpen] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -115,15 +100,10 @@ function PerfilContent() {
         setSavedProfile(newProfile);
         setDraftProfile(newProfile);
 
-        if (profileData.profile_photo_url) {
-          setSavedAvatarImage(profileData.profile_photo_url);
-          setDraftAvatarImage(profileData.profile_photo_url);
-        }
-
-        if (profileData.cover_photo_url) {
-          setSavedCoverImage(profileData.cover_photo_url);
-          setDraftCoverImage(profileData.cover_photo_url);
-        }
+        setSavedAvatarImage(profileData.profile_photo_url ?? null);
+        setDraftAvatarImage(profileData.profile_photo_url ?? null);
+        setSavedCoverImage(profileData.cover_photo_url ?? null);
+        setDraftCoverImage(profileData.cover_photo_url ?? null);
 
         setProfileLoaded(true);
       } catch (err) {
@@ -145,6 +125,40 @@ function PerfilContent() {
     }));
   }
 
+  async function handleAvatarFileChange(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      setDraftAvatarImage(dataUrl);
+    } catch (error) {
+      console.error("Erro ao ler arquivo de avatar:", error);
+    }
+  }
+
+  async function handleCoverFileChange(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      setDraftCoverImage(dataUrl);
+    } catch (error) {
+      console.error("Erro ao ler arquivo de capa:", error);
+    }
+  }
+
   function handleOpenEdit() {
     setSaveError(null);
     setDraftProfile(savedProfile);
@@ -160,27 +174,6 @@ function PerfilContent() {
     setDraftAvatarImage(savedAvatarImage);
     setEditMode(false);
   }
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const storedAvatarUrl = window.localStorage.getItem(
-      PROFILE_AVATAR_STORAGE_KEY,
-    );
-
-    const syncStoredAvatarTimeout = window.setTimeout(() => {
-      if (storedAvatarUrl) {
-        setSavedAvatarImage(storedAvatarUrl);
-        setDraftAvatarImage(storedAvatarUrl);
-      }
-    }, 0);
-
-    return () => {
-      window.clearTimeout(syncStoredAvatarTimeout);
-    };
-  }, []);
 
   useEffect(() => {
     if (user?.id) {
@@ -202,18 +195,6 @@ function PerfilContent() {
     }
   }
 
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    window.localStorage.setItem(
-      PROFILE_AVATAR_STORAGE_KEY,
-      savedAvatarImage,
-    );
-    window.dispatchEvent(new Event("ruralize.avatar.update"));
-  }, [savedAvatarImage]);
-
   async function handleSaveEdit() {
     setSavingProfile(true);
     setSaveError(null);
@@ -228,6 +209,8 @@ function PerfilContent() {
         name: draftProfile.name,
         description: draftProfile.bio,
         campus_location: draftProfile.location,
+        profile_photo_url: draftAvatarImage,
+        cover_photo_url: draftCoverImage,
       };
 
       console.log("Enviando atualização:", { userId: user.id, payload: updatePayload });
@@ -242,6 +225,26 @@ function PerfilContent() {
       console.log("Perfil atualizado do banco:", updatedProfile);
 
       setSavedProfile(draftProfile);
+      setSavedAvatarImage(draftAvatarImage);
+      setSavedCoverImage(draftCoverImage);
+
+      try {
+        await updateProfile({
+          name: draftProfile.name,
+          email: draftProfile.email,
+          roleDescription: draftProfile.roleDescription,
+          bio: draftProfile.bio,
+          location: draftProfile.location,
+          coverImageUrl: draftCoverImage ?? "",
+          avatarUrl: draftAvatarImage ?? "",
+        });
+      } catch (sessionError) {
+        console.warn(
+          "Não foi possível sincronizar a sessão após salvar o perfil:",
+          sessionError,
+        );
+      }
+
       setEditMode(false);
       setSaveFeedbackOpen(true);
     } catch (error) {
@@ -263,7 +266,11 @@ function PerfilContent() {
       {editMode ? (
         <EditProfileScreen
           profile={draftProfile}
+          avatarUrl={draftAvatarImage}
+          coverUrl={draftCoverImage}
           onChange={handleDraftChange}
+          onAvatarFileChange={handleAvatarFileChange}
+          onCoverFileChange={handleCoverFileChange}
           onCancel={handleCancelEdit}
           onSave={handleSaveEdit}
           saveError={saveError}
@@ -275,8 +282,8 @@ function PerfilContent() {
             profile={savedProfile}
             subtitle={subtitle}
             registration={registration}
-            coverImageUrl={savedCoverImage}
-            avatarImageUrl={savedAvatarImage}
+            coverImageUrl={savedCoverImage ? resolveBackendImageUrl(savedCoverImage) || savedCoverImage : undefined}
+            avatarImageUrl={savedAvatarImage ? resolveBackendImageUrl(savedAvatarImage) || savedAvatarImage : undefined}
             onEdit={handleOpenEdit}
             userPosts={userPosts}
             loadingPosts={loadingPosts}
@@ -307,8 +314,8 @@ function ProfileOverview({
   profile: EditableProfile;
   subtitle: string;
   registration: string;
-  coverImageUrl: string;
-  avatarImageUrl: string;
+  coverImageUrl?: string | null;
+  avatarImageUrl?: string | null;
   onEdit: () => void;
   userPosts: PostResponse[];
   loadingPosts: boolean;
@@ -327,7 +334,7 @@ function ProfileOverview({
 
       <div className="mt-9 grid gap-9 lg:grid-cols-[340px_minmax(0,1fr)]">
         <aside className="space-y-8">
-          <SuggestionsCard />
+          <BackendSuggestionsCard />
           <AcademicInfoCard
             email={profile.email}
             roleDescription={profile.roleDescription}
@@ -387,19 +394,25 @@ function ProfileHero({
   displayName: string;
   subtitle: string;
   bio: string;
-  coverImageUrl: string;
-  avatarImageUrl: string;
+  coverImageUrl?: string | null;
+  avatarImageUrl?: string | null;
   onEdit: () => void;
 }) {
+  const coverBackgroundStyle = coverImageUrl
+    ? {
+        backgroundImage: `linear-gradient(180deg, rgba(23, 73, 27, 0.02), rgba(23, 73, 27, 0.12)), url("${coverImageUrl}")`,
+      }
+    : {
+        backgroundImage: "linear-gradient(180deg, rgba(23, 73, 27, 0.02), rgba(23, 73, 27, 0.12))",
+      };
+
   return (
     <section className="overflow-hidden rounded-[28px] bg-white shadow-[0_1px_0_rgba(33,55,30,0.04)]">
       <div
         className="h-[174px] bg-[#d7e4c6] bg-cover bg-center"
         role="img"
         aria-label="Campo cultivado ao nascer do sol"
-        style={{
-          backgroundImage: `linear-gradient(180deg, rgba(23, 73, 27, 0.02), rgba(23, 73, 27, 0.12)), url("${coverImageUrl}")`,
-        }}
+        style={coverBackgroundStyle}
       />
 
       <div className="relative px-6 pb-8 pt-[62px] sm:px-8 lg:px-9">
@@ -434,14 +447,22 @@ function ProfileHero({
 
 function EditProfileScreen({
   profile,
+  avatarUrl,
+  coverUrl,
   onChange,
+  onAvatarFileChange,
+  onCoverFileChange,
   onCancel,
   onSave,
   saveError,
   saving,
 }: {
   profile: EditableProfile;
+  avatarUrl: string | null;
+  coverUrl: string | null;
   onChange: (field: ProfileFieldName, value: string) => void;
+  onAvatarFileChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onCoverFileChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onCancel: () => void;
   onSave: () => Promise<void>;
   saveError: string | null;
@@ -493,6 +514,97 @@ function EditProfileScreen({
               className="lg:col-span-2"
             />
           </div>
+
+          <section className="mt-8 rounded-[18px] bg-[#f7f8f3] p-6 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
+            <h3 className="mb-4 text-base font-black text-[#1f6f2a]">
+              Fotos de Perfil e Capa
+            </h3>
+            <div className="grid gap-x-8 gap-y-6 lg:grid-cols-2">
+              <div className="lg:col-span-2">
+                <p className="text-[12px] font-black text-[#4f5b6a]">
+                  Selecione arquivos de imagem do seu dispositivo para avatar e capa.
+                </p>
+              </div>
+
+              <div className="lg:col-span-2">
+                <div className="grid gap-4 rounded-[18px] border border-[#d9e0d4] bg-white p-5">
+                  <div className="grid gap-4 lg:grid-cols-2">
+                    <div className="rounded-[18px] border border-[#d9e0d4] p-4">
+                      <p className="text-[12px] font-black text-[#4f5b6a]">
+                        Avatar selecionado
+                      </p>
+                      <div className="mt-4 flex items-center gap-4">
+                        <div className="h-20 w-20 overflow-hidden rounded-full bg-[#e8f0de]">
+                          {avatarUrl ? (
+                            <img
+                              src={resolveBackendImageUrl(avatarUrl) ?? avatarUrl}
+                              alt="Prévia do avatar selecionado"
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-[11px] font-semibold text-[#4f5b6a]">
+                              Nenhuma imagem
+                            </div>
+                          )}
+                        </div>
+                        <label className="inline-flex cursor-pointer items-center rounded-full bg-[#eef8ea] px-4 py-2 text-[12px] font-semibold text-[#1f6f2a] transition hover:bg-white">
+                          Selecionar arquivo
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="sr-only"
+                            onChange={onAvatarFileChange}
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="rounded-[18px] border border-[#d9e0d4] p-4">
+                      <p className="text-[12px] font-black text-[#4f5b6a]">
+                        Capa selecionada
+                      </p>
+                      <div className="mt-4 flex items-center gap-4">
+                        <div className="h-20 min-w-[120px] overflow-hidden rounded-[18px] bg-[#e8f0de]">
+                          {coverUrl ? (
+                            <img
+                              src={resolveBackendImageUrl(coverUrl) ?? coverUrl}
+                              alt="Prévia da capa selecionada"
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-[11px] font-semibold text-[#4f5b6a]">
+                              Nenhuma imagem
+                            </div>
+                          )}
+                        </div>
+                        <label className="inline-flex cursor-pointer items-center rounded-full bg-[#eef8ea] px-4 py-2 text-[12px] font-semibold text-[#1f6f2a] transition hover:bg-white">
+                          Selecionar arquivo
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="sr-only"
+                            onChange={onCoverFileChange}
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+                  <div className="lg:col-span-2">
+                <div className="rounded-[18px] border border-[#d9e0d4] bg-white p-5">
+                  <p className="text-[12px] font-black text-[#4f5b6a]">
+                    Apenas imagens carregadas são suportadas.
+                  </p>
+                  <p className="mt-3 text-[12px] text-[#6b7367]">
+                    Selecione arquivos de avatar e capa do seu dispositivo. Links
+                    externos não são aceitos neste formulário.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
 
           <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[#eceee8] pt-6 sm:flex-row sm:items-center sm:justify-end">
             {saveError ? (
@@ -632,7 +744,7 @@ function ProfileAvatar({
   imageUrl,
 }: {
   name: string;
-  imageUrl: string;
+  imageUrl?: string | null;
 }) {
   return (
     <div className="absolute left-6 top-[-58px] h-[116px] w-[116px] rounded-full bg-white p-[5px] shadow-[0_14px_28px_rgba(33,55,30,0.18)] sm:left-8 lg:left-9">
@@ -640,11 +752,13 @@ function ProfileAvatar({
         <span className="absolute inset-0 flex items-center justify-center text-[26px] font-black text-white">
           {readInitials(name)}
         </span>
-        <span
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url("${imageUrl}")` }}
-          aria-hidden="true"
-        />
+        {imageUrl ? (
+          <span
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url("${imageUrl}")` }}
+            aria-hidden="true"
+          />
+        ) : null}
       </div>
     </div>
   );
@@ -656,8 +770,8 @@ function EditAvatar({
   onImageChange,
 }: {
   name: string;
-  imageUrl: string;
-  onImageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  imageUrl?: string | null;
+  onImageChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }) {
   return (
     <div className="absolute left-6 top-[118px] h-[96px] w-[96px] rounded-[22px] bg-white p-[4px] shadow-[0_16px_28px_rgba(33,55,30,0.2)] sm:left-8 sm:top-[124px] lg:left-9">
@@ -665,11 +779,13 @@ function EditAvatar({
         <span className="absolute inset-0 flex items-center justify-center text-[23px] font-black text-white">
           {readInitials(name)}
         </span>
-        <span
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url("${imageUrl}")` }}
-          aria-hidden="true"
-        />
+        {imageUrl ? (
+          <span
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url("${imageUrl}")` }}
+            aria-hidden="true"
+          />
+        ) : null}
       </div>
       <label
         className="absolute -bottom-2 -right-2 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-[#eef8ea] text-[#1f6f2a] shadow-[0_8px_18px_rgba(33,55,30,0.16)] ring-4 ring-white transition-colors hover:bg-white"
@@ -685,39 +801,6 @@ function EditAvatar({
         />
       </label>
     </div>
-  );
-}
-
-function SuggestionsCard() {
-  return (
-    <section className="rounded-[22px] bg-white px-6 py-7 shadow-[0_1px_0_rgba(33,55,30,0.04)]">
-      <h2 className="text-[15px] font-black tracking-[-0.02em] text-[#1e261e]">
-        Sugestões
-      </h2>
-
-      <div className="mt-6 space-y-4">
-        {suggestions.map((person, index) => (
-          <div key={person.name} className="flex items-center gap-3">
-            <MiniAvatar color={person.color} variant={index} />
-            <div className="min-w-0">
-              <p className="truncate text-[12px] font-black leading-4 text-[#242b23]">
-                {person.name}
-              </p>
-              <p className="truncate text-[10px] font-semibold leading-3 text-[#8a9186]">
-                {person.role}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <button
-        type="button"
-        className="mt-7 w-full text-center text-[11px] font-black text-[#287630]"
-      >
-        Ver todas as sugestões
-      </button>
-    </section>
   );
 }
 

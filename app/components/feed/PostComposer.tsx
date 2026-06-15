@@ -13,6 +13,7 @@ import {
   readEventsByCreator,
   type UserCreatedEvent,
 } from "@/app/lib/userEvents";
+import { readFileAsDataUrl } from "@/app/lib/fileReader";
 import { ImageIcon } from "./FeedIcons";
 
 export function PostComposer({
@@ -43,7 +44,7 @@ export function PostComposer({
     type: "success" | "error";
   } | null>(null);
 
-  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
 
     if (!file) {
@@ -51,13 +52,13 @@ export function PostComposer({
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      setSelectedImage(
-        typeof reader.result === "string" ? reader.result : null
-      );
-    };
-    reader.readAsDataURL(file);
+    try {
+      const dataUrl = await readFileAsDataUrl(file);
+      setSelectedImage(dataUrl);
+    } catch (error) {
+      console.error("Erro ao ler arquivo de publicação:", error);
+      setSelectedImage(null);
+    }
   }
 
   function clearImage() {
@@ -122,7 +123,7 @@ export function PostComposer({
   }
 
   async function handlePublish() {
-    console.log("[PostComposer] Iniciando publicacao...");
+    console.log("[PostComposer] Iniciando publicação...");
     console.log("[PostComposer] Estado atual:", {
       isReady,
       isAuthenticated,
@@ -245,7 +246,7 @@ export function PostComposer({
 
         <div className="min-w-0 flex-1">
           <label htmlFor={textInputId} className="sr-only">
-            Criar publicacao
+            Criar publicação
           </label>
           <textarea
             id={textInputId}
@@ -305,7 +306,7 @@ export function PostComposer({
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={selectedImage}
-                  alt="Imagem selecionada para publicacao"
+                  alt="Imagem selecionada para publicação"
                   className="h-full w-full object-cover"
                 />
                 <button

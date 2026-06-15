@@ -7,8 +7,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/app/components/auth/AuthProvider";
 import { BellIcon, SearchIcon } from "./FeedIcons";
 
-const PROFILE_AVATAR_STORAGE_KEY = "ruralize.profile.avatarUrl";
-
 const navItems = [
   { label: "Feed", path: "/feed" },
   { label: "Agendamentos", path: "/agendamentos" },
@@ -45,10 +43,7 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
     opacity: 1,
   });
   const [menuOpen, setMenuOpen] = useState(false);
-  const [storedProfileAvatarUrl, setStoredProfileAvatarUrl] = useState<
-    string | undefined
-  >(undefined);
-  const profileAvatarUrl = user?.avatarUrl ?? storedProfileAvatarUrl;
+  const profileAvatarUrl = user?.avatarUrl;
   const menuRef = useRef<HTMLDivElement | null>(null);
   const currentSection = useMemo<HeaderSection>(() => {
     const matchedItem = navItems.find((item) => pathname.startsWith(item.path));
@@ -70,20 +65,6 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
       opacity: 1,
     });
   }, [activeSection]);
-
-  useEffect(() => {
-    function syncStoredAvatar() {
-      setStoredProfileAvatarUrl(readStoredProfileAvatarUrl());
-    }
-
-    const initialAvatarTimeout = window.setTimeout(syncStoredAvatar, 0);
-    window.addEventListener("ruralize.avatar.update", syncStoredAvatar);
-
-    return () => {
-      window.clearTimeout(initialAvatarTimeout);
-      window.removeEventListener("ruralize.avatar.update", syncStoredAvatar);
-    };
-  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -240,11 +221,4 @@ export function FeedHeader(props: FeedHeaderProps = {}) {
   );
 }
 
-function readStoredProfileAvatarUrl() {
-  if (typeof window === "undefined") {
-    return undefined;
-  }
-
-  return window.localStorage.getItem(PROFILE_AVATAR_STORAGE_KEY) ?? undefined;
-}
 

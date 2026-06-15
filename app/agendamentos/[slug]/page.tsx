@@ -5,38 +5,168 @@ import { useParams, useRouter } from "next/navigation";
 
 import { RegistrationActions } from "@/app/components/appointments/RegistrationActions";
 import { RequireAuth } from "@/app/components/auth/RequireAuth";
+import { useAuthenticatedUser } from "@/app/components/auth/useAuthenticatedUser";
 import { FeedHeader } from "@/app/components/feed/FeedHeader";
-import { getEvent, type EventResponse } from "@/app/services/api/events.api";
+import {
+  getEvent,
+  deleteEvent,
+  updateEvent,
+  type EventResponse,
+  type EventUpdate,
+} from "@/app/services/api/events.api";
 
 export default function AppointmentDetailsPage() {
   const params = useParams();
   const eventId = typeof params?.slug === "string" ? params.slug : "";
 
   const router = useRouter();
+  const user = useAuthenticatedUser();
   const [event, setEvent] = useState<EventResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [editForm, setEditForm] = useState({
+    title: "",
+    description: "",
+    start_date: "",
+    end_date: "",
+    location_name: "",
+    address: "",
+    max_participants: "",
+    points: "",
+    photo_url: "",
+    status: "",
+  });
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  useEffect(() => {
-    const fetchEvent = async () => {
-      if (!eventId) {
-        setError("Evento inválido");
-        setLoading(false);
-        return;
-      }
+  const canManageEvent = Boolean(
+    user?.userId && event?.promoter_id && user.userId === event.promoter_id,
+  );
 
+  const formatToDateTimeLocal = (dateString: string) => {
+    if (!dateString) {
+      return "";
+    }
+
+    // When backend returns a timezone-aware value, adjust to local time.
+    if (/[zZ]|[+-]\d{2}:\d{2}$/.test(dateString)) {
       try {
-        setLoading(true);
-        setError(null);
-        const data = await getEvent(eventId);
-        setEvent(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Erro ao carregar evento");
-      } finally {
-        setLoading(false);
+        const date = new Date(dateString);
+        const tzOffset = date.getTimezoneOffset() * 60000;
+        return new Date(date.getTime() - tzOffset).toISOString().slice(0, 16);
+      } catch {
+        return dateString.slice(0, 16);
       }
+    }
+
+    // Backend may return naive local date-time strings already suitable for datetime-local.
+    return dateString.slice(0, 16);
+  };
+
+  const fetchEvent = async () => {
+    if (!eventId) {
+      setError("Evento inválido");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getEvent(eventId);
+      setEvent(data);
+      setEditForm({
+        title: data.title,
+        description: data.description,
+        start_date: formatToDateTimeLocal(data.start_date),
+        end_date: formatToDateTimeLocal(data.end_date),
+        location_name: data.location_name,
+        address: data.address,
+        max_participants: String(data.max_participants),
+        points: String(data.points),
+        photo_url: data.photo_url ?? "",
+        status: data.status,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao carregar evento");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (field: keyof typeof editForm, value: string) => {
+    setEditForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
+  const handleSaveChanges = async (eventSubmit: React.FormEvent<HTMLFormElement>) => {
+    eventSubmit.preventDefault();
+
+    if (!event) {
+      return;
+    }
+
+    setIsSaving(true);
+    setActionError(null);
+    setActionMessage(null);
+
+    const updatePayload: EventUpdate = {
+      title: editForm.title,
+      description: editForm.description,
+      start_date: editForm.start_date,
+      end_date: editForm.end_date,
+      location_name: editForm.location_name,
+      address: editForm.address,
+      max_participants: Number(editForm.max_participants),
+      points: Number(editForm.points),
+      photo_url: editForm.photo_url || undefined,
+      status: editForm.status || undefined,
     };
 
+    try {
+      await updateEvent(event.id, updatePayload);
+      setActionMessage("Evento atualizado com sucesso.");
+      setEditMode(false);
+      await fetchEvent();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Erro ao atualizar evento");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteEvent = async () => {
+    if (!event) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Tem certeza que deseja excluir este evento? Esta ação não pode ser desfeita.",
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setActionError(null);
+    setActionMessage(null);
+
+    try {
+      await deleteEvent(event.id);
+      router.push("/agendamentos");
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Erro ao excluir evento");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  useEffect(() => {
     fetchEvent();
   }, [eventId]);
 
@@ -184,6 +314,137 @@ export default function AppointmentDetailsPage() {
                 endDate={event.end_date}
               />
 
+              {canManageEvent ? (
+                <div className="mt-6 rounded-[18px] border border-[#d4e8d4] bg-[#f4fbf3] p-4">
+                  <p className="text-[11px] font-black uppercase tracking-[0.08em] text-[#287630]">
+                    Gerenciar evento
+                  </p>
+
+                  {actionError ? (
+                    <div className="mt-3 rounded bg-red-50 p-3 text-sm text-red-700">
+                      {actionError}
+                    </div>
+                  ) : null}
+
+                  {actionMessage ? (
+                    <div className="mt-3 rounded bg-green-50 p-3 text-sm text-green-700">
+                      {actionMessage}
+                    </div>
+                  ) : null}
+
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setEditMode((current) => !current)}
+                      className="inline-flex h-11 items-center justify-center rounded-full border border-[#287630] bg-white px-4 text-[12px] font-black text-[#287630] transition hover:bg-[#f4fbf3]"
+                    >
+                      {editMode ? "Cancelar edição" : "Editar evento"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleDeleteEvent}
+                      disabled={isDeleting}
+                      className="inline-flex h-11 items-center justify-center rounded-full bg-[#b92828] px-4 text-[12px] font-black text-white transition hover:bg-[#991d1d] disabled:opacity-60"
+                    >
+                      {isDeleting ? "Excluindo..." : "Excluir evento"}
+                    </button>
+                  </div>
+
+                  {editMode ? (
+                    <form className="mt-5 space-y-4" onSubmit={handleSaveChanges}>
+                      <div>
+                        <label className="block text-[12px] font-semibold text-[#44503f]">
+                          Título
+                        </label>
+                        <input
+                          value={editForm.title}
+                          onChange={(e) => handleInputChange("title", e.target.value)}
+                          className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-[#1f281f]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[12px] font-semibold text-[#44503f]">
+                          Descrição
+                        </label>
+                        <textarea
+                          value={editForm.description}
+                          onChange={(e) => handleInputChange("description", e.target.value)}
+                          className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-[#1f281f]"
+                          rows={3}
+                        />
+                      </div>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <label className="block text-[12px] font-semibold text-[#44503f]">
+                          Início
+                          <input
+                            type="datetime-local"
+                            value={editForm.start_date}
+                            onChange={(e) => handleInputChange("start_date", e.target.value)}
+                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-[#1f281f]"
+                          />
+                        </label>
+                        <label className="block text-[12px] font-semibold text-[#44503f]">
+                          Término
+                          <input
+                            type="datetime-local"
+                            value={editForm.end_date}
+                            onChange={(e) => handleInputChange("end_date", e.target.value)}
+                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-[#1f281f]"
+                          />
+                        </label>
+                      </div>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <label className="block text-[12px] font-semibold text-[#44503f]">
+                          Local
+                          <input
+                            value={editForm.location_name}
+                            onChange={(e) => handleInputChange("location_name", e.target.value)}
+                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-[#1f281f]"
+                          />
+                        </label>
+                        <label className="block text-[12px] font-semibold text-[#44503f]">
+                          Endereço
+                          <input
+                            value={editForm.address}
+                            onChange={(e) => handleInputChange("address", e.target.value)}
+                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-[#1f281f]"
+                          />
+                        </label>
+                      </div>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <label className="block text-[12px] font-semibold text-[#44503f]">
+                          Máx. participantes
+                          <input
+                            type="number"
+                            min="1"
+                            value={editForm.max_participants}
+                            onChange={(e) => handleInputChange("max_participants", e.target.value)}
+                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-[#1f281f]"
+                          />
+                        </label>
+                        <label className="block text-[12px] font-semibold text-[#44503f]">
+                          Pontos
+                          <input
+                            type="number"
+                            min="1"
+                            value={editForm.points}
+                            onChange={(e) => handleInputChange("points", e.target.value)}
+                            className="mt-2 w-full rounded-[10px] border border-[#c9d4c1] bg-white px-3 py-2 text-sm text-[#1f281f]"
+                          />
+                        </label>
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={isSaving}
+                        className="mt-2 inline-flex w-full h-12 items-center justify-center rounded-full bg-[#287630] px-4 text-[12px] font-black text-white transition hover:bg-[#1f6428] disabled:opacity-60"
+                      >
+                        {isSaving ? "Salvando..." : "Salvar alterações"}
+                      </button>
+                    </form>
+                  ) : null}
+                </div>
+              ) : null}
+
               <p className="mt-6 flex items-center justify-center gap-2 text-[10px] font-semibold text-[#a0a69b]">
                 <ShieldIcon className="h-3.5 w-3.5" />
                 Sua inscrição será validada pela equipe.
@@ -306,8 +567,8 @@ function ShieldIcon({ className = "h-4 w-4" }: { className?: string }) {
       className={className}
       aria-hidden="true"
     >
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
-      <path d="m9 12 2 2 4-4" />
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      <path d="M9.5 12.5l2 2 3.5-3.5" />
     </svg>
   );
 }

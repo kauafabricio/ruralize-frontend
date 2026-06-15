@@ -87,6 +87,15 @@ export async function updateEvent(
   return response.data;
 }
 
+export async function deleteEvent(
+  eventId: string,
+): Promise<Record<string, unknown>> {
+  const response = await api.delete<Record<string, unknown>>(
+    `/events/${eventId}`,
+  );
+  return response.data;
+}
+
 export async function getMyEvents(): Promise<EventResponse[]> {
   const response = await api.get<unknown>("/events/my/events");
   const data = response.data;

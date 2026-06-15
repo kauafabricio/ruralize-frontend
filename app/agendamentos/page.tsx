@@ -6,34 +6,34 @@ import { useEffect, useState } from "react";
 import { RequireAuth } from "@/app/components/auth/RequireAuth";
 import { FeedHeader } from "@/app/components/feed/FeedHeader";
 import { useAuthenticatedUser } from "@/app/components/auth/useAuthenticatedUser";
-import { getMySubscriptions, listSubscriptions, SubscriptionListResponse } from "@/app/services/api/subscription.api";
+import { getMySubscriptions, SubscriptionResponse } from "@/app/services/api/subscriptions.api";
+import { unsubscribeEvent } from "@/app/services/api/events.api";
 
 export default function AgendamentosPage() {
   const user = useAuthenticatedUser();
-  const [registeredEvents, setRegisteredEvents] = useState<SubscriptionListResponse[]>([]);
+  const [registeredEvents, setRegisteredEvents] = useState<SubscriptionResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Fetch user's events from backend
   useEffect(() => {
-    if (!user || !user.userId) return;
+    if (!user) return;
 
     const fetchMyEvents = async () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await getMySubscriptions(user.userId);
+        const data = await getMySubscriptions();
         setRegisteredEvents(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Erro ao carregar agendamentos");
-        // setRegisteredEvents([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchMyEvents();
-  }, [user?.userId]);
+  }, [user]);
 
   const handleCancel = async (eventId: string, eventTitle: string) => {
     const confirmed = window.confirm(
@@ -43,8 +43,8 @@ export default function AgendamentosPage() {
     if (!confirmed || !user) return;
 
     try {
-      //await unsubscribeEvent(eventId);
-      setRegisteredEvents(registeredEvents.filter((e) => e.id !== eventId));
+      await unsubscribeEvent(eventId);
+      setRegisteredEvents((current) => current.filter((e) => e.event.id !== eventId));
     } catch (err) {
       alert(err instanceof Error ? err.message : "Erro ao cancelar inscrição");
     }
@@ -54,10 +54,10 @@ export default function AgendamentosPage() {
   const now = new Date();
 
   const agendadosEvents = registeredEvents.filter(
-    (event) => new Date(event.start_date) > now
+    ({ event }) => new Date(event.start_date) > now
   );
   const realizadosEvents = registeredEvents.filter(
-    (event) => new Date(event.start_date) <= now
+    ({ event }) => new Date(event.start_date) <= now
   );
 
   return (
@@ -92,85 +92,88 @@ export default function AgendamentosPage() {
               </div>
             )}
 
-            {!loading && registeredEvents.length === 0 && (
-              <EmptyAppointmentsState />
-            )}
+            {!loading && (
+              <div className="mt-12 grid gap-12 lg:grid-cols-[1fr_372px]">
+                {/* Main content - Events */}
+                <div>
+                  {registeredEvents.length > 0 ? (
+                    <>
+                      {/* Próximos Eventos */}
+                      <div>
+                        <h2 className="text-[24px] font-black tracking-[-0.03em] text-[#1e261e] flex items-center gap-3">
+                          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e4f5df] text-[#287630]">
+                            📅
+                          </span>
+                          Próximos Eventos
+                        </h2>
 
-            {!loading && registeredEvents.length > 0 && (
-              <>
-                {/* Agendados Section */}
-                <div className="mt-12">
-                  <h2 className="text-[24px] font-black tracking-[-0.03em] text-[#1e261e] flex items-center gap-3">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e4f5df] text-[#287630]">
-                      📅
-                    </span>
-                    Próximos Eventos
-                  </h2>
+                        {agendadosEvents.length > 0 ? (
+                          <div className="mt-6 grid gap-7 md:grid-cols-2">
+                            {agendadosEvents.map((subscription) => (
+                              <AppointmentCard
+                                key={subscription.id}
+                                id={subscription.event.id}
+                                title={subscription.event.title}
+                                date={formatDate(subscription.event.start_date)}
+                                location={subscription.event.location_name}
+                                href={`/agendamentos/${subscription.event.id}`}
+                                onCancel={() => handleCancel(subscription.event.id, subscription.event.title)}
+                                status="Confirmado"
+                                showCancel={true}
+                              />
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="mt-6 flex min-h-[150px] flex-col items-center justify-center rounded-[18px] border border-dashed border-[#d8dbd2] bg-[#fbfbf7]">
+                            <p className="text-[14px] font-semibold text-[#777f72]">
+                              Nenhum evento agendado no momento
+                            </p>
+                          </div>
+                        )}
+                      </div>
 
-                  {agendadosEvents.length > 0 ? (
-                    <div className="mt-6 grid gap-7 md:grid-cols-2 xl:grid-cols-3">
-                      {agendadosEvents.map((event) => (
-                        <AppointmentCard
-                          key={event.id}
-                          id={event.id}
-                          title="haha"
-                          date={formatDate(event.created_at)}
-                          location={"name"}
-                          href={`/agendamentos/${event.id}`}
-                          onCancel={() => handleCancel(event.id, "tesste")}
-                          status="Confirmado"
-                          showCancel={true}
-                        />
-                      ))}
-                    </div>
+                      {/* Eventos Realizados */}
+                      {realizadosEvents.length > 0 && (
+                        <div className="mt-14">
+                          <h2 className="text-[24px] font-black tracking-[-0.03em] text-[#1e261e] flex items-center gap-3">
+                            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e8efdf] text-[#556050]">
+                              ✅
+                            </span>
+                            Eventos Realizados
+                          </h2>
+
+                          <div className="mt-6 grid gap-7 md:grid-cols-2">
+                            {realizadosEvents.map((subscription) => (
+                              <AppointmentCard
+                                key={subscription.id}
+                                id={subscription.event.id}
+                                title={subscription.event.title}
+                                date={formatDate(subscription.event.start_date)}
+                                location={subscription.event.location_name}
+                                href={`/agendamentos/${subscription.event.id}`}
+                                onCancel={() => handleCancel(subscription.event.id, subscription.event.title)}
+                                status="Realizado"
+                                showCancel={false}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
                   ) : (
-                    <div className="mt-6 flex min-h-[150px] flex-col items-center justify-center rounded-[18px] border border-dashed border-[#d8dbd2] bg-[#fbfbf7]">
+                    <div className="flex min-h-[150px] flex-col items-center justify-center rounded-[18px] border border-dashed border-[#d8dbd2] bg-[#fbfbf7]">
                       <p className="text-[14px] font-semibold text-[#777f72]">
-                        Nenhum evento agendado no momento
+                        Nenhum agendamento confirmado
                       </p>
-                      <Link
-                        href="/agendamentos/explorar"
-                        className="mt-3 text-[12px] font-black text-[#287630] hover:text-[#1f6428]"
-                      >
-                        Explorar Eventos →
-                      </Link>
                     </div>
                   )}
                 </div>
 
-                {/* Realizados Section */}
-                {realizadosEvents.length > 0 && (
-                  <div className="mt-14">
-                    <h2 className="text-[24px] font-black tracking-[-0.03em] text-[#1e261e] flex items-center gap-3">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e8efdf] text-[#556050]">
-                        ✅
-                      </span>
-                      Eventos Realizados
-                    </h2>
-
-                    <div className="mt-6 grid gap-7 md:grid-cols-2 xl:grid-cols-3">
-                      {realizadosEvents.map((event) => (
-                        <AppointmentCard
-                          key={event.id}
-                          id={event.id}
-                          title={"event.title"}
-                          date={formatDate(event.created_at)}
-                          location={"event.location_name"}
-                          href={`/agendamentos/${event.id}`}
-                          onCancel={() => handleCancel(event.id, "event.title")}
-                          status="Realizado"
-                          showCancel={false}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* New Appointment Card */}
-                <div className="mt-11 flex justify-center">
+                {/* Sidebar - Explorar Eventos Card */}
+                <aside className="sticky top-20 h-fit">
                   <NewAppointmentCard />
-                </div>
-              </>
+                </aside>
+              </div>
             )}
           </section>
         </div>
@@ -188,28 +191,6 @@ function formatDate(dateStr: string): string {
   } catch {
     return dateStr;
   }
-}
-
-function EmptyAppointmentsState() {
-  return (
-    <section className="mt-10 flex min-h-[230px] flex-col items-center justify-center rounded-[26px] border border-dashed border-[#d8dbd2] bg-[#fbfbf7] px-8 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#e4f5df] text-[#287630]">
-        <CalendarIcon className="h-6 w-6" />
-      </div>
-      <h2 className="mt-6 text-[20px] font-black tracking-[-0.03em] text-[#1e261e]">
-        Nenhum agendamento confirmado
-      </h2>
-      <p className="mt-3 max-w-[360px] text-[12px] font-semibold leading-5 text-[#777f72]">
-        Inscreva-se em um evento em Explorar Eventos para que ele apareça aqui.
-      </p>
-      <Link
-        href="/agendamentos/explorar"
-        className="mt-7 inline-flex h-11 items-center justify-center rounded-full bg-[#287630] px-8 text-center text-[12px] font-black text-white shadow-[0_10px_18px_rgba(40,118,48,0.22)] transition hover:bg-[#1f6428]"
-      >
-        Explorar Eventos
-      </Link>
-    </section>
-  );
 }
 
 function AppointmentCard({
@@ -284,9 +265,9 @@ function AppointmentCard({
 
 function NewAppointmentCard() {
   return (
-    <aside className="flex min-h-[264px] w-full max-w-[372px] flex-col items-center justify-center rounded-[26px] border border-dashed border-[#d8dbd2] bg-[#fbfbf7] px-8 text-center">
+    <aside className="flex min-h-[264px] w-full flex-col items-center justify-center rounded-[26px] border border-dashed border-[#d8dbd2] bg-[#fbfbf7] px-8 text-center">
       <h2 className="text-[18px] font-black tracking-[-0.03em] text-[#1e261e]">
-        Novo Agendamento
+        Explorar Eventos
       </h2>
       <p className="mt-3 max-w-[245px] text-[11px] font-semibold leading-5 text-[#777f72]">
         Encontre novas atividades e participe da nossa comunidade.

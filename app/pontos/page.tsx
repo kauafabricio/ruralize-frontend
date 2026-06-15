@@ -15,6 +15,55 @@ import {
 } from "@/app/services/api/rewards.api";
 import { getPointsBalance } from "@/app/services/api/points.api";
 
+const rewardImageFallbacks: Record<string, string> = {
+  "10 fichas de almoço no RU": "/ficharu1.jpeg",
+  "10 fichas de jantar no RU": "/ficharu2.jpeg",
+  "1 ecobag": "/ecobag.jpeg",
+};
+
+function resolveRewardImagePath(imageUrl?: string | null): string | undefined {
+  if (!imageUrl) {
+    return undefined;
+  }
+
+  const trimmed = imageUrl.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+
+  let pathname = trimmed;
+
+  try {
+    const parsed = new URL(trimmed, "http://localhost");
+    pathname = parsed.pathname;
+  } catch {
+    // Keep original trimmed value if it isn't a full URL.
+    pathname = trimmed;
+  }
+
+  const filename = pathname
+    .split("/")
+    .filter(Boolean)
+    .filter((segment) => segment !== "app" && segment !== "public")
+    .filter((segment) => segment !== "src")
+    .pop();
+
+  if (!filename) {
+    return undefined;
+  }
+
+  return `/${filename}`;
+}
+
+function getRewardImageSrc(reward: Reward): string | undefined {
+  const imagePath = resolveRewardImagePath(reward.image_url);
+  if (imagePath) {
+    return imagePath;
+  }
+
+  return rewardImageFallbacks[reward.name];
+}
+
 // Ação de histórico para compatibilidade com UI existente
 const actionHistory = [
   {
@@ -301,13 +350,17 @@ export default function PointsPage() {
                     className="overflow-hidden rounded-[22px] bg-white shadow-[0_1px_0_rgba(33,55,30,0.05)]"
                   >
                     <div className="relative h-[176px] overflow-hidden bg-[#e8e8e8]">
-                      {reward.image_url && (
+                      {getRewardImageSrc(reward) ? (
                         <img
-                          src={reward.image_url}
+                          src={getRewardImageSrc(reward)}
                           alt={reward.name}
                           className="h-full w-full object-cover"
                           loading="lazy"
                         />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-[12px] font-semibold text-[#687266]">
+                          Imagem indisponível
+                        </div>
                       )}
                       <span className="absolute right-4 top-4 rounded-full bg-[#287630] px-3 py-1.5 text-[10px] font-black text-white shadow-[0_8px_16px_rgba(23,73,27,0.22)]">
                         {reward.points_required} pts

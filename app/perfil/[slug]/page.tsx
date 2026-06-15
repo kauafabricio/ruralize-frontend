@@ -164,8 +164,8 @@ export default function UserProfilePage() {
     );
   }
 
-  const coverImage = profile.cover_photo_url || "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1800&q=85";
-  const profileImage = profile.profile_photo_url || "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=320&q=85";
+  const coverImage = profile.cover_photo_url || undefined;
+  const profileImage = profile.profile_photo_url || undefined;
 
   return (
     <main className="min-h-screen bg-[#f8f8f3] text-[#222a20]">
@@ -221,9 +221,15 @@ export default function UserProfilePage() {
             className="h-[174px] bg-[#d7e4c6] bg-cover bg-center"
             role="img"
             aria-label="Capa do perfil"
-            style={{
-              backgroundImage: `linear-gradient(180deg, rgba(23, 73, 27, 0.02), rgba(23, 73, 27, 0.12)), url("${coverImage}")`,
-            }}
+            style={
+              coverImage
+                ? {
+                    backgroundImage: `linear-gradient(180deg, rgba(23, 73, 27, 0.02), rgba(23, 73, 27, 0.12)), url("${coverImage}")`,
+                  }
+                : {
+                    backgroundImage: "linear-gradient(180deg, rgba(23, 73, 27, 0.02), rgba(23, 73, 27, 0.12))",
+                  }
+            }
           />
 
           <div className="relative px-6 pb-8 pt-[62px] sm:px-8 lg:px-9">
@@ -295,7 +301,7 @@ function ProfileAvatar({
   imageUrl,
 }: {
   name: string;
-  imageUrl: string;
+  imageUrl?: string | null;
 }) {
   return (
     <div className="absolute left-6 top-[-58px] h-[116px] w-[116px] rounded-full bg-white p-[5px] shadow-[0_14px_28px_rgba(33,55,30,0.18)] sm:left-8 lg:left-9">
@@ -303,11 +309,13 @@ function ProfileAvatar({
         <span className="absolute inset-0 flex items-center justify-center text-[26px] font-black text-white">
           {readInitials(name)}
         </span>
-        <span
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url("${imageUrl}")` }}
-          aria-hidden="true"
-        />
+        {imageUrl ? (
+          <span
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url("${imageUrl}")` }}
+            aria-hidden="true"
+          />
+        ) : null}
       </div>
     </div>
   );

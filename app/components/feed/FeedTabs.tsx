@@ -148,14 +148,14 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
   return (
     <>
       <div
-        className=”relative mb-8 inline-flex items-center gap-11 pl-1 text-[12px] font-semibold text-gray-900”
-        role=”tablist”
-        aria-label=”Tipo de feed”
+        className="relative mb-8 inline-flex items-center gap-11 pl-1 text-[12px] font-semibold text-gray-900"
+        role="tablist"
+        aria-label="Tipo de feed"
       >
         <span
-          className=”absolute bottom-[-12px] left-[13px] h-[3px] w-[64px] rounded-full bg-primary-dark transition-transform duration-300 ease-out”
+          className="absolute bottom-[-12px] left-[13px] h-[3px] w-[64px] rounded-full bg-primary-dark transition-transform duration-300 ease-out"
           style={{ transform: `translateX(${activeIndex * 134}px)` }}
-          aria-hidden=”true”
+          aria-hidden="true"
         />
 
         {feedTabs.map((tab) => {
@@ -164,16 +164,16 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
           return (
             <button
               key={tab.id}
-              type=”button”
-              role=”tab”
+              type="button"
+              role="tab"
               aria-selected={active}
               aria-controls={`${tab.id}-feed-panel`}
               id={`${tab.id}-feed-tab`}
               onClick={() => setActiveTab(tab.id)}
               className={`relative w-[90px] rounded-full py-3 transition-all duration-300 ease-out ${
                 active
-                  ? “bg-white font-black text-primary-dark shadow-md”
-                  : “text-gray-700 hover:text-primary-dark hover:bg-gray-50”
+                  ? "bg-white font-black text-primary-dark shadow-md"
+                  : "text-gray-700 hover:text-primary-dark hover:bg-gray-50"
               }`}
             >
               {tab.label}
@@ -183,19 +183,19 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
       </div>
 
       <div
-        className=”mb-7 flex flex-wrap items-center gap-2 rounded-2xl border border-gray-200 bg-white px-3 py-2 shadow-sm”
-        aria-label=”Filtros do feed”
+        className="mb-7 flex flex-wrap items-center gap-2 rounded-2xl border border-gray-200 bg-white px-3 py-2 shadow-sm"
+        aria-label="Filtros do feed"
       >
         {DEFAULT_FILTER_IDS.map((filterId) => {
           const active = filterId === activeFilter;
           let displayLabel: string;
 
-          if (filterId === “all”) {
-            displayLabel = “Todos”;
-          } else if (filterId === “recent”) {
-            displayLabel = “Recentes”;
-          } else if (filterId === “general”) {
-            displayLabel = “🌍 Sem ação”;
+          if (filterId === "all") {
+            displayLabel = "Todos";
+          } else if (filterId === "recent") {
+            displayLabel = "Recentes";
+          } else if (filterId === "general") {
+            displayLabel = "🌍 Sem acao";
           } else {
             const actionIcon = getActionIcon(filterId);
             const actionName = getActionName(filterId);
@@ -205,12 +205,12 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
           return (
             <button
               key={filterId}
-              type=”button”
+              type="button"
               onClick={() => setActiveFilter(filterId as FeedFilterId)}
               className={`h-8 rounded-full px-3 text-[12px] font-bold transition-all duration-200 ${
                 active
-                  ? “bg-primary-dark text-white shadow-md”
-                  : “bg-gray-50 text-gray-600 border border-gray-200 hover:text-primary-dark hover:border-gray-300”
+                  ? "bg-primary-dark text-white shadow-md"
+                  : "bg-gray-50 text-gray-600 border border-gray-200 hover:text-primary-dark hover:border-gray-300"
               }`}
               aria-pressed={active}
             >
@@ -223,16 +223,16 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
       {feedTabs.map((tab) => (
         <div
           key={tab.id}
-          role=”tabpanel”
+          role="tabpanel"
           id={`${tab.id}-feed-panel`}
           aria-labelledby={`${tab.id}-feed-tab`}
           hidden={activeTab !== tab.id}
-          className=”space-y-7”
+          className="space-y-7"
         >
-          <span className=”sr-only”>{tab.description}</span>
+          <span className="sr-only">{tab.description}</span>
           {searchTerm ? (
-            <p className=”text-sm font-medium text-gray-700”>
-              Buscando por “{searchTerm}”
+            <p className="text-sm font-medium text-gray-700">
+              Buscando por "{searchTerm}"
             </p>
           ) : null}
           <PostComposer onPostCreated={handlePostCreated} />
@@ -240,7 +240,7 @@ export function FeedTabs({ searchTerm }: { searchTerm: string }) {
           {loading ? (
             <FeedSkeletonList />
           ) : error ? (
-            <div className=”rounded-3xl bg-white px-6 py-8 text-center text-sm text-red-600 shadow-md”>
+            <div className="rounded-3xl bg-white px-6 py-8 text-center text-sm text-red-600 shadow-md">
               {error}
             </div>
           ) : (

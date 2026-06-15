@@ -29,7 +29,7 @@ export function AuthInput({
         </span>
       ) : null}
 
-      <span className="flex h-16 items-center gap-4 rounded-2xl border border-pastel-support bg-white px-4 text-gray-500 shadow-sm transition duration-200 focus-within:shadow-md focus-within:border-primary-dark focus-within:ring-1 focus-within:ring-primary-dark/10">
+      <span className="flex h-16 items-center gap-4 rounded-2xl border border-pastel-support bg-white px-4 text-gray-500 shadow-sm transition duration-200 focus-within:shadow-md focus-within:border-primary-dark focus-within:ring-1 focus-within:ring-primary-dark-20">
         {icon && (
           <span className="flex h-5 w-5 shrink-0 items-center justify-center">
             {icon}

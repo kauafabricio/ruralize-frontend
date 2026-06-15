@@ -8,11 +8,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: {
-          dark: "#2c4a24",
+        "primary-dark": {
+          DEFAULT: "#2c4a24",
+          "10": "rgba(44, 74, 36, 0.1)",
+          "20": "rgba(44, 74, 36, 0.2)",
+          "80": "rgba(44, 74, 36, 0.8)",
+          "90": "rgba(44, 74, 36, 0.9)",
         },
         secondary: "#f5eee0",
         accent: "#b0cdba",
+        "pastel-support": "#b0cdba",
         muted: "#a1ba9b",
         "base-clean": "#ffffff",
       },
@@ -32,3 +37,4 @@ export default {
   },
   plugins: [],
 };
+

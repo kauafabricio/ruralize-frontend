@@ -23,7 +23,7 @@ export function RuralizeLogoMinimalist({
             dy="16"
             stdDeviation="20"
             floodColor="#2c4a24"
-            floodOpacity="0.18"
+            floodOpacity={0.18}
           />
         </filter>
       </defs>

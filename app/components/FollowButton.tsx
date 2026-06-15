@@ -57,7 +57,7 @@ export function FollowButton({
         className={`inline-flex h-10 w-fit items-center gap-2 rounded-full px-6 text-[12px] font-black transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-70 ${
           isFollowing
             ? "bg-secondary text-primary-dark hover:bg-accent hover:shadow-sm"
-            : "bg-primary-dark text-white shadow-lg hover:bg-primary-dark/90 hover:shadow-xl"
+            : "bg-primary-dark text-white shadow-lg hover:bg-primary-dark-90 hover:shadow-xl"
         }`}
         title={isFollowing ? "Clique para deixar de seguir" : "Clique para seguir"}
       >

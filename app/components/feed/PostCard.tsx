@@ -329,7 +329,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
               </div>
             )}
             <div>
-              <p className="text-sm font-black text-primary-dark transition duration-150 group-hover:text-primary-dark/80">
+              <p className="text-sm font-black text-primary-dark transition duration-150 group-hover:text-primary-dark-80">
                 {authorName}
               </p>
               <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1.5">
@@ -377,7 +377,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                 value={editContent}
                 onChange={(event) => setEditContent(event.target.value)}
                 rows={4}
-                className="mt-2 w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium normal-case leading-6 tracking-normal text-gray-900 outline-none transition duration-200 focus:border-primary-dark focus:ring-1 focus:ring-primary-dark/10"
+                className="mt-2 w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium normal-case leading-6 tracking-normal text-gray-900 outline-none transition duration-200 focus:border-primary-dark focus:ring-1 focus:ring-primary-dark-10"
               />
             </label>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -386,7 +386,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                 <select
                   value={editActionId}
                   onChange={(event) => setEditActionId(event.target.value)}
-                  className="mt-2 h-10 w-full rounded-full border border-gray-200 bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-gray-900 outline-none transition duration-200 focus:border-primary-dark focus:ring-1 focus:ring-primary-dark/10"
+                  className="mt-2 h-10 w-full rounded-full border border-gray-200 bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-gray-900 outline-none transition duration-200 focus:border-primary-dark focus:ring-1 focus:ring-primary-dark-10"
                 >
                   <option value="">🌍 Sem ação</option>
                   {getAllActions().map((action) => (
@@ -402,7 +402,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                   type="text"
                   value={editLocation}
                   onChange={(event) => setEditLocation(event.target.value)}
-                  className="mt-2 h-10 w-full rounded-full border border-gray-200 bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-gray-900 outline-none transition duration-200 focus:border-primary-dark focus:ring-1 focus:ring-primary-dark/10"
+                  className="mt-2 h-10 w-full rounded-full border border-gray-200 bg-white px-4 text-[12px] font-semibold normal-case tracking-normal text-gray-900 outline-none transition duration-200 focus:border-primary-dark focus:ring-1 focus:ring-primary-dark-10"
                   placeholder="Opcional"
                 />
               </label>
@@ -414,7 +414,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                 type="file"
                 accept="image/*"
                 onChange={handleEditImageFile}
-                className="mt-2 w-full rounded-full border border-gray-200 bg-white px-4 py-2 text-[12px] font-semibold normal-case tracking-normal text-gray-900 outline-none transition duration-200 file:mr-4 file:border-0 file:bg-secondary file:px-3 file:py-2 file:text-[12px] file:font-semibold file:text-primary-dark focus:border-primary-dark focus:ring-1 focus:ring-primary-dark/10"
+                className="mt-2 w-full rounded-full border border-gray-200 bg-white px-4 py-2 text-[12px] font-semibold normal-case tracking-normal text-gray-900 outline-none transition duration-200 file:mr-4 file:border-0 file:bg-secondary file:px-3 file:py-2 file:text-[12px] file:font-semibold file:text-primary-dark focus:border-primary-dark focus:ring-1 focus:ring-primary-dark-10"
               />
             </label>
             {editImageUrl ? (
@@ -455,7 +455,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                 type="button"
                 onClick={handleSavePost}
                 disabled={isSavingPost || !editContent.trim()}
-                className="h-10 rounded-full bg-primary-dark px-5 text-[11px] font-black text-white transition duration-150 hover:bg-primary-dark/90 disabled:opacity-50"
+                className="h-10 rounded-full bg-primary-dark px-5 text-[11px] font-black text-white transition duration-150 hover:bg-primary-dark-90 disabled:opacity-50"
               >
                 {isSavingPost ? "Salvando..." : "Salvar alteracoes"}
               </button>
@@ -551,7 +551,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                   <div className="flex-1">
                     <Link
                       href={`/perfil/${comment.user_id}`}
-                      className="text-[12px] font-black text-primary-dark transition duration-150 hover:text-primary-dark/80"
+                      className="text-[12px] font-black text-primary-dark transition duration-150 hover:text-primary-dark-80"
                     >
                       {comment.user_name || (comment.user_id === user?.id ? user.name || "Você" : "Usuário")}
                     </Link>
@@ -591,12 +591,12 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                 }
               }}
               placeholder="Deixe um comentário..."
-              className="flex-1 rounded-full bg-gray-50 px-4 py-2 text-[12px] outline-none transition duration-150 placeholder:text-gray-500 focus:bg-white focus:ring-1 focus:ring-primary-dark/10"
+              className="flex-1 rounded-full bg-gray-50 px-4 py-2 text-[12px] outline-none transition duration-150 placeholder:text-gray-500 focus:bg-white focus:ring-1 focus:ring-primary-dark-10"
             />
             <button
               onClick={handleAddComment}
               disabled={isLoadingComment || !newComment.trim()}
-              className="rounded-full bg-primary-dark px-4 py-2 text-[11px] font-black text-white transition duration-150 hover:bg-primary-dark/90 disabled:opacity-50"
+              className="rounded-full bg-primary-dark px-4 py-2 text-[11px] font-black text-white transition duration-150 hover:bg-primary-dark-90 disabled:opacity-50"
             >
               {isLoadingComment ? "..." : "Enviar"}
             </button>
@@ -691,7 +691,7 @@ function DeleteSuccessDialog({ onClose }: { onClose: () => void }) {
         <button
           type="button"
           onClick={onClose}
-          className="mt-7 h-11 w-full rounded-full bg-primary-dark px-5 text-[11px] font-black text-white shadow-lg transition duration-150 hover:bg-primary-dark/90"
+          className="mt-7 h-11 w-full rounded-full bg-primary-dark px-5 text-[11px] font-black text-white shadow-lg transition duration-150 hover:bg-primary-dark-90"
         >
           Entendi
         </button>
